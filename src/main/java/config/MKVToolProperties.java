@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,25 +16,72 @@ public class MKVToolProperties {
     private String mkvmergePath;
     private String mkvpropeditPath;
 
-    public MKVToolProperties() {
-        try(Stream<String> stream = Files.lines(Paths.get("mkvDirectoryPath"))) {
-            directoryPath = stream.collect(Collectors.joining("\n"));
-        }catch(IOException e) {
-            log.fatal(e.getMessage());
-        }
+    private static MKVToolProperties instance = null;
 
-        if(!directoryPath.endsWith("\\")) {
-            directoryPath += "\\";
+    private MKVToolProperties() {
+    }
+
+    public static MKVToolProperties getInstance() {
+        if(instance == null){
+            instance = new MKVToolProperties();
         }
+        return instance;
+    }
+
+    public void defineMKVToolNixPath() {
+        searchWithFilePath();
+        if(pathIsValid()){
+            log.info("MKVToolNix found!");
+            return;
+        }
+        log.debug("MKVToolNix not found in file!");
+        searchInDefaultPath();
+        if(pathIsValid()){
+            log.info("MKVToolNix found!");
+            return;
+        }
+        log.debug("MKVToolNix not found in default path!");
+        Scanner input = new Scanner(System.in);
+        while(true){
+            searchWithUserPath(input);
+            if(pathIsValid()){
+                log.info("MKVToolNix found!");
+                break;
+            }
+        }
+        log.error("MKVToolNix not found anywhere!");
+    }
+
+    private boolean pathIsValid() {
+        checkForSeparator();
+        setMKVmergeAndPropEditPath();
+        return new File(mkvmergePath).exists() && new File(mkvpropeditPath).exists();
+    }
+
+    private void checkForSeparator() {
+        if(! (directoryPath.endsWith("/") || directoryPath.endsWith("\\"))){
+            directoryPath += File.separator;
+        }
+    }
+
+    private void setMKVmergeAndPropEditPath() {
         mkvmergePath = directoryPath + "mkvmerge.exe";
         mkvpropeditPath = directoryPath + "mkvpropedit.exe";
     }
 
+    private void searchWithFilePath() {
+        try(Stream<String> stream = Files.lines(Paths.get("mkvDirectoryPath"))){
+            directoryPath = stream.collect(Collectors.joining("\n"));
+        }catch(IOException e){
+            log.fatal(e.getMessage());
+        }
+    }
 
-    public boolean pathsAreValid() {
-        File mkvmergeFile = new File(mkvmergePath);
-        File mkvpropeditFile = new File(mkvpropeditPath);
+    private void searchInDefaultPath() {
 
-        return mkvmergeFile.exists() && mkvpropeditFile.exists();
+    }
+
+    private void searchWithUserPath(Scanner input) {
+        directoryPath = input.nextLine();
     }
 }
