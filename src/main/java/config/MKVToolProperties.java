@@ -1,5 +1,6 @@
 package config;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log4j2
+@Getter
 public class MKVToolProperties {
     private String directoryPath;
     private String mkvmergePath;
@@ -59,7 +61,7 @@ public class MKVToolProperties {
     }
 
     private void checkForSeparator() {
-        if(! (directoryPath.endsWith("/") || directoryPath.endsWith("\\"))){
+        if(! (directoryPath.endsWith("/") || (directoryPath.endsWith("\\") && System.getProperty("os.name").toLowerCase().contains("windows")))){
             directoryPath += File.separator;
         }
     }
@@ -78,7 +80,7 @@ public class MKVToolProperties {
     }
 
     private void searchInDefaultPath() {
-
+        directoryPath = "C:\\Program Files\\MKVToolNix";
     }
 
     private void searchWithUserPath(Scanner input) {
