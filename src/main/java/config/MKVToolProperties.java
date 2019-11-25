@@ -3,8 +3,7 @@ package config;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -31,8 +30,7 @@ public class MKVToolProperties {
     }
 
     public void defineMKVToolNixPath() {
-        searchWithFilePath();
-        if(pathIsValid()){
+        if(searchWithFilePath() && pathIsValid()){
             log.info("MKVToolNix found!");
             return;
         }
@@ -47,11 +45,15 @@ public class MKVToolProperties {
         while(true){
             searchWithUserPath(input);
             if(pathIsValid()){
-                log.info("MKVToolNix found!");
                 break;
             }
         }
-        log.error("MKVToolNix not found anywhere!");
+        try(PrintWriter writer = new PrintWriter("mkvDirectoryPath", "UTF-8")){
+            writer.println(directoryPath);
+        }catch(UnsupportedEncodingException | FileNotFoundException e){
+            log.error("File counldn't be written!");
+        }
+        log.info("MKVToolNix found!");
     }
 
     private boolean pathIsValid() {
@@ -71,12 +73,14 @@ public class MKVToolProperties {
         mkvpropeditPath = directoryPath + "mkvpropedit.exe";
     }
 
-    private void searchWithFilePath() {
+    private boolean searchWithFilePath() {
         try(Stream<String> stream = Files.lines(Paths.get("mkvDirectoryPath"))){
             directoryPath = stream.collect(Collectors.joining("\n"));
         }catch(IOException e){
             log.fatal(e.getMessage());
+            return false;
         }
+        return true;
     }
 
     private void searchInDefaultPath() {
@@ -84,6 +88,7 @@ public class MKVToolProperties {
     }
 
     private void searchWithUserPath(Scanner input) {
+        log.info("Please enter the path to the directory of MKVToolNix:");
         directoryPath = input.nextLine();
     }
 }
