@@ -5,6 +5,7 @@ import config.MKVToolProperties;
 import lombok.extern.log4j.Log4j2;
 import model.FileAttribute;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -23,7 +24,7 @@ public class QueryBuilder {
     public QueryBuilder() {
     }
 
-    public boolean executeUpdateOnAllFiles(String path) {
+    public boolean executeUpdateOnAllFiles(String path, JTextPane outputArea) {
         List<String> allFilePaths = getAllFilesFromDirectory(path);
         if(allFilePaths == null){
             log.error("Couldn't process path!");
@@ -31,6 +32,7 @@ public class QueryBuilder {
         }
         for(String filePath : allFilePaths){
             updateAttributes(filePath, queryAttributes(filePath));
+            outputArea.setText("Success: " + filePath + "\n" + outputArea.getPage());
         }
         return true;
     }
