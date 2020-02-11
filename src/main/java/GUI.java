@@ -1,3 +1,4 @@
+import config.CustomOutputStream;
 import lombok.extern.log4j.Log4j2;
 import model.FileAttribute;
 import query.QueryBuilder;
@@ -17,7 +18,7 @@ public class GUI {
     private JButton openFileBrowser;
     private JButton startOperation;
     private JButton openProperties;
-    private JTextPane outputArea;
+    private JTextArea outputArea;
 
     public GUI() {
         JFrame frame = new JFrame();
@@ -28,7 +29,10 @@ public class GUI {
 
         JPanel top = new JPanel(new GridLayout(1, 3, 20, 20));
 
-        outputArea = new JTextPane();
+        outputArea = new JTextArea();
+        PrintStream printStream = new PrintStream(new CustomOutputStream(outputArea));
+        System.setOut(printStream);
+        System.setErr(printStream);
         outputArea.setEditable(false);
 
         openFileBrowser = new JButton("Browse directory");
@@ -38,7 +42,7 @@ public class GUI {
                 JFileChooser fileChooser = new JFileChooser();
                 try{
                     if(! readFile("lastDir", Charset.defaultCharset()).isEmpty()){
-                        String temp = readFile("dir.txt", Charset.defaultCharset());
+                        String temp = readFile("lastDir", Charset.defaultCharset());
                         fileChooser.setCurrentDirectory(new File(temp));
                     }
                 }catch(IOException ie){
@@ -61,7 +65,7 @@ public class GUI {
                         startOperation.setEnabled(true);
                     }
                 }catch(NullPointerException ne){
-                    outputArea.setText("File or directory not found!\n" + (outputArea.getText() == null ? "" : outputArea.getText()));
+                    System.out.println("File or directory not found!");
                     log.error("File or directory not found!", ne);
                 }
             }
@@ -76,7 +80,8 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 QueryBuilder queryBuilder = new QueryBuilder();
                 if(queryBuilder.executeUpdateOnAllFiles(path, outputArea)){
-                    outputArea.setText("All files updated!\n" + (outputArea.getText() == null ? "" : outputArea.getText()));
+                    log.info("All files updated!");
+                    System.out.println("All files updated!");
                 }
             }
         });

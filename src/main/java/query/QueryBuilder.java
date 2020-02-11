@@ -24,7 +24,7 @@ public class QueryBuilder {
     public QueryBuilder() {
     }
 
-    public boolean executeUpdateOnAllFiles(String path, JTextPane outputArea) {
+    public boolean executeUpdateOnAllFiles(String path, JTextArea outputArea) {
         List<String> allFilePaths = getAllFilesFromDirectory(path);
         if(allFilePaths == null){
             log.error("Couldn't process path!");
@@ -32,7 +32,8 @@ public class QueryBuilder {
         }
         for(String filePath : allFilePaths){
             updateAttributes(filePath, queryAttributes(filePath));
-            outputArea.setText("Success: " + filePath + "\n" + outputArea.getPage());
+            log.info("Success: " + filePath);
+            System.out.println("Success: " + filePath);
         }
         return true;
     }
