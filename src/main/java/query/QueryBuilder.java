@@ -1,11 +1,14 @@
 package query;
 
+import at.pcgamingfreaks.yaml.YAML;
+import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.MKVToolProperties;
 import lombok.extern.log4j.Log4j2;
 import model.FileAttribute;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -76,32 +79,66 @@ public class QueryBuilder {
     }
 
     private void updateAttributes(String path, List<FileAttribute> fileAttributes) {
-        if(fileAttributes.size() > 2){
-            StringBuffer stringBuffer = new StringBuffer("\"");
-            stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
-            stringBuffer.append("\" \"");
-            stringBuffer.append(path);
-            stringBuffer.append("\" ");
 
-            int c = 0;
-            int d = 0;
+        YAML yaml;
+        List<String> subtitles = null;
+        List<String> audios = null;
 
-            for(FileAttribute attributes : fileAttributes){
-                if(attributes.isDefaultTrack() && "audio".equals(attributes.getType())){
-                    stringBuffer.append("--edit track:" + attributes.getId() + " --set flag-default=0 ");
+        try{
+            yaml = new YAML(new File("src/main/resources/config.yaml"));
+            subtitles = yaml.getStringList("subtitle", null);
+            audios = yaml.getStringList("audio", null);
+        }catch(YamlInvalidContentException | IOException e){
+            log.error(e.getMessage());
+        }
+
+        if(fileAttributes.size() > 2 && subtitles != null && audios != null){
+
+
+            int oldAudioDefault = - 1;
+            int oldSubtitleDefault = - 1;
+            int audioDefault = - 1;
+            int subtitleDefault = - 1;
+            int subtitleIndex = - 1;
+            int audioIndex = - 1;
+
+            for(FileAttribute attribute : fileAttributes){
+                if(subtitles.contains(attribute.getLanguage()) && "subtitles".equals(attribute.getType())){
+                    for(int i = 0; i < subtitles.size(); i++){
+                        if(subtitles.get(i).equals(attribute.getLanguage())){
+                            if(subtitleIndex == - 1 || i < subtitleIndex){
+                                subtitleIndex = i;
+                                subtitleDefault = attribute.getId();
+                            }
+                        }
+                    }
                 }
-                if(attributes.isDefaultTrack() && "subtitles".equals(attributes.getType())){
-                    stringBuffer.append("--edit track:" + attributes.getId() + " --set flag-default=0 ");
+                if(audios.contains(attribute.getLanguage()) && "audio".equals(attribute.getType())){
+                    for(int i = 0; i < audios.size(); i++){
+                        if(audios.get(i).equals(attribute.getLanguage())){
+                            if(audioIndex == - 1 || i < audioIndex){
+                                audioIndex = i;
+                                audioDefault = attribute.getId();
+                            }
+                        }
+                    }
                 }
-                if("jpn".equals(attributes.getLanguage()) && "audio".equals(attributes.getType()) && c == 0){
-                    c++;
-                    stringBuffer.append("--edit track:" + attributes.getId() + " --set flag-default=1 ");
+
+                if(attribute.isDefaultTrack() && "audio".equals(attribute.getType())){
+                    oldAudioDefault = attribute.getId();
                 }
-                if("eng".equals(attributes.getLanguage()) && "subtitles".equals(attributes.getType()) && d == 0){
-                    d++;
-                    stringBuffer.append("--edit track:" + attributes.getId() + " --set flag-default=1 ");
+                if(attribute.isDefaultTrack() && "subtitles".equals(attribute.getType())){
+                    oldSubtitleDefault = attribute.getId();
                 }
             }
+            StringBuilder stringBuffer = new StringBuilder("\"");
+            stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
+            stringBuffer.append("\" \"").append(path).append("\" ");
+            stringBuffer.append("--edit track:").append(oldSubtitleDefault).append(" --set flag-default=0 ");
+            stringBuffer.append("--edit track:").append(oldAudioDefault).append(" --set flag-default=0 ");
+            stringBuffer.append("--edit track:").append(subtitleDefault).append(" --set flag-default=1 ");
+            stringBuffer.append("--edit track:").append(audioDefault).append(" --set flag-default=1 ");
+
             try{
                 Runtime.getRuntime().exec(stringBuffer.toString());
             }catch(IOException e){
