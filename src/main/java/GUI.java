@@ -1,10 +1,8 @@
-import config.CustomOutputStream;
 import lombok.extern.log4j.Log4j2;
 import model.FileAttribute;
 import query.QueryBuilder;
 
 import javax.swing.*;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,25 +16,15 @@ public class GUI {
     private String path;
     private JButton openFileBrowser;
     private JButton startOperation;
-    private JButton openProperties;
-    private JTextArea outputArea;
 
     public GUI() {
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
         frame.setTitle("MKV Audio and Subtitle Changer");
-        frame.setSize(500, 300);
+        frame.setSize(500, 75);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        JPanel top = new JPanel(new GridLayout(1, 3, 20, 20));
-
-        outputArea = new JTextArea();
-        DefaultCaret caret = (DefaultCaret) outputArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        PrintStream printStream = new PrintStream(new CustomOutputStream(outputArea));
-        System.setOut(printStream);
-        System.setErr(printStream);
-        outputArea.setEditable(false);
+        JPanel top = new JPanel(new GridLayout(1, 2, 20, 20));
 
         openFileBrowser = new JButton("Browse directory");
         openFileBrowser.addActionListener(new ActionListener() {
@@ -74,15 +62,12 @@ public class GUI {
             }
         });
 
-        openProperties = new JButton("Open properties");
-        openProperties.setEnabled(false);
-
         startOperation = new JButton("Start updating");
         startOperation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 QueryBuilder queryBuilder = new QueryBuilder();
-                if(queryBuilder.executeUpdateOnAllFiles(path, outputArea)){
+                if(queryBuilder.executeUpdateOnAllFiles(path)){
                     log.info("All files updated!");
                     System.out.println("All files updated!");
                 }
@@ -92,10 +77,8 @@ public class GUI {
 
         top.add(openFileBrowser);
         top.add(startOperation);
-        top.add(openProperties);
 
         frame.add(top, BorderLayout.NORTH);
-        frame.add(outputArea);
 
         frame.setVisible(true);
     }

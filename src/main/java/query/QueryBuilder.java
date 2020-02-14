@@ -7,7 +7,6 @@ import config.MKVToolProperties;
 import lombok.extern.log4j.Log4j2;
 import model.FileAttribute;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,7 @@ public class QueryBuilder {
     public QueryBuilder() {
     }
 
-    public boolean executeUpdateOnAllFiles(String path, JTextArea outputArea) {
+    public boolean executeUpdateOnAllFiles(String path) {
         List<String> allFilePaths = getAllFilesFromDirectory(path);
         if(allFilePaths == null){
             log.error("Couldn't process path!");
@@ -35,8 +34,6 @@ public class QueryBuilder {
         }
         for(String filePath : allFilePaths){
             updateAttributes(filePath, queryAttributes(filePath));
-            log.info("Success: " + filePath);
-            System.out.println("Success: " + filePath);
         }
         return true;
     }
@@ -85,7 +82,7 @@ public class QueryBuilder {
         List<String> audios = null;
 
         try{
-            yaml = new YAML(new File("config.yaml"));
+            yaml = new YAML(new File("./src/main/resources/config.yaml"));
             subtitles = yaml.getStringList("subtitle", null);
             audios = yaml.getStringList("audio", null);
 
@@ -129,6 +126,13 @@ public class QueryBuilder {
                         oldSubtitleDefault = attribute.getId();
                     }
                 }
+                if(oldAudioDefault == audioDefault && oldSubtitleDefault == subtitleDefault){
+                    return;
+                }
+                if(audioIndex != 0){
+                    subtitleDefault = oldSubtitleDefault;
+                }
+
                 StringBuilder stringBuffer = new StringBuilder("\"");
                 stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
                 stringBuffer.append("\" \"").append(path).append("\" ");
@@ -143,11 +147,13 @@ public class QueryBuilder {
                     log.error("Couldn't make changes to file");
 
                 }
+                log.info("Success: " + path);
 
             }else{
                 log.info("There were not enough lines provided to make any changes to the file");
             }
         }catch(YamlInvalidContentException | IOException e){
+            log.error("Failure: " + path);
             log.error(e.getMessage());
         }
     }
