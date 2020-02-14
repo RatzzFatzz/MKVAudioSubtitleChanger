@@ -85,68 +85,70 @@ public class QueryBuilder {
         List<String> audios = null;
 
         try{
-            yaml = new YAML(new File("src/main/resources/config.yaml"));
+            yaml = new YAML(new File("config.yaml"));
             subtitles = yaml.getStringList("subtitle", null);
             audios = yaml.getStringList("audio", null);
+
+
+            if(fileAttributes.size() > 2 && subtitles != null && audios != null){
+
+
+                int oldAudioDefault = - 1;
+                int oldSubtitleDefault = - 1;
+                int audioDefault = - 1;
+                int subtitleDefault = - 1;
+                int subtitleIndex = - 1;
+                int audioIndex = - 1;
+
+                for(FileAttribute attribute : fileAttributes){
+                    if(subtitles.contains(attribute.getLanguage()) && "subtitles".equals(attribute.getType())){
+                        for(int i = 0; i < subtitles.size(); i++){
+                            if(subtitles.get(i).equals(attribute.getLanguage())){
+                                if(subtitleIndex == - 1 || i < subtitleIndex){
+                                    subtitleIndex = i;
+                                    subtitleDefault = attribute.getId();
+                                }
+                            }
+                        }
+                    }
+                    if(audios.contains(attribute.getLanguage()) && "audio".equals(attribute.getType())){
+                        for(int i = 0; i < audios.size(); i++){
+                            if(audios.get(i).equals(attribute.getLanguage())){
+                                if(audioIndex == - 1 || i < audioIndex){
+                                    audioIndex = i;
+                                    audioDefault = attribute.getId();
+                                }
+                            }
+                        }
+                    }
+
+                    if(attribute.isDefaultTrack() && "audio".equals(attribute.getType())){
+                        oldAudioDefault = attribute.getId();
+                    }
+                    if(attribute.isDefaultTrack() && "subtitles".equals(attribute.getType())){
+                        oldSubtitleDefault = attribute.getId();
+                    }
+                }
+                StringBuilder stringBuffer = new StringBuilder("\"");
+                stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
+                stringBuffer.append("\" \"").append(path).append("\" ");
+                stringBuffer.append("--edit track:").append(oldSubtitleDefault).append(" --set flag-default=0 ");
+                stringBuffer.append("--edit track:").append(oldAudioDefault).append(" --set flag-default=0 ");
+                stringBuffer.append("--edit track:").append(subtitleDefault).append(" --set flag-default=1 ");
+                stringBuffer.append("--edit track:").append(audioDefault).append(" --set flag-default=1 ");
+
+                try{
+                    Runtime.getRuntime().exec(stringBuffer.toString());
+                }catch(IOException e){
+                    log.error("Couldn't make changes to file");
+
+                }
+
+            }else{
+                log.info("There were not enough lines provided to make any changes to the file");
+            }
         }catch(YamlInvalidContentException | IOException e){
             log.error(e.getMessage());
-        }
-
-        if(fileAttributes.size() > 2 && subtitles != null && audios != null){
-
-
-            int oldAudioDefault = - 1;
-            int oldSubtitleDefault = - 1;
-            int audioDefault = - 1;
-            int subtitleDefault = - 1;
-            int subtitleIndex = - 1;
-            int audioIndex = - 1;
-
-            for(FileAttribute attribute : fileAttributes){
-                if(subtitles.contains(attribute.getLanguage()) && "subtitles".equals(attribute.getType())){
-                    for(int i = 0; i < subtitles.size(); i++){
-                        if(subtitles.get(i).equals(attribute.getLanguage())){
-                            if(subtitleIndex == - 1 || i < subtitleIndex){
-                                subtitleIndex = i;
-                                subtitleDefault = attribute.getId();
-                            }
-                        }
-                    }
-                }
-                if(audios.contains(attribute.getLanguage()) && "audio".equals(attribute.getType())){
-                    for(int i = 0; i < audios.size(); i++){
-                        if(audios.get(i).equals(attribute.getLanguage())){
-                            if(audioIndex == - 1 || i < audioIndex){
-                                audioIndex = i;
-                                audioDefault = attribute.getId();
-                            }
-                        }
-                    }
-                }
-
-                if(attribute.isDefaultTrack() && "audio".equals(attribute.getType())){
-                    oldAudioDefault = attribute.getId();
-                }
-                if(attribute.isDefaultTrack() && "subtitles".equals(attribute.getType())){
-                    oldSubtitleDefault = attribute.getId();
-                }
-            }
-            StringBuilder stringBuffer = new StringBuilder("\"");
-            stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
-            stringBuffer.append("\" \"").append(path).append("\" ");
-            stringBuffer.append("--edit track:").append(oldSubtitleDefault).append(" --set flag-default=0 ");
-            stringBuffer.append("--edit track:").append(oldAudioDefault).append(" --set flag-default=0 ");
-            stringBuffer.append("--edit track:").append(subtitleDefault).append(" --set flag-default=1 ");
-            stringBuffer.append("--edit track:").append(audioDefault).append(" --set flag-default=1 ");
-
-            try{
-                Runtime.getRuntime().exec(stringBuffer.toString());
-            }catch(IOException e){
-                log.error("Couldn't make changes to file");
-
-            }
-        }else{
-            log.info("There were not enough lines provided to make any changes to the file");
         }
     }
 }

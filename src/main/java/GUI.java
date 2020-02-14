@@ -4,6 +4,7 @@ import model.FileAttribute;
 import query.QueryBuilder;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,8 @@ public class GUI {
         JPanel top = new JPanel(new GridLayout(1, 3, 20, 20));
 
         outputArea = new JTextArea();
+        DefaultCaret caret = (DefaultCaret) outputArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         PrintStream printStream = new PrintStream(new CustomOutputStream(outputArea));
         System.setOut(printStream);
         System.setErr(printStream);
