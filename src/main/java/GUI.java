@@ -16,20 +16,15 @@ public class GUI {
     private String path;
     private JButton openFileBrowser;
     private JButton startOperation;
-    private JButton openProperties;
-    private JTextPane outputArea;
 
     public GUI() {
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
         frame.setTitle("MKV Audio and Subtitle Changer");
-        frame.setSize(500, 300);
+        frame.setSize(500, 75);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        JPanel top = new JPanel(new GridLayout(1, 3, 20, 20));
-
-        outputArea = new JTextPane();
-        outputArea.setEditable(false);
+        JPanel top = new JPanel(new GridLayout(1, 2, 20, 20));
 
         openFileBrowser = new JButton("Browse directory");
         openFileBrowser.addActionListener(new ActionListener() {
@@ -38,7 +33,7 @@ public class GUI {
                 JFileChooser fileChooser = new JFileChooser();
                 try{
                     if(! readFile("lastDir", Charset.defaultCharset()).isEmpty()){
-                        String temp = readFile("dir.txt", Charset.defaultCharset());
+                        String temp = readFile("lastDir", Charset.defaultCharset());
                         fileChooser.setCurrentDirectory(new File(temp));
                     }
                 }catch(IOException ie){
@@ -61,22 +56,20 @@ public class GUI {
                         startOperation.setEnabled(true);
                     }
                 }catch(NullPointerException ne){
-                    outputArea.setText("File or directory not found!\n" + (outputArea.getText() == null ? "" : outputArea.getText()));
+                    System.out.println("File or directory not found!");
                     log.error("File or directory not found!", ne);
                 }
             }
         });
-
-        openProperties = new JButton("Open properties");
-        openProperties.setEnabled(false);
 
         startOperation = new JButton("Start updating");
         startOperation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 QueryBuilder queryBuilder = new QueryBuilder();
-                if(queryBuilder.executeUpdateOnAllFiles(path, outputArea)){
-                    outputArea.setText("All files updated!\n" + (outputArea.getText() == null ? "" : outputArea.getText()));
+                if(queryBuilder.executeUpdateOnAllFiles(path)){
+                    log.info("All files updated!");
+                    System.out.println("All files updated!");
                 }
             }
         });
@@ -84,10 +77,8 @@ public class GUI {
 
         top.add(openFileBrowser);
         top.add(startOperation);
-        top.add(openProperties);
 
         frame.add(top, BorderLayout.NORTH);
-        frame.add(outputArea);
 
         frame.setVisible(true);
     }
