@@ -1,4 +1,4 @@
-package model;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

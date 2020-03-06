@@ -1,5 +1,5 @@
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import lombok.extern.log4j.Log4j2;
-import model.FileAttribute;
 import query.QueryBuilder;
 
 import javax.swing.*;
