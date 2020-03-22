@@ -1,7 +1,13 @@
-audio:
-  - jpn
-  - ger
-  - eng
-subtitle:
-  - ger
-  - eng
+config:
+  1:
+    audio:
+      - jpn
+    subtitle:
+      - ger
+      - eng
+  2:
+    audio:
+      - eng
+      - ger
+    subtitle:
+      - eng

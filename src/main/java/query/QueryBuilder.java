@@ -1,11 +1,11 @@
 package query;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.MKVToolProperties;
 import lombok.extern.log4j.Log4j2;
-import model.FileAttribute;
 
 import java.io.File;
 import java.io.IOException;
