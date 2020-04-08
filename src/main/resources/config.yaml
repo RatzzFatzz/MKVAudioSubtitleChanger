@@ -3,8 +3,8 @@ config:
     audio:
       - jpn
     subtitle:
-      - ger
       - eng
+      - ger
   2:
     audio:
       - eng
