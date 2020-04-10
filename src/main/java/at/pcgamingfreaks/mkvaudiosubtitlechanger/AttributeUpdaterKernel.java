@@ -18,17 +18,17 @@ public class AttributeUpdaterKernel {
 
     public void execute() {
         List<AttributeConfig> configPattern = ConfigUtil.loadConfig();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter the path to the files which should be updated: ");
         List<File> allValidPaths = null;
-        do{
-            allValidPaths = collector.loadFiles(scanner.nextLine());
-            if(allValidPaths == null){
-                System.out.println("Please enter a valid path: ");
-            }
-        }while(allValidPaths == null);
-        log.info(allValidPaths.size() + " files where found and will now be processed!");
-
+        try(Scanner scanner = new Scanner(System.in)){
+            System.out.println("Please enter the path to the files which should be updated: ");
+            do{
+                allValidPaths = collector.loadFiles(scanner.nextLine());
+                if(allValidPaths == null){
+                    System.out.println("Please enter a valid path: ");
+                }
+            }while(allValidPaths == null);
+            log.info(allValidPaths.size() + " files where found and will now be processed!");
+        }
         for(File file : allValidPaths){
             List<FileAttribute> attributes = collector.loadAttributes(file);
             for(AttributeConfig config : configPattern){
