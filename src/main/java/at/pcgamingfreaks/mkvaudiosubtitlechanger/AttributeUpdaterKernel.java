@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.AttributeConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ConfigProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl.MkvFileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ConfigUtil;
@@ -34,8 +35,8 @@ public class AttributeUpdaterKernel {
                 /*
                  * Creating new ArrayList, because the method removes elements from the list by reference
                  */
-                boolean fileIsChanged = config.processConfig(file, new ArrayList<>(attributes));
-                if(fileIsChanged){
+                boolean fileHasChanged = new ConfigProcessor(config).processConfig(file, new ArrayList(allValidPaths));
+                if(fileHasChanged){
                     break;
                 }
             }
