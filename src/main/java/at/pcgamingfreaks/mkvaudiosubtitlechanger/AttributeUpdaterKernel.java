@@ -35,7 +35,7 @@ public class AttributeUpdaterKernel {
                 /*
                  * Creating new ArrayList, because the method removes elements from the list by reference
                  */
-                boolean fileHasChanged = new ConfigProcessor(config).processConfig(file, new ArrayList(allValidPaths));
+                boolean fileHasChanged = new ConfigProcessor(config).processConfig(file, new ArrayList<>(attributes));
                 if(fileHasChanged){
                     break;
                 }
