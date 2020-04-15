@@ -3,11 +3,11 @@ config:
     audio:
       - jpn
     subtitle:
-      - eng
       - ger
+      - eng
   2:
     audio:
-      - eng
       - ger
+      - eng
     subtitle:
       - eng
