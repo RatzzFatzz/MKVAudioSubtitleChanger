@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 @Log4j2
 public class MkvFileCollector implements FileCollector {
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * @param path Is entered path, which leads to one file directly or a directory which will be loaded recursive
@@ -78,9 +78,5 @@ public class MkvFileCollector implements FileCollector {
             log.error("File could not be found or loaded!");
         }
         return fileAttributes;
-    }
-
-    private boolean verifyFile(File file) {
-        return false;
     }
 }
