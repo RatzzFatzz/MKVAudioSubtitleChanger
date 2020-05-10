@@ -10,4 +10,4 @@ config:
       - ger
       - eng
     subtitle:
-      - eng
+      - OFF

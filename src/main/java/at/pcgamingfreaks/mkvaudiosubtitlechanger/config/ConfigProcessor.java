@@ -15,7 +15,7 @@ import java.util.List;
 public class ConfigProcessor {
     private int audioDefault = 0;
     private int subtitleDefault = 0;
-    private AttributeConfig config;
+    private final AttributeConfig config;
 
     public ConfigProcessor(AttributeConfig config) {
         this.config = config;
@@ -32,9 +32,9 @@ public class ConfigProcessor {
         // check if size is bigger or equal 2 to make sure that there is at least one audio and subtitle line
         // TODO: implement empty audio or subtitle line
         if(attributes.size() >= 2){
-            filterAttributes(attributes);
+            TransferObject transfer = filterAttributes(attributes);
             if(! attributes.isEmpty()){
-                return updateFile(file, attributes);
+                return updateFile(file, attributes, transfer);
             }
         }
         return false;
@@ -44,13 +44,18 @@ public class ConfigProcessor {
      * Filters the attributes that only those are remaining which are needed in the current configuration.
      * Also analyzes which tracks were default before.
      */
-    private void filterAttributes(List<FileAttribute> attributes) {
+    private TransferObject filterAttributes(List<FileAttribute> attributes) {
+        TransferObject transfer = new TransferObject();
         Iterator<FileAttribute> iterator = attributes.iterator();
         while(iterator.hasNext()){
             FileAttribute elem = iterator.next();
             if("audio".equals(elem.getType())){
                 if(elem.isDefaultTrack()){
                     audioDefault = elem.getId();
+                }
+                if(config.getAudio().contains("OFF")){
+                    transfer.setAudioOn(false);
+                    transfer.setAudioIndex(- 2);
                 }
                 if(! config.getAudio().contains(elem.getLanguage())){
                     iterator.remove();
@@ -59,11 +64,16 @@ public class ConfigProcessor {
                 if(elem.isDefaultTrack()){
                     subtitleDefault = elem.getId();
                 }
+                if(config.getSubtitle().contains("OFF")){
+                    transfer.setSubtitleOn(false);
+                    transfer.setSubtitleIndex(- 2);
+                }
                 if(! config.getSubtitle().contains(elem.getLanguage())){
                     iterator.remove();
                 }
             }
         }
+        return transfer;
     }
 
     /**
@@ -73,16 +83,20 @@ public class ConfigProcessor {
      * @param attributes has the metadata for the transferred file
      * @return if the the current file was updated or not. Returns true if the file already has the correct metadata set
      */
-    private boolean updateFile(File file, List<FileAttribute> attributes) {
+    private boolean updateFile(File file, List<FileAttribute> attributes, TransferObject transfer) {
         StringBuilder stringBuffer = new StringBuilder("\"");
         stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
         stringBuffer.append("\" \"").append(file.getAbsolutePath()).append("\" ");
-        stringBuffer.append("--edit track:").append(subtitleDefault).append(" --set flag-default=0 ");
-        stringBuffer.append("--edit track:").append(audioDefault).append(" --set flag-default=0 ");
-        TransferObject transfer = collectLines(attributes);
+        stringBuffer.append("--edit track:=").append(subtitleDefault).append(" --set flag-default=0 ");
+        stringBuffer.append("--edit track:=").append(audioDefault).append(" --set flag-default=0 ");
+        collectLines(attributes, transfer);
         if(transfer.isValid){
-            stringBuffer.append("--edit track:").append(transfer.getSubtitleIndex()).append(" --set flag-default=1 ");
-            stringBuffer.append("--edit track:").append(transfer.getAudioIndex()).append(" --set flag-default=1 ");
+            if(transfer.isAudioOn){
+                stringBuffer.append("--edit track:=").append(transfer.getAudioIndex()).append(" --set flag-default=1 ");
+            }
+            if(transfer.isSubtitleOn){
+                stringBuffer.append("--edit track:=").append(transfer.getSubtitleIndex()).append(" --set flag-default=1 ");
+            }
             if(subtitleDefault == transfer.getSubtitleIndex() && audioDefault == transfer.getAudioIndex()){
                 /*
                  * In this case the file would be change to the exact same audio and subtitle lines and we want to
@@ -114,8 +128,7 @@ public class ConfigProcessor {
      * the entered config. Also transfers a boolean which contains information about if the other two values
      * were set
      */
-    private TransferObject collectLines(List<FileAttribute> attributes) {
-        TransferObject transfer = new TransferObject();
+    private TransferObject collectLines(List<FileAttribute> attributes, TransferObject transfer) {
         int subtitleListIndex = - 1;
         int audioListIndex = - 1;
         for(FileAttribute elem : attributes){
@@ -157,6 +170,8 @@ public class ConfigProcessor {
         private boolean isValid;
         private int audioIndex = - 1;
         private int subtitleIndex = - 1;
+        private boolean isSubtitleOn = true;
+        private boolean isAudioOn = true;
 
         TransferObject() {
         }
