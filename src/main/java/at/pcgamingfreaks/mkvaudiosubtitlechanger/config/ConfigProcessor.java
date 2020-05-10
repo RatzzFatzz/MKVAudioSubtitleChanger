@@ -1,7 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.MKVToolProperties;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import config.MKVToolProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -13,8 +13,8 @@ import java.util.List;
 
 @Log4j2
 public class ConfigProcessor {
-    private int audioDefault = 0;
-    private int subtitleDefault = 0;
+    private int audioDefault = - 1;
+    private int subtitleDefault = - 1;
     private final AttributeConfig config;
 
     public ConfigProcessor(AttributeConfig config) {
@@ -87,8 +87,12 @@ public class ConfigProcessor {
         StringBuilder stringBuffer = new StringBuilder("\"");
         stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
         stringBuffer.append("\" \"").append(file.getAbsolutePath()).append("\" ");
-        stringBuffer.append("--edit track:=").append(subtitleDefault).append(" --set flag-default=0 ");
-        stringBuffer.append("--edit track:=").append(audioDefault).append(" --set flag-default=0 ");
+        if(audioDefault != - 1){
+            stringBuffer.append("--edit track:=").append(audioDefault).append(" --set flag-default=0 ");
+        }
+        if(subtitleDefault != - 1){
+            stringBuffer.append("--edit track:=").append(subtitleDefault).append(" --set flag-default=0 ");
+        }
         collectLines(attributes, transfer);
         if(transfer.isValid){
             if(transfer.isAudioOn){

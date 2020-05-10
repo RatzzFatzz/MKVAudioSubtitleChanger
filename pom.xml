@@ -40,7 +40,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>Main</Main-Class>
+                            <Main-Class>at/pcgamingfreaks/mkvaudiosubtitlechanger/Main</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

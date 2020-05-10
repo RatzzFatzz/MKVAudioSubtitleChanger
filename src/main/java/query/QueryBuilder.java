@@ -1,10 +1,10 @@
 package query;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.MKVToolProperties;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.MKVToolProperties;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 @Log4j2
 public class QueryBuilder {
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public QueryBuilder() {
     }

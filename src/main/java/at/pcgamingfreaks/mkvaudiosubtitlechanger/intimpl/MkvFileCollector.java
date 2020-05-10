@@ -1,8 +1,8 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.MKVToolProperties;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.MKVToolProperties;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -56,6 +56,8 @@ public class MkvFileCollector implements FileCollector {
     public List<FileAttribute> loadAttributes(File file) {
         Map<String, Object> jsonMap;
         List<FileAttribute> fileAttributes = new ArrayList<>();
+        System.out.println("\"" + MKVToolProperties.getInstance().getMkvmergePath()
+                + "\" --identify --identification-format json \"" + file.getAbsolutePath() + "\"");
         try(InputStream inputStream =
                     Runtime.getRuntime().exec("\"" + MKVToolProperties.getInstance().getMkvmergePath()
                             + "\" --identify --identification-format json \"" + file.getAbsolutePath() + "\"").getInputStream()){

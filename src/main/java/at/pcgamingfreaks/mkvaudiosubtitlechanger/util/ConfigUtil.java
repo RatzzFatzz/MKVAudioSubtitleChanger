@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ConfigUtil {
     public static List<AttributeConfig> loadConfig() {
-        try(YAML yaml = new YAML(new File("./src/main/resources/config.yaml"))){
+        try(YAML yaml = new YAML(new File("config.yaml"))){
             return yaml.getKeysFiltered(".*audio.*").stream()
                     .sorted()
                     .map(elem -> elem.replace(".audio", ""))
