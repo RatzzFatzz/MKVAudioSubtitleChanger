@@ -22,6 +22,9 @@ public class Main {
     private static boolean checkIfMKVToolNixIsValid() {
         try{
             String path = new YAML(new File("config.yml")).getString("mkvtoolnixPath");
+            if(! path.endsWith(File.separator)){
+                path += File.separator;
+            }
             MKVToolProperties.getInstance().setMkvmergePath(path + "mkvmerge");
             MKVToolProperties.getInstance().setMkvpropeditPath(path + "mkvproperties");
         }catch(YamlKeyNotFoundException | IOException | YamlInvalidContentException e){

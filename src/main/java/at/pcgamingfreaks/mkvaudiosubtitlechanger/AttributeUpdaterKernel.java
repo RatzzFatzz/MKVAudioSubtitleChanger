@@ -18,7 +18,7 @@ public class AttributeUpdaterKernel {
     public void execute(String path) {
         List<AttributeConfig> configPattern = ConfigUtil.loadConfig();
         List<File> allValidPaths = collector.loadFiles(path);
-        if(! allValidPaths.isEmpty()){
+        if(! allValidPaths.isEmpty() && configPattern != null){
             for(File file : allValidPaths){
                 List<FileAttribute> attributes = collector.loadAttributes(file);
                 for(AttributeConfig config : configPattern){
@@ -32,7 +32,7 @@ public class AttributeUpdaterKernel {
                 }
             }
         }else{
-            log.error("Path is not valid!");
+            log.error("Path is not valid or config has errors!");
         }
     }
 }
