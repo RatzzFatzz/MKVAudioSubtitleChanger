@@ -1,19 +1,19 @@
-###Table of content
+### Table of content
  - Introduction
  - Requirements
  - Running
  - config.yml example
  
-###Introduction
+### Introduction
 
 This program helps changing audio and subtitle lines of mkv files.
 
-###Requirements
+### Requirements
 
  - Java 8 or higher
  - mkvtoolnix installation
  
-###Running
+### Running
 
 Opening terminal / cmd in the directory of the jar and the config file and execute following command:
 
@@ -21,7 +21,7 @@ Opening terminal / cmd in the directory of the jar and the config file and execu
 
 You have to replace the brackets and the content of it with the path to your mkv file or the directory with mkv files.
 
-###config.yml example:
+### config.yml example:
 
 ```
 mkvtoolnixPath: /usr/bin
