@@ -21,12 +21,17 @@ public class Main {
 
     private static boolean checkIfMKVToolNixIsValid() {
         try{
-            String path = new YAML(new File("config.yml")).getString("mkvtoolnixPath");
+            String path = new YAML(new File("config.yaml")).getString("mkvtoolnixPath");
             if(! path.endsWith(File.separator)){
                 path += File.separator;
             }
-            MKVToolProperties.getInstance().setMkvmergePath(path + "mkvmerge");
-            MKVToolProperties.getInstance().setMkvpropeditPath(path + "mkvproperties");
+            if(System.getProperty("os.name").toLowerCase().contains("windows")){
+                MKVToolProperties.getInstance().setMkvmergePath(path + "mkvmerge.exe");
+                MKVToolProperties.getInstance().setMkvpropeditPath(path + "mkvpropedit.exe");
+            }else{
+                MKVToolProperties.getInstance().setMkvmergePath(path + "mkvmerge");
+                MKVToolProperties.getInstance().setMkvpropeditPath(path + "mkvpropedit");
+            }
         }catch(YamlKeyNotFoundException | IOException | YamlInvalidContentException e){
             e.printStackTrace();
         }

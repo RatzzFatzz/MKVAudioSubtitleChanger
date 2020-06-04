@@ -18,17 +18,21 @@ public class AttributeUpdaterKernel {
     public void execute(String path) {
         List<AttributeConfig> configPattern = ConfigUtil.loadConfig();
         List<File> allValidPaths = collector.loadFiles(path);
-        if(! allValidPaths.isEmpty() && configPattern != null){
+        if(allValidPaths != null && configPattern != null){
             for(File file : allValidPaths){
                 List<FileAttribute> attributes = collector.loadAttributes(file);
+                boolean fileHasChanged = false;
                 for(AttributeConfig config : configPattern){
                     /*
                      * Creating new ArrayList, because the method removes elements from the list by reference
                      */
-                    boolean fileHasChanged = new ConfigProcessor(config).processConfig(file, new ArrayList<>(attributes));
+                    fileHasChanged = new ConfigProcessor(config).processConfig(file, new ArrayList<>(attributes));
                     if(fileHasChanged){
                         break;
                     }
+                }
+                if(! fileHasChanged){
+                    log.info(file.getName() + " didn't change!");
                 }
             }
         }else{

@@ -56,14 +56,24 @@ public class MkvFileCollector implements FileCollector {
     public List<FileAttribute> loadAttributes(File file) {
         Map<String, Object> jsonMap;
         List<FileAttribute> fileAttributes = new ArrayList<>();
-        System.out.println("\"" + MKVToolProperties.getInstance().getMkvmergePath()
-                + "\" --identify --identification-format json \"" + file.getAbsolutePath() + "\"");
-        try(InputStream inputStream =
-                    Runtime.getRuntime().exec("\"" + MKVToolProperties.getInstance().getMkvmergePath()
-                            + "\" --identify --identification-format json \"" + file.getAbsolutePath() + "\"").getInputStream()){
+        try{
+            String command = "";
+            if(System.getProperty("os.name").toLowerCase().contains("windows")){
+                command = "\"" + MKVToolProperties.getInstance().getMkvmergePath() + "\"";
+            }else{
+                command = MKVToolProperties.getInstance().getMkvmergePath();
+            }
+            String[] array = new String[]{
+                    command,
+                    "--identify",
+                    "--identification-format",
+                    "json",
+                    file.getAbsoluteFile().toString()
+            };
+
+            InputStream inputStream = Runtime.getRuntime().exec(array).getInputStream();
             jsonMap = mapper.readValue(inputStream, Map.class);
             List<Map<String, Object>> tracks = (List<Map<String, Object>>) jsonMap.get("tracks");
-
             for(Map<String, Object> attribute : tracks){
                 if(! "video".equals(attribute.get("type"))){
                     Map<String, Object> properties = (Map<String, Object>) attribute.get("properties");
@@ -77,6 +87,7 @@ public class MkvFileCollector implements FileCollector {
                 }
             }
         }catch(IOException e){
+            e.printStackTrace();
             log.error("File could not be found or loaded!");
         }
         return fileAttributes;

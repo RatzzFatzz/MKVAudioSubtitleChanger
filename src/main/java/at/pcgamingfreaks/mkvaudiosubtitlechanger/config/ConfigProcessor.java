@@ -84,9 +84,15 @@ public class ConfigProcessor {
      * @return if the the current file was updated or not. Returns true if the file already has the correct metadata set
      */
     private boolean updateFile(File file, List<FileAttribute> attributes, TransferObject transfer) {
-        StringBuilder stringBuffer = new StringBuilder("\"");
-        stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
-        stringBuffer.append("\" \"").append(file.getAbsolutePath()).append("\" ");
+        StringBuilder stringBuffer = new StringBuilder();
+        if(System.getProperty("os.name").toLowerCase().contains("windows")){
+            stringBuffer.append("\"");
+            stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
+            stringBuffer.append("\" \"").append(file.getAbsolutePath()).append("\" ");
+        }else{
+            stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
+            stringBuffer.append(" ").append(file.getAbsolutePath()).append(" ");
+        }
         if(audioDefault != - 1){
             stringBuffer.append("--edit track:=").append(audioDefault).append(" --set flag-default=0 ");
         }
@@ -106,18 +112,19 @@ public class ConfigProcessor {
                  * In this case the file would be change to the exact same audio and subtitle lines and we want to
                  * avoid unnecessary changes to the file
                  */
+                log.info(file.getName() + " already fits config!");
                 return true;
             }
             try{
                 Runtime.getRuntime().exec(stringBuffer.toString());
             }catch(IOException e){
                 log.error("Couldn't make changes to file");
-
             }
             /*
              * We return true even if there was an error. If there was an error, the chances that this file is still
              * busy later.
              */
+            log.info(file.getName() + " was updated");
             return true;
         }else{
             return false;

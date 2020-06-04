@@ -1,3 +1,4 @@
+mkvtoolnixPath: /usr/bin
 config:
   1:
     audio:
