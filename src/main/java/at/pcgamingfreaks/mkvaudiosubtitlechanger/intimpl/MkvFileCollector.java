@@ -28,22 +28,22 @@ public class MkvFileCollector implements FileCollector {
     @Override
     public List<File> loadFiles(String path) {
         File file = new File(path);
-        if(file.isFile() && file.getAbsolutePath().endsWith(".mkv")){
+        if (file.isFile() && file.getAbsolutePath().endsWith(".mkv")) {
             return new ArrayList<File>() {{
                 add(file);
             }};
-        }else if(file.isDirectory()){
-            try(Stream<Path> paths = Files.walk(Paths.get(path))){
+        } else if (file.isDirectory()) {
+            try (Stream<Path> paths = Files.walk(Paths.get(path))) {
                 return paths
                         .filter(Files::isRegularFile)
                         .map(Path::toFile)
                         .filter(f -> f.getAbsolutePath().endsWith(".mkv"))
                         .collect(Collectors.toList());
-            }catch(IOException e){
+            } catch (IOException e) {
                 log.error("Couldn't find file or directory!", e);
                 return null;
             }
-        }else{
+        } else {
             return null;
         }
     }
@@ -56,11 +56,11 @@ public class MkvFileCollector implements FileCollector {
     public List<FileAttribute> loadAttributes(File file) {
         Map<String, Object> jsonMap;
         List<FileAttribute> fileAttributes = new ArrayList<>();
-        try{
+        try {
             String command = "";
-            if(System.getProperty("os.name").toLowerCase().contains("windows")){
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
                 command = "\"" + MKVToolProperties.getInstance().getMkvmergePath() + "\"";
-            }else{
+            } else {
                 command = MKVToolProperties.getInstance().getMkvmergePath();
             }
             String[] array = new String[]{
@@ -74,19 +74,23 @@ public class MkvFileCollector implements FileCollector {
             InputStream inputStream = Runtime.getRuntime().exec(array).getInputStream();
             jsonMap = mapper.readValue(inputStream, Map.class);
             List<Map<String, Object>> tracks = (List<Map<String, Object>>) jsonMap.get("tracks");
-            for(Map<String, Object> attribute : tracks){
-                if(! "video".equals(attribute.get("type"))){
+            if (tracks == null) {
+                log.warn("Couldn't retrieve information of {}", file.getAbsoluteFile().toString());
+                return new ArrayList<>();
+            }
+            for (Map<String, Object> attribute : tracks) {
+                if (!"video".equals(attribute.get("type"))) {
                     Map<String, Object> properties = (Map<String, Object>) attribute.get("properties");
                     fileAttributes.add(new FileAttribute(
                             (int) properties.get("number"),
                             (String) properties.get("language"),
                             (String) properties.get("track_name"),
-                            (Boolean) properties.get("default_track"),
-                            (Boolean) properties.get("forced_track"),
+                            (Boolean) properties.getOrDefault("default_track", false),
+                            (Boolean) properties.getOrDefault("forced_track", false),
                             (String) attribute.get("type")));
                 }
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             log.error("File could not be found or loaded!");
         }

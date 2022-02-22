@@ -21,6 +21,9 @@ public class AttributeUpdaterKernel {
         if(allValidPaths != null && configPattern != null){
             for(File file : allValidPaths){
                 List<FileAttribute> attributes = collector.loadAttributes(file);
+                if (attributes.isEmpty()) {
+                    continue;
+                }
                 boolean fileHasChanged = false;
                 for(AttributeConfig config : configPattern){
                     /*
