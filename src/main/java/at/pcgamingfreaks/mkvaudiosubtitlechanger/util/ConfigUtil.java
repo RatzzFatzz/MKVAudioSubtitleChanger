@@ -37,4 +37,15 @@ public class ConfigUtil {
             return null;
         }
     }
+
+    public static int getThreadCount() {
+        try {
+            return Integer.parseInt(new YAML(new File("config.yaml")).getString("threadCount"));
+        } catch (YamlInvalidContentException | IOException e) {
+            e.printStackTrace();
+        } catch (YamlKeyNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return 1;
+    }
 }

@@ -1,12 +1,6 @@
 Configuration:
   name: DefaultLogger
   Appenders:
-    Console:
-      name: Console_Out
-      PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
-      ThresholdFilter:
-        level: debug
     File:
       name: FileAppender
       fileName: default.log
@@ -18,11 +12,9 @@ Configuration:
     Root:
       level: debug
       AppenderRef:
-        - ref: Console_Out
         - ref: FileAppender
     Logger:
       name: "com.zaxxer.hikari.HikariConfig"
       level: info
       AppenderRef:
-        - ref: Console_Out
         - ref: FileAppender

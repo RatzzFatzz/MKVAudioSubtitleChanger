@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,10 +32,11 @@ public class ConfigProcessor {
     public boolean processConfig(File file, List<FileAttribute> attributes) {
         // check if size is bigger or equal 2 to make sure that there is at least one audio and subtitle line
         // TODO: implement empty audio or subtitle line
-        if(attributes.size() >= 2){
-            TransferObject transfer = filterAttributes(attributes);
-            if(! attributes.isEmpty()){
-                return updateFile(file, attributes, transfer);
+        List<FileAttribute> attributesCopy = new ArrayList<>(attributes);
+        if(attributesCopy.size() >= 2){
+            TransferObject transfer = filterAttributes(attributesCopy);
+            if(! attributesCopy.isEmpty()){
+                return updateFile(file, attributesCopy, transfer);
             }
         }
         return false;
@@ -112,7 +114,7 @@ public class ConfigProcessor {
                  * In this case the file would be change to the exact same audio and subtitle lines and we want to
                  * avoid unnecessary changes to the file
                  */
-                log.info(file.getName() + " already fits config!");
+                log.info("File already fits config: {}", file.getName());
                 return true;
             }
             try{
@@ -124,7 +126,7 @@ public class ConfigProcessor {
              * We return true even if there was an error. If there was an error, the chances that this file is still
              * busy later.
              */
-            log.info(file.getName() + " was updated");
+            log.info("Updated {}", file.getName());
             return true;
         }else{
             return false;
