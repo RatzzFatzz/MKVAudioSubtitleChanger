@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.String.format;
+
 @Log4j2
 public class ConfigProcessor {
     private int audioDefault = - 1;
@@ -83,31 +85,32 @@ public class ConfigProcessor {
      *
      * @param file       is the file, which will be updated
      * @param attributes has the metadata for the transferred file
-     * @return if the the current file was updated or not. Returns true if the file already has the correct metadata set
+     * @return if the current file was updated or not. Returns true if the file already has the correct metadata set
      */
     private boolean updateFile(File file, List<FileAttribute> attributes, TransferObject transfer) {
         StringBuilder stringBuffer = new StringBuilder();
         if(System.getProperty("os.name").toLowerCase().contains("windows")){
-            stringBuffer.append("\"");
-            stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
-            stringBuffer.append("\" \"").append(file.getAbsolutePath()).append("\" ");
+            stringBuffer.append(format("\"%s\" \"%s\" ",
+                    MKVToolProperties.getInstance().getMkvpropeditPath(),
+                    file.getAbsolutePath()));
         }else{
-            stringBuffer.append(MKVToolProperties.getInstance().getMkvpropeditPath());
-            stringBuffer.append(" ").append(file.getAbsolutePath()).append(" ");
+            stringBuffer.append(format("%s %s ",
+                    MKVToolProperties.getInstance().getMkvpropeditPath(),
+                    file.getAbsolutePath()));
         }
         if(audioDefault != - 1){
-            stringBuffer.append("--edit track:=").append(audioDefault).append(" --set flag-default=0 ");
+            stringBuffer.append(format("--edit track:=%s --set flag-default=0 ", audioDefault));
         }
         if(subtitleDefault != - 1){
-            stringBuffer.append("--edit track:=").append(subtitleDefault).append(" --set flag-default=0 ");
+            stringBuffer.append(format("--edit track:=%s --set flag-default=0 ", subtitleDefault));
         }
         collectLines(attributes, transfer);
         if(transfer.isValid){
             if(transfer.isAudioOn){
-                stringBuffer.append("--edit track:=").append(transfer.getAudioIndex()).append(" --set flag-default=1 ");
+                stringBuffer.append(format("--edit track:=%s --set flag-default=1 ", transfer.getAudioIndex()));
             }
             if(transfer.isSubtitleOn){
-                stringBuffer.append("--edit track:=").append(transfer.getSubtitleIndex()).append(" --set flag-default=1 ");
+                stringBuffer.append(format("--edit track:=%s --set flag-default=1 ", transfer.getSubtitleIndex()));
             }
             if(subtitleDefault == transfer.getSubtitleIndex() && audioDefault == transfer.getAudioIndex()){
                 /*
