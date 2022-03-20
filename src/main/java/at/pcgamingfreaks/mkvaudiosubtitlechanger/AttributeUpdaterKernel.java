@@ -21,9 +21,9 @@ public class AttributeUpdaterKernel {
 
     @SneakyThrows
     public void execute(String path) {
-        List<AttributeConfig> configPattern = ConfigUtil.loadConfig();
+        List<AttributeConfig> configPattern = ConfigUtil.getInstance().getAttributeConfig();
         List<File> allValidPaths = collector.loadFiles(path);
-        ExecutorService executor = Executors.newFixedThreadPool(ConfigUtil.getThreadCount());
+        ExecutorService executor = Executors.newFixedThreadPool(ConfigUtil.getInstance().getThreadCount());
 
         long beforeTimer = System.currentTimeMillis();
         if(allValidPaths != null && configPattern != null){
