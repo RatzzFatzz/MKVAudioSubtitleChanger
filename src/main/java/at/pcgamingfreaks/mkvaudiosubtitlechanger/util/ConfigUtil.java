@@ -27,6 +27,7 @@ public class ConfigUtil {
     @Getter(AccessLevel.NONE)
     private String mkvtoolnixPath;
     private String libraryPath;
+    private boolean isSafeMode;
 
     public static ConfigUtil getInstance() {
         if(configUtil == null) {

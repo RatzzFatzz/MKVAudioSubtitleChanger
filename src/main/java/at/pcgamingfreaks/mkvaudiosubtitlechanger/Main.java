@@ -46,6 +46,7 @@ public class Main {
         options.addRequiredOption("l", "library", true, "path to library");
         options.addOption("c", "config", false, "path to config");
         options.addOption("t", "threads", true, "thread count");
+        options.addOption("s", "safe-mode", false, "Test run (no files will be changes)");
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -56,6 +57,7 @@ public class Main {
             configUtil.loadConfig(cmd.getOptionValue("config", "config.yaml")); // use cmd input
             configUtil.setLibraryPath(cmd.getOptionValue("library"));
             if (cmd.hasOption("threads")) configUtil.setThreadCount(parseInt(cmd.getOptionValue("threads")));
+            configUtil.setSafeMode(cmd.hasOption("safe-mode"));
             configUtil.isValid();
         } catch (ParseException e) {
             log.error(e);

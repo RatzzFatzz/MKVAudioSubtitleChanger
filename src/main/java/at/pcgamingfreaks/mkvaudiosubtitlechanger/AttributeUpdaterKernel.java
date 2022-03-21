@@ -36,8 +36,12 @@ public class AttributeUpdaterKernel {
         executor.awaitTermination(1, TimeUnit.DAYS);
         runtime = System.currentTimeMillis() - beforeTimer;
 
-        System.out.printf("%nFiles changed: %s%n", filesChangedAmount);
-        System.out.printf("Files not changed: %s%n", filesNotChangedAmount);
+        System.out.printf("%nFiles %schanged: %s%n",
+                ConfigUtil.getInstance().isSafeMode() ? "would " : "",
+                filesChangedAmount);
+        System.out.printf("Files %s not changed: %s%n",
+                ConfigUtil.getInstance().isSafeMode() ? "would " : "",
+                filesNotChangedAmount);
         System.out.printf("Runtime: %ss%n", runtime / 1000);
     }
 

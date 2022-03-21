@@ -2,6 +2,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.MKVToolProperties;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ConfigUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -121,7 +122,9 @@ public class ConfigProcessor {
                 return true;
             }
             try{
-                Runtime.getRuntime().exec(stringBuffer.toString());
+                if(!ConfigUtil.getInstance().isSafeMode()) {
+                    Runtime.getRuntime().exec(stringBuffer.toString());
+                }
             }catch(IOException e){
                 log.error("Couldn't make changes to file");
             }
