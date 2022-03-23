@@ -1,8 +1,8 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ConfigUtil;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.MkvToolNix;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 
@@ -58,12 +58,7 @@ public class MkvFileCollector implements FileCollector {
         Map<String, Object> jsonMap;
         List<FileAttribute> fileAttributes = new ArrayList<>();
         try {
-            String command = "";
-            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-                command = "\"" + ConfigUtil.getInstance().getPathFor(MkvToolNix.MKV_MERGER) + "\"";
-            } else {
-                command = ConfigUtil.getInstance().getPathFor(MkvToolNix.MKV_MERGER);
-            }
+            String command = String.format("\"%s\"", Config.getInstance().getPathFor(MkvToolNix.MKV_MERGER));
             String[] array = new String[]{
                     command,
                     "--identify",

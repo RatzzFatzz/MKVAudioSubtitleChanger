@@ -1,4 +1,4 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.util;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 public enum MkvToolNix {
     MKV_MERGER("mkvmerge.exe"),

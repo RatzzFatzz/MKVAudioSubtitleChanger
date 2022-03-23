@@ -1,6 +1,7 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.util;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.AttributeConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import at.pcgamingfreaks.yaml.YamlKeyNotFoundException;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 @Log4j2
 @Getter
 @Setter
-public class ConfigUtil {
+public class Config {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private static ConfigUtil configUtil = null;
+    private static Config config = null;
 
     private List<AttributeConfig> attributeConfig;
     private int threadCount;
@@ -28,12 +29,13 @@ public class ConfigUtil {
     private String mkvtoolnixPath;
     private String libraryPath;
     private boolean isSafeMode;
+    private boolean isWindows;
 
-    public static ConfigUtil getInstance() {
-        if(configUtil == null) {
-            configUtil = new ConfigUtil();
+    public static Config getInstance() {
+        if(config == null) {
+            config = new Config();
         }
-        return configUtil;
+        return config;
     }
 
     public void isValid() throws RuntimeException{
@@ -55,6 +57,7 @@ public class ConfigUtil {
             setAttributeConfig(loadAttributeConfig(config));
             setThreadCount(loadThreadCount(config));
             setMkvtoolnixPath(loadMkvToolNixPath(config));
+            setWindows(System.getProperty("os.name").toLowerCase().contains("windows"));
         }catch(YamlInvalidContentException | YamlKeyNotFoundException | IOException e){
             log.fatal("Config could not be loaded: {}", e.getMessage());
         }

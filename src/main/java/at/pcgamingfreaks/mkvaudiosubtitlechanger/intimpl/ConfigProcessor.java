@@ -1,8 +1,10 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.MKVToolProperties;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ConfigUtil;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static java.lang.String.format;
 
@@ -92,11 +95,11 @@ public class ConfigProcessor {
         StringBuilder stringBuffer = new StringBuilder();
         if(System.getProperty("os.name").toLowerCase().contains("windows")){
             stringBuffer.append(format("\"%s\" \"%s\" ",
-                    MKVToolProperties.getInstance().getMkvpropeditPath(),
+                    Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT),
                     file.getAbsolutePath()));
         }else{
             stringBuffer.append(format("%s %s ",
-                    MKVToolProperties.getInstance().getMkvpropeditPath(),
+                    Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT),
                     file.getAbsolutePath()));
         }
         if(audioDefault != - 1){
@@ -122,7 +125,7 @@ public class ConfigProcessor {
                 return true;
             }
             try{
-                if(!ConfigUtil.getInstance().isSafeMode()) {
+                if(!Config.getInstance().isSafeMode()) {
                     Runtime.getRuntime().exec(stringBuffer.toString());
                 }
             }catch(IOException e){

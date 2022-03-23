@@ -1,10 +1,10 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.AttributeConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ConfigProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl.ConfigProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl.MkvFileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ConfigUtil;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,10 +20,10 @@ public class AttributeUpdaterKernel {
     long runtime = 0;
 
     @SneakyThrows
-    public void execute(String path) {
-        List<AttributeConfig> configPattern = ConfigUtil.getInstance().getAttributeConfig();
-        List<File> allValidPaths = collector.loadFiles(path);
-        ExecutorService executor = Executors.newFixedThreadPool(ConfigUtil.getInstance().getThreadCount());
+    public void execute() {
+        List<AttributeConfig> configPattern = Config.getInstance().getAttributeConfig();
+        List<File> allValidPaths = collector.loadFiles(Config.getInstance().getLibraryPath());
+        ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreadCount());
 
         long beforeTimer = System.currentTimeMillis();
         if(allValidPaths != null && configPattern != null){
@@ -37,10 +37,10 @@ public class AttributeUpdaterKernel {
         runtime = System.currentTimeMillis() - beforeTimer;
 
         System.out.printf("%nFiles %schanged: %s%n",
-                ConfigUtil.getInstance().isSafeMode() ? "would " : "",
+                Config.getInstance().isSafeMode() ? "would " : "",
                 filesChangedAmount);
         System.out.printf("Files %s not changed: %s%n",
-                ConfigUtil.getInstance().isSafeMode() ? "would " : "",
+                Config.getInstance().isSafeMode() ? "would " : "",
                 filesNotChangedAmount);
         System.out.printf("Runtime: %ss%n", runtime / 1000);
     }
