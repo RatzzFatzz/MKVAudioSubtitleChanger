@@ -1,6 +1,5 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.MKVToolProperties;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static java.lang.String.format;
 
@@ -154,15 +152,15 @@ public class ConfigProcessor {
         int subtitleListIndex = - 1;
         int audioListIndex = - 1;
         for(FileAttribute elem : attributes){
-            if("audio".equals(elem.getType())){
-                for(int i = 0; i < config.getAudio().size(); i++){
-                    audioListIndex = findIndex("audio", elem, audioListIndex, config.getAudio(), transfer);
-                }
-            }else if("subtitles".equals(elem.getType())){
-                for(int i = 0; i < config.getSubtitle().size(); i++){
-                    subtitleListIndex = findIndex("subtitles", elem, subtitleListIndex, config.getSubtitle(), transfer);
-                }
-            }
+//            if("audio".equals(elem.getType())){
+//                for(int i = 0; i < config.getAudio().size(); i++){
+//                    audioListIndex = findIndex("audio", elem, audioListIndex, config.getAudio(), transfer);
+//                }
+//            }else if("subtitles".equals(elem.getType())){
+//                for(int i = 0; i < config.getSubtitle().size(); i++){
+//                    subtitleListIndex = findIndex("subtitles", elem, subtitleListIndex, config.getSubtitle(), transfer);
+//                }
+//            }
         }
 
         transfer.analyzeIfValid();

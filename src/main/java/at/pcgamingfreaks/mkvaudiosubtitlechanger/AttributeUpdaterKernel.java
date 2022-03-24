@@ -14,6 +14,8 @@ import java.util.concurrent.*;
 
 @Log4j2
 public class AttributeUpdaterKernel {
+
+    ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreadCount());
     MkvFileCollector collector = new MkvFileCollector();
     int filesChangedAmount = 0;
     int filesNotChangedAmount = 0;
@@ -21,17 +23,10 @@ public class AttributeUpdaterKernel {
 
     @SneakyThrows
     public void execute() {
-        List<AttributeConfig> configPattern = Config.getInstance().getAttributeConfig();
-        List<File> allValidPaths = collector.loadFiles(Config.getInstance().getLibraryPath());
-        ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreadCount());
-
         long beforeTimer = System.currentTimeMillis();
-        if(allValidPaths != null && configPattern != null){
-            System.out.print("Running");
-            allValidPaths.forEach(file -> executor.submit(() -> process(configPattern, file)));
-        }else{
-            log.error("Path is not valid or config has errors!");
-        }
+
+        collector.loadFiles(Config.getInstance().getLibraryPath())
+                .forEach(file -> executor.submit(() -> process(file)));
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.DAYS);
         runtime = System.currentTimeMillis() - beforeTimer;
@@ -45,12 +40,12 @@ public class AttributeUpdaterKernel {
         System.out.printf("Runtime: %ss%n", runtime / 1000);
     }
 
-    private void process(List<AttributeConfig> configPattern, File file) {
+    private void process(File file) {
         List<FileAttribute> attributes = collector.loadAttributes(file);
         boolean fileHasChanged = false;
 
         if (attributes.isEmpty()) return;
-        for(AttributeConfig config : configPattern){
+        for(AttributeConfig config : Config.getInstance().getAttributeConfig()){
             fileHasChanged = new ConfigProcessor(config).processConfig(file, attributes);
             if(fileHasChanged) break;
         }

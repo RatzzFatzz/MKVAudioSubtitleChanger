@@ -42,10 +42,10 @@ public class MkvFileCollector implements FileCollector {
                         .collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("Couldn't find file or directory!", e);
-                return null;
+                return new ArrayList<>();
             }
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 

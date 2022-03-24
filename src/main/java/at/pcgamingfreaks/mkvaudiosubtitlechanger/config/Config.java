@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -39,17 +40,26 @@ public class Config {
     }
 
     public void isValid() throws RuntimeException{
-        System.out.println(attributeConfig);
-        System.out.println(threadCount);
-        System.out.println(mkvtoolnixPath);
-        System.out.println(libraryPath);
-        if (attributeConfig != null && !attributeConfig.isEmpty()
-                && threadCount > 0 && !mkvtoolnixPath.isEmpty()
-                && new File(getPathFor(MkvToolNix.MKV_MERGER)).isFile()
-                && new File(getPathFor(MkvToolNix.MKV_PROP_EDIT)).isFile()) {
-            return;
+        boolean isValid = true;
+        if (attributeConfig == null || attributeConfig.isEmpty()
+                || !attributeConfig.stream().allMatch(AttributeConfig::isValid)) {
+            isValid = false;
+            System.out.println("Audio & subtitle configuration invalid!");
         }
-        throw new RuntimeException("Invalid configuration");
+        if (threadCount <= 0) {
+            isValid = false;
+            System.out.println("Thread count needs to be at least 1!");
+        }
+        if (mkvtoolnixPath.isEmpty()
+                || !new File(getPathFor(MkvToolNix.MKV_MERGER)).isFile()
+                || !new File(getPathFor(MkvToolNix.MKV_PROP_EDIT)).isFile()) {
+            isValid = false;
+            System.out.println("MkvToolNix installation path invalid!");
+        }
+
+        if (!isValid) {
+            throw new RuntimeException("Invalid configuration");
+        }
     }
 
     public void loadConfig(String configPath) {
@@ -63,23 +73,15 @@ public class Config {
         }
     }
 
-    private List<AttributeConfig> loadAttributeConfig(YAML config) {
+    private List<AttributeConfig> loadAttributeConfig(YAML config){
+        Function<String, String> audio = key -> config.getString(key + ".audio", null);
+        Function<String, String> subtitle = key -> config.getString(key + ".subtitle", null);
+
         return config.getKeysFiltered(".*audio.*").stream()
                 .sorted()
-                .map(elem -> elem.replace(".audio", ""))
-                .map(elem -> createAttributeConfig(elem, config))
+                .map(key -> key.replace(".audio", ""))
+                .map(key -> new AttributeConfig(audio.apply(key), subtitle.apply(key)))
                 .collect(Collectors.toList());
-    }
-
-    private AttributeConfig createAttributeConfig(String key, YAML config) {
-        try{
-            return new AttributeConfig(
-                    config.getStringList(key + ".audio"),
-                    config.getStringList(key + ".subtitle"));
-        }catch(YamlKeyNotFoundException e){
-            e.printStackTrace();
-            return null;
-        }
     }
 
     private int loadThreadCount(YAML config) throws YamlKeyNotFoundException{
@@ -89,7 +91,9 @@ public class Config {
     }
 
     private String loadMkvToolNixPath(YAML config) throws YamlKeyNotFoundException {
-        return config.isSet("mkvtoolnixPath") ? config.getString("mkvtoolnixPath") : defaultMkvToolNixPath();
+        return config.isSet("mkvtoolnixPath")
+                ? config.getString("mkvtoolnixPath")
+                : defaultMkvToolNixPath();
     }
 
     private String defaultMkvToolNixPath() {

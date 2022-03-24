@@ -3,14 +3,14 @@ mkvtoolnixPath: C:\Program Files\MKVToolNix
 threadCount: 2
 config:
   1:
-    audio:
-      - jpn
-    subtitle:
-      - ger
-      - eng
+    audio: jpn
+    subtitle: ger
   2:
-    audio:
-      - ger
-      - eng
-    subtitle:
-      - OFF
+    audio: jpn
+    subtitle: eng
+  3:
+    audio: ger
+    subtitle: OFF
+  4:
+    audio: eng
+    subtitle: OFF
