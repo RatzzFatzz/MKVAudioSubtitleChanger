@@ -20,9 +20,10 @@ public class FileAttribute {
     private String trackName;
     private boolean defaultTrack;
     private boolean forcedTrack;
-    private String type;
+    private LaneType type;
 
-    public FileAttribute(int id, String language, String trackName, boolean defaultTrack, boolean forcedTrack, String type) {
+    public FileAttribute(int id, String language, String trackName, boolean defaultTrack, boolean forcedTrack,
+                         LaneType type) {
         this.id = id;
         this.language = language;
         this.trackName = trackName;

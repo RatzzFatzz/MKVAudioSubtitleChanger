@@ -1,6 +1,8 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileCollector;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileProcessor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
 
@@ -10,7 +12,7 @@ import static java.lang.Integer.parseInt;
 public class Main {
     public static void main(String[] args) {
         initConfig(args);
-        AttributeUpdaterKernel kernel = new AttributeUpdaterKernel();
+        AttributeUpdaterKernel kernel = new AttributeUpdaterKernel(new MkvFileCollector(), new MkvFileProcessor());
         kernel.execute();
     }
 

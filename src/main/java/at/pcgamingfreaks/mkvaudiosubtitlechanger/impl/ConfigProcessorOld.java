@@ -1,4 +1,4 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.intimpl;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
@@ -17,12 +17,12 @@ import java.util.List;
 import static java.lang.String.format;
 
 @Log4j2
-public class ConfigProcessor {
+public class ConfigProcessorOld {
     private int audioDefault = - 1;
     private int subtitleDefault = - 1;
     private final AttributeConfig config;
 
-    public ConfigProcessor(AttributeConfig config) {
+    public ConfigProcessorOld(AttributeConfig config) {
         this.config = config;
     }
 
@@ -59,22 +59,22 @@ public class ConfigProcessor {
                 if(elem.isDefaultTrack()){
                     audioDefault = elem.getId();
                 }
-                if(config.getAudio().contains("OFF")){
+                if(config.getAudioLanguage().contains("OFF")){
                     transfer.setAudioOn(false);
                     transfer.setAudioIndex(- 2);
                 }
-                if(! config.getAudio().contains(elem.getLanguage())){
+                if(! config.getAudioLanguage().contains(elem.getLanguage())){
                     iterator.remove();
                 }
             }else if("subtitles".equals(elem.getType())){
                 if(elem.isDefaultTrack()){
                     subtitleDefault = elem.getId();
                 }
-                if(config.getSubtitle().contains("OFF")){
+                if(config.getSubtitleLanguage().contains("OFF")){
                     transfer.setSubtitleOn(false);
                     transfer.setSubtitleIndex(- 2);
                 }
-                if(! config.getSubtitle().contains(elem.getLanguage())){
+                if(! config.getSubtitleLanguage().contains(elem.getLanguage())){
                     iterator.remove();
                 }
             }
