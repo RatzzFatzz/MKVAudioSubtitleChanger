@@ -1,26 +1,28 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class AttributeUpdaterKernel {
 
-    ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreadCount());
-    FileCollector collector;
-    FileProcessor processor;
-    int filesChangedAmount = 0;
-    int filesNotChangedAmount = 0;
-    long runtime = 0;
+    private final ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreadCount());
+    private final FileCollector collector;
+    private final FileProcessor processor;
+    private final ResultStatistic statistic = new ResultStatistic();
 
     public AttributeUpdaterKernel(FileCollector collector, FileProcessor processor) {
         this.collector = collector;
@@ -29,33 +31,33 @@ public class AttributeUpdaterKernel {
 
     @SneakyThrows
     public void execute() {
-        long beforeTimer = System.currentTimeMillis();
-
-
+        statistic.startTimer();
 
         List<File> files = collector.loadFiles(Config.getInstance().getLibraryPath());
         files.forEach(file -> executor.submit(() -> process(file)));
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.DAYS);
 
-
-
-        runtime = System.currentTimeMillis() - beforeTimer;
-
-        System.out.printf("%nFiles %schanged: %s%n",
-                Config.getInstance().isSafeMode() ? "would " : "",
-                filesChangedAmount);
-        System.out.printf("Files %s not changed: %s%n",
-                Config.getInstance().isSafeMode() ? "would " : "",
-                filesNotChangedAmount);
-        System.out.printf("Runtime: %ss%n", runtime / 1000);
+        statistic.stopTimer();
+        System.out.println(statistic);
     }
 
     private void process(File file) {
         List<FileAttribute> attributes = processor.loadAttributes(file);
         FileInfoDto fileInfo = processor.filterAttributes(attributes);
-        if (fileInfo.isChangeNecessary() && !Config.getInstance().isSafeMode()) {
-            processor.update(file, fileInfo);
+        if (fileInfo.isChangeNecessary()) {
+            statistic.shouldChange(file, fileInfo);
+            if (!Config.getInstance().isSafeMode()) {
+                try {
+                    processor.update(file, fileInfo);
+                    statistic.success(file, fileInfo);
+                } catch (IOException e) {
+                    statistic.failure(file, fileInfo);
+                    log.warn("File couldn't be updated: {}", file.getAbsoluteFile());
+                }
+            }
+        } else {
+            statistic.fits(file, fileInfo);
         }
     }
 }

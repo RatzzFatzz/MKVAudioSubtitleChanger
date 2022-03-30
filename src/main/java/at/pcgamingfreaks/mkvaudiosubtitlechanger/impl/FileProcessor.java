@@ -4,6 +4,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface FileProcessor {
@@ -16,5 +17,5 @@ public interface FileProcessor {
 
     FileInfoDto filterAttributes(List<FileAttribute> attributes);
 
-    void update(File file, FileInfoDto fileInfo);
+    void update(File file, FileInfoDto fileInfo) throws IOException;
 }

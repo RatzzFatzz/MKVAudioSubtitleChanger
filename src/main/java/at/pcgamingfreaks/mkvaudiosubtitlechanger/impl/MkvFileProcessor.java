@@ -7,7 +7,10 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,10 +82,12 @@ public class MkvFileProcessor implements FileProcessor {
 
     private void detectCurrentConfiguration(List<FileAttribute> attributes, FileInfoDto info, List<FileAttribute> nonForcedTracks) {
         Set<FileAttribute> detectedForcedSubtitleLanes = new HashSet<>();
-        for (FileAttribute attribute: attributes) {
+        for (FileAttribute attribute : attributes) {
             if (attribute.isDefaultTrack() && AUDIO.equals(attribute.getType())) info.setDefaultAudioLane(attribute);
-            if (attribute.isDefaultTrack() && SUBTITLES.equals(attribute.getType())) info.setDefaultSubtitleLane(attribute);
-            if (attribute.isForcedTrack() && SUBTITLES.equals(attribute.getType())) detectedForcedSubtitleLanes.add(attribute);
+            if (attribute.isDefaultTrack() && SUBTITLES.equals(attribute.getType()))
+                info.setDefaultSubtitleLane(attribute);
+            if (attribute.isForcedTrack() && SUBTITLES.equals(attribute.getType()))
+                detectedForcedSubtitleLanes.add(attribute);
         }
 
         info.setDesiredForcedSubtitleLanes(attributes.stream()
@@ -93,13 +98,13 @@ public class MkvFileProcessor implements FileProcessor {
     }
 
     private void detectDesiredConfiguration(FileInfoDto info, List<FileAttribute> nonForcedTracks) {
-        for (AttributeConfig config: Config.getInstance().getAttributeConfig()) {
+        for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
             FileAttribute desiredAudio = null;
             FileAttribute desiredSubtitle = null;
-            for (FileAttribute attribute: nonForcedTracks) {
-                if ( attribute.getLanguage().equals(config.getAudioLanguage())
+            for (FileAttribute attribute : nonForcedTracks) {
+                if (attribute.getLanguage().equals(config.getAudioLanguage())
                         && AUDIO.equals(attribute.getType())) desiredAudio = attribute;
-                if ( attribute.getLanguage().equals(config.getSubtitleLanguage())
+                if (attribute.getLanguage().equals(config.getSubtitleLanguage())
                         && SUBTITLES.equals(attribute.getType())) desiredSubtitle = attribute;
             }
             if (desiredAudio != null && desiredSubtitle != null) {
@@ -111,7 +116,7 @@ public class MkvFileProcessor implements FileProcessor {
     }
 
     @Override
-    public void update(File file, FileInfoDto fileInfo) {
+    public void update(File file, FileInfoDto fileInfo) throws IOException {
         StringBuffer sb = new StringBuffer();
         sb.append(format("\"%s\" ", Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT)));
         sb.append(format("\"%s\" ", file.getAbsolutePath()));
@@ -128,17 +133,12 @@ public class MkvFileProcessor implements FileProcessor {
             sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredSubtitleLane().getId()));
         }
         if (fileInfo.areForcedTracksDifferent()) {
-            for (FileAttribute attribute: fileInfo.getDesiredForcedSubtitleLanes()) {
+            for (FileAttribute attribute : fileInfo.getDesiredForcedSubtitleLanes()) {
                 sb.append(format(ENABLE_FORCED_TRACK, attribute.getId()));
             }
         }
 
-        try {
-            InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
-            log.debug(IOUtils.toString(new InputStreamReader(inputstream)));
-        } catch (IOException e) {
-            log.warn("File couldn't be updated: {}", file.getAbsoluteFile());
-        }
+        InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
+        log.debug(IOUtils.toString(new InputStreamReader(inputstream)));
     }
-
 }

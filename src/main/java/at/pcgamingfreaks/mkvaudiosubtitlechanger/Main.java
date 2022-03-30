@@ -3,7 +3,6 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileProcessor;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.cli.*;
 
@@ -27,7 +26,7 @@ public class Main {
         options.addOption("c", CONFIG.toString(), false, "path to config");
         options.addOption("t", THREADS.toString(), true, "thread count");
         options.addOption("s", SAFE_MODE.toString(), false, "Test run (no files will be changes)");
-        options.addOption(create("k", FORCED_KEYWORDS.toString(),Option.UNLIMITED_VALUES,"Additional keywords to identify forced tracks"));
+        options.addOption(create("k", FORCED_KEYWORDS.toString(), Option.UNLIMITED_VALUES, "Additional keywords to identify forced tracks"));
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -44,7 +43,8 @@ public class Main {
             config.setLibraryPath(cmd.getOptionValue("library"));
             config.setSafeMode(cmd.hasOption("safe-mode"));
             if (cmd.hasOption("threads")) config.setThreadCount(parseInt(cmd.getOptionValue("threads")));
-            if (cmd.hasOption(FORCED_KEYWORDS.toString())) config.getForcedKeywords().addAll(List.of(cmd.getOptionValues(FORCED_KEYWORDS.toString())));
+            if (cmd.hasOption(FORCED_KEYWORDS.toString()))
+                config.getForcedKeywords().addAll(List.of(cmd.getOptionValues(FORCED_KEYWORDS.toString())));
             config.isValid();
         } catch (ParseException e) {
             log.error(e);

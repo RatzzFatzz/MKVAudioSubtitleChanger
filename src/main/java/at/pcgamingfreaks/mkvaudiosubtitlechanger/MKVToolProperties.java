@@ -17,7 +17,7 @@ public class MKVToolProperties {
     }
 
     public static MKVToolProperties getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new MKVToolProperties();
         }
         return instance;

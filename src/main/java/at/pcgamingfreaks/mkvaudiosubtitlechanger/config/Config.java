@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.MKV_TOOL_NIX;
 
 @Log4j2
 @Getter

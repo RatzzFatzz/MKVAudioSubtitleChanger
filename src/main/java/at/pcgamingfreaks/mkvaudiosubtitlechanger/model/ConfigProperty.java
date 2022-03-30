@@ -9,7 +9,7 @@ public enum ConfigProperty {
     SAFE_MODE("safe-mode"),
     HELP("help");
 
-    private String property;
+    private final String property;
 
     ConfigProperty(String property) {
         this.property = property;
