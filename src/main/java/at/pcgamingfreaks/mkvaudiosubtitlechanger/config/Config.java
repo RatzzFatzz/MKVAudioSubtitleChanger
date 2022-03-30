@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
@@ -12,9 +13,11 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
 
 @Log4j2
 @Getter
@@ -26,6 +29,7 @@ public class Config {
 
     private List<AttributeConfig> attributeConfig;
     private int threadCount;
+    private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs"));
     @Getter(AccessLevel.NONE)
     private String mkvtoolnixPath;
     private String libraryPath;
@@ -33,13 +37,13 @@ public class Config {
     private boolean isWindows;
 
     public static Config getInstance() {
-        if(config == null) {
+        if (config == null) {
             config = new Config();
         }
         return config;
     }
 
-    public void isValid() throws RuntimeException{
+    public void isValid() throws RuntimeException {
         boolean isValid = true;
         if (attributeConfig == null || attributeConfig.isEmpty()
                 || !attributeConfig.stream().allMatch(AttributeConfig::isValid)) {
@@ -63,17 +67,18 @@ public class Config {
     }
 
     public void loadConfig(String configPath) {
-        try(YAML config = new YAML(new File(configPath))){
+        try (YAML config = new YAML(new File(configPath))) {
             setAttributeConfig(loadAttributeConfig(config));
             setThreadCount(loadThreadCount(config));
             setMkvtoolnixPath(loadMkvToolNixPath(config));
             setWindows(System.getProperty("os.name").toLowerCase().contains("windows"));
-        }catch(YamlInvalidContentException | YamlKeyNotFoundException | IOException e){
+            getForcedKeywords().addAll(loadForcedKeywords(config));
+        } catch (YamlInvalidContentException | YamlKeyNotFoundException | IOException e) {
             log.fatal("Config could not be loaded: {}", e.getMessage());
         }
     }
 
-    private List<AttributeConfig> loadAttributeConfig(YAML config){
+    private List<AttributeConfig> loadAttributeConfig(YAML config) {
         Function<String, String> audio = key -> config.getString(key + ".audio", null);
         Function<String, String> subtitle = key -> config.getString(key + ".subtitle", null);
 
@@ -84,15 +89,19 @@ public class Config {
                 .collect(Collectors.toList());
     }
 
-    private int loadThreadCount(YAML config) throws YamlKeyNotFoundException{
-        return config.isSet("threadCount")
-                ? Integer.parseInt(config.getString("threadCount"))
+    private int loadThreadCount(YAML config) throws YamlKeyNotFoundException {
+        return config.isSet(ConfigProperty.THREADS.toString())
+                ? Integer.parseInt(config.getString(ConfigProperty.THREADS.toString()))
                 : 1;
     }
 
+    private List<String> loadForcedKeywords(YAML config) {
+        return config.getStringList(ConfigProperty.FORCED_KEYWORDS.toString(), new ArrayList<>());
+    }
+
     private String loadMkvToolNixPath(YAML config) throws YamlKeyNotFoundException {
-        return config.isSet("mkvtoolnixPath")
-                ? config.getString("mkvtoolnixPath")
+        return config.isSet(MKV_TOOL_NIX.toString())
+                ? config.getString(MKV_TOOL_NIX.toString())
                 : defaultMkvToolNixPath();
     }
 

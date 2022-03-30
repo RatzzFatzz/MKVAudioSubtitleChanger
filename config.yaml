@@ -1,6 +1,7 @@
 mkvtoolnixPath: C:\Program Files\MKVToolNix
 # Only edit this value if you know what you are doing, otherwise it may impact your performance negatively
-threadCount: 2
+threads: 2
+#forcedKeywords: ["forced", "signs"]
 config:
   1:
     audio: jpn
