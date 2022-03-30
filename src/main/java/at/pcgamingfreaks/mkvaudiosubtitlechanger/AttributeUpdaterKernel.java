@@ -2,8 +2,6 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.ConfigProcessorOld;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
@@ -51,24 +49,6 @@ public class AttributeUpdaterKernel {
                 Config.getInstance().isSafeMode() ? "would " : "",
                 filesNotChangedAmount);
         System.out.printf("Runtime: %ss%n", runtime / 1000);
-    }
-
-    private void processOld(File file) {
-        List<FileAttribute> attributes = processor.loadAttributes(file);
-        boolean fileHasChanged = false;
-
-        if (attributes.isEmpty()) return;
-        for(AttributeConfig config : Config.getInstance().getAttributeConfig()){
-            fileHasChanged = new ConfigProcessorOld(config).processConfig(file, attributes);
-            if(fileHasChanged) break;
-        }
-        if(!fileHasChanged){
-            log.info("File didn't change: {}", file.getName());
-            filesNotChangedAmount++;
-        } else {
-            filesChangedAmount++;
-        }
-        System.out.print(".");
     }
 
     private void process(File file) {

@@ -5,29 +5,31 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.core.util.IOUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType.AUDIO;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType.SUBTITLES;
+import static java.lang.String.format;
 
 @Log4j2
 public class MkvFileProcessor implements FileProcessor {
     private final ObjectMapper mapper = new ObjectMapper();
+    private final String[] forcedKeywords = new String[]{"forced", "signs"};
+    private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0 ";
+    private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1 ";
+    private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1 ";
+
 
     @Override
     public List<FileAttribute> loadAttributes(File file) {
         Map<String, Object> jsonMap;
         List<FileAttribute> fileAttributes = new ArrayList<>();
         try {
-            String command = String.format("\"%s\"", Config.getInstance().getPathFor(MkvToolNix.MKV_MERGER));
+            String command = format("\"%s\"", Config.getInstance().getPathFor(MkvToolNix.MKV_MERGER));
             String[] arguments = new String[]{
                     command,
                     "--identify",
@@ -40,7 +42,7 @@ public class MkvFileProcessor implements FileProcessor {
             jsonMap = mapper.readValue(inputStream, Map.class);
             List<Map<String, Object>> tracks = (List<Map<String, Object>>) jsonMap.get("tracks");
             if (tracks == null) {
-                log.warn("Couldn't retrieve information of {}", file.getAbsoluteFile().toString());
+                log.warn("Couldn't retrieve information of {}", file.getAbsolutePath());
                 return new ArrayList<>();
             }
             for (Map<String, Object> attribute : tracks) {
@@ -65,24 +67,40 @@ public class MkvFileProcessor implements FileProcessor {
     @Override
     public FileInfoDto filterAttributes(List<FileAttribute> attributes) {
         FileInfoDto info = new FileInfoDto();
+        List<FileAttribute> nonForcedTracks = attributes.stream()
+                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(), forcedKeywords))
+                .collect(Collectors.toList());
+
+        detectCurrentConfiguration(attributes, info, nonForcedTracks);
+        detectDesiredConfiguration(info, nonForcedTracks);
+
+        return info;
+    }
+
+    private void detectCurrentConfiguration(List<FileAttribute> attributes, FileInfoDto info, List<FileAttribute> nonForcedTracks) {
+        Set<FileAttribute> detectedForcedSubtitleLanes = new HashSet<>();
         for (FileAttribute attribute: attributes) {
             if (attribute.isDefaultTrack() && AUDIO.equals(attribute.getType())) info.setDefaultAudioLane(attribute);
-            if (attribute.isForcedTrack() && AUDIO.equals(attribute.getType())) info.setForcedAudioLane(attribute);
-
             if (attribute.isDefaultTrack() && SUBTITLES.equals(attribute.getType())) info.setDefaultSubtitleLane(attribute);
-            if (attribute.isForcedTrack() && SUBTITLES.equals(attribute.getType())) info.setForcedSubtitleLane(attribute);
+            if (attribute.isForcedTrack() && SUBTITLES.equals(attribute.getType())) detectedForcedSubtitleLanes.add(attribute);
         }
-        List<FileAttribute> nonForcedTracks = attributes.stream()
-                .filter(elem -> !StringUtils.containsIgnoreCase(elem.getTrackName(), "forced"))
-                .collect(Collectors.toList());
+
+        info.setDesiredForcedSubtitleLanes(attributes.stream()
+                .filter(e -> !nonForcedTracks.contains(e))
+                .filter(e -> !detectedForcedSubtitleLanes.contains(e))
+                .collect(Collectors.toSet())
+        );
+    }
+
+    private void detectDesiredConfiguration(FileInfoDto info, List<FileAttribute> nonForcedTracks) {
         for (AttributeConfig config: Config.getInstance().getAttributeConfig()) {
             FileAttribute desiredAudio = null;
             FileAttribute desiredSubtitle = null;
             for (FileAttribute attribute: nonForcedTracks) {
                 if ( attribute.getLanguage().equals(config.getAudioLanguage())
-                    && AUDIO.equals(attribute.getType())) desiredAudio = attribute;
+                        && AUDIO.equals(attribute.getType())) desiredAudio = attribute;
                 if ( attribute.getLanguage().equals(config.getSubtitleLanguage())
-                    && SUBTITLES.equals(attribute.getType())) desiredSubtitle = attribute;
+                        && SUBTITLES.equals(attribute.getType())) desiredSubtitle = attribute;
             }
             if (desiredAudio != null && desiredSubtitle != null) {
                 info.setDesiredAudioLane(desiredAudio);
@@ -90,11 +108,37 @@ public class MkvFileProcessor implements FileProcessor {
                 break;
             }
         }
-        return info;
     }
 
     @Override
     public void update(File file, FileInfoDto fileInfo) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(format("\"%s\" ", Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT)));
+        sb.append(format("\"%s\" ", file.getAbsolutePath()));
+        if (fileInfo.isAudioDifferent()) {
+            if (fileInfo.getDefaultAudioLane() != null) {
+                sb.append(format(DISABLE_DEFAULT_TRACK, fileInfo.getDefaultAudioLane().getId()));
+            }
+            sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredAudioLane().getId()));
+        }
+        if (fileInfo.isSubtitleDifferent()) {
+            if (fileInfo.getDefaultSubtitleLane() != null) {
+                sb.append(format(DISABLE_DEFAULT_TRACK, fileInfo.getDefaultSubtitleLane().getId()));
+            }
+            sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredSubtitleLane().getId()));
+        }
+        if (fileInfo.areForcedTracksDifferent()) {
+            for (FileAttribute attribute: fileInfo.getDesiredForcedSubtitleLanes()) {
+                sb.append(format(ENABLE_FORCED_TRACK, attribute.getId()));
+            }
+        }
 
+        try {
+            InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
+            log.debug(IOUtils.toString(new InputStreamReader(inputstream)));
+        } catch (IOException e) {
+            log.warn("File couldn't be updated: {}", file.getAbsoluteFile());
+        }
     }
+
 }
