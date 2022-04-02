@@ -8,6 +8,9 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,31 +36,43 @@ public class AttributeUpdaterKernel {
     public void execute() {
         statistic.startTimer();
 
-        List<File> files = collector.loadFiles(Config.getInstance().getLibraryPath());
-        files.forEach(file -> executor.submit(() -> process(file)));
-        executor.shutdown();
-        executor.awaitTermination(1, TimeUnit.DAYS);
+        try (ProgressBar progressBar = pbBuilder().build()) {
+            List<File> files = collector.loadFiles(Config.getInstance().getLibraryPath());
+            progressBar.maxHint(files.size());
+            files.forEach(file -> executor.submit(() -> process(file, progressBar)));
+            executor.shutdown();
+            executor.awaitTermination(1, TimeUnit.DAYS);
+        }
 
         statistic.stopTimer();
         System.out.println(statistic);
     }
 
-    private void process(File file) {
+    private void process(File file, ProgressBar progressBar) {
+        statistic.total();
         List<FileAttribute> attributes = processor.loadAttributes(file);
         FileInfoDto fileInfo = processor.filterAttributes(attributes);
         if (fileInfo.isChangeNecessary()) {
-            statistic.shouldChange(file, fileInfo);
+            statistic.shouldChange();
             if (!Config.getInstance().isSafeMode()) {
                 try {
                     processor.update(file, fileInfo);
-                    statistic.success(file, fileInfo);
+                    statistic.success();
                 } catch (IOException e) {
-                    statistic.failure(file, fileInfo);
+                    statistic.failure();
                     log.warn("File couldn't be updated: {}", file.getAbsoluteFile());
                 }
             }
         } else {
-            statistic.fits(file, fileInfo);
+            statistic.fits();
         }
+        progressBar.step();
+    }
+
+    private static ProgressBarBuilder pbBuilder() {
+        return new ProgressBarBuilder()
+                .setStyle(ProgressBarStyle.ASCII)
+                .setUpdateIntervalMillis(250)
+                .setMaxRenderedLength(75);
     }
 }

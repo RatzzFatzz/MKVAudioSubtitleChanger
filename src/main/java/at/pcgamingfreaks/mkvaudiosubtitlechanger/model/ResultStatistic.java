@@ -7,12 +7,14 @@ import java.io.File;
 
 @Getter
 public class ResultStatistic {
-    private static final String result = "Files should change: %s%n" +
-            "Files successfully changed: %s%n" +
-            "Files failed changing: %s%n" +
-            "Files already fitting config: %s%n" +
+    private static final String result = "Total files: %s%n" +
+            "├─ Should change: %s%n" +
+            "├─ Successfully changed: %s%n" +
+            "├─ Already fit config: %s%n" +
+            "└─ Failed: %s%n" +
             "Runtime: %ss";
 
+    private int filesTotal = 0;
     private int filesShouldChange = 0;
     private int filesSuccessfullyChanged = 0;
     private int filesFailed = 0;
@@ -21,19 +23,23 @@ public class ResultStatistic {
     private long startTime = 0;
     private long runtime = 0;
 
-    public void shouldChange(File file, FileInfoDto fileInfo) {
+    public synchronized void total() {
+        filesTotal++;
+    }
+
+    public synchronized void shouldChange() {
         filesShouldChange++;
     }
 
-    public void success(File file, FileInfoDto fileInfo) {
+    public synchronized void success() {
         filesSuccessfullyChanged++;
     }
 
-    public void failure(File file, FileInfoDto fileInfo) {
+    public synchronized void failure() {
         filesFailed++;
     }
 
-    public void fits(File file, FileInfoDto fileInfo) {
+    public synchronized void fits() {
         filesAlreadyFit++;
     }
 
@@ -47,7 +53,7 @@ public class ResultStatistic {
 
     @Override
     public String toString() {
-        return String.format(result, filesShouldChange, filesSuccessfullyChanged, filesFailed, filesAlreadyFit,
-                runtime / 1000);
+        return String.format(result, filesTotal, filesShouldChange, filesSuccessfullyChanged, filesAlreadyFit,
+                filesFailed, runtime / 1000);
     }
 }

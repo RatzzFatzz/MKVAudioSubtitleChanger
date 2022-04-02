@@ -154,6 +154,11 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
+        <dependency>
+            <groupId>me.tongfei</groupId>
+            <artifactId>progressbar</artifactId>
+            <version>0.9.3</version>
+        </dependency>
         <!-- endregion -->
         <!-- region unit-tests -->
         <dependency>
