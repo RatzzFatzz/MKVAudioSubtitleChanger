@@ -17,30 +17,33 @@ This program helps changing audio and subtitle lines of mkv files.
 
 Opening terminal / cmd in the directory of the jar and the config file and execute following command:
 
-`java -jar mkvaudiosubtitleschanger.jar [path to mkv or dir with mkv]`
+`java -jar mkvaudiosubtitleschanger.jar -l [path to mkv or dir with mkv]`
 
-You have to replace the brackets and the content of it with the path to your mkv file or the directory with mkv files.
+### Additional arameters
+```properties
+ -c,--config                 path to config
+ -h,--help                   "for help this is" - Yoda
+ -k,--forcedKeywords <arg>   Additional keywords to identify forced tracks
+ -l,--library <arg>          path to library (Required)
+ -s,--safe-mode              Test run (no files will be changes)
+ -t,--threads <arg>          thread count
+```
 
 ### config.yml example
-Config file needs to be placed in the same directory as the jar.
+Config file needs to be placed in the same directory as the jar or path to config has to be passed via command line 
+argument.
 
-```
-mkvtoolnixPath: /usr/bin
+```yaml
+mkvtoolnixPath: C:\Program Files\MKVToolNix
+# Recommendations for data stored on HDDs, increase when using SSDs
+threads: 2
+#forcedKeywords: ["forced", "signs"]
 config:
   1:
-    audio:
-      - jpn
-    subtitle:
-      - ger
-      - eng
+    audio: ger
+    subtitle: OFF
   2:
-    audio:
-      - ger
-      - eng
-    subtitle:
-      - OFF
+    audio: eng
+    subtitle: ger
 ```
-This config will first check if there is japanese audio and german or english subtitles available, if yes,
-it will set these attributes. If these are not available, it will check the second part. This means, it checks
-if german or english audio is available. It does not care for the subtitle, because it's "off", which means, it 
-will disable subtitles in this case.
+Subtitle lanes recognized as forced will be set as one. Already existing ones will not be overwritten or changed.

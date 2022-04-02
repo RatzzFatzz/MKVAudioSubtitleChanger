@@ -1,0 +1,11 @@
+mkvtoolnixPath: C:\Program Files\MKVToolNix
+# Recommendations for data stored on HDDs, increase when using SSDs
+threads: 2
+#forcedKeywords: ["forced", "signs"]
+config:
+  1:
+    audio: ger
+    subtitle: OFF
+  2:
+    audio: eng
+    subtitle: ger
