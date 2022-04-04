@@ -21,12 +21,13 @@ Opening terminal / cmd in the directory of the jar and the config file and execu
 
 ### Additional arameters
 ```properties
- -c,--config                 path to config
- -h,--help                   "for help this is" - Yoda
- -k,--forcedKeywords <arg>   Additional keywords to identify forced tracks
- -l,--library <arg>          path to library (Required)
- -s,--safe-mode              Test run (no files will be changes)
- -t,--threads <arg>          thread count
+ -c,--config                      path to config
+ -e,--exclude-directories <arg>   Directories to exclude
+ -h,--help                        "for help this is" - Yoda
+ -k,--forcedKeywords <arg>        Additional keywords to identify forcedtracks"
+ -l,--library <arg>               path to library
+ -s,--safe-mode                   Test run (no files will be changes)
+ -t,--threads <arg>               thread count
 ```
 
 ### config.yml example

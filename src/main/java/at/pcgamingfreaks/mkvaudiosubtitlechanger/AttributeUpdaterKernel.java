@@ -14,10 +14,12 @@ import me.tongfei.progressbar.ProgressBarStyle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class AttributeUpdaterKernel {
@@ -37,7 +39,13 @@ public class AttributeUpdaterKernel {
         statistic.startTimer();
 
         try (ProgressBar progressBar = pbBuilder().build()) {
-            List<File> files = collector.loadFiles(Config.getInstance().getLibraryPath());
+            List<File> excludedFiles = Config.getInstance().getExcludedDirectories().stream()
+                    .map(collector::loadFiles)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            List<File> files = collector.loadFiles(Config.getInstance().getLibraryPath()).stream()
+                    .filter(file -> !excludedFiles.contains(file))
+                    .collect(Collectors.toList());
             progressBar.maxHint(files.size());
             files.forEach(file -> executor.submit(() -> process(file, progressBar)));
             executor.shutdown();

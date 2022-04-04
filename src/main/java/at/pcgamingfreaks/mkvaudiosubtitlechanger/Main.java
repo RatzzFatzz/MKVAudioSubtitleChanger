@@ -9,6 +9,7 @@ import org.apache.commons.cli.*;
 import java.util.List;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
 import static java.lang.Integer.parseInt;
 
 @Log4j2
@@ -20,14 +21,7 @@ public class Main {
     }
 
     private static void initConfig(String[] args) {
-        Options options = new Options();
-        options.addOption("h", HELP.toString(), false, "\"for help this is\" - Yoda");
-        options.addRequiredOption("l", LIBRARY.toString(), true, "path to library");
-        options.addOption("c", CONFIG.toString(), false, "path to config");
-        options.addOption("t", THREADS.toString(), true, "thread count");
-        options.addOption("s", SAFE_MODE.toString(), false, "Test run (no files will be changes)");
-        options.addOption(create("k", FORCED_KEYWORDS.toString(), Option.UNLIMITED_VALUES, "Additional keywords to identify forced tracks"));
-
+        Options options = initOptions();
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         try {
@@ -39,12 +33,14 @@ public class Main {
             }
 
             Config config = Config.getInstance();
-            config.loadConfig(cmd.getOptionValue(CONFIG.toString(), "config.yaml")); // use cmd input
+            config.loadConfig(cmd.getOptionValue(CONFIG_PATH.prop(), "config.yaml")); // use cmd input
             config.setLibraryPath(cmd.getOptionValue("library"));
             config.setSafeMode(cmd.hasOption("safe-mode"));
             if (cmd.hasOption("threads")) config.setThreadCount(parseInt(cmd.getOptionValue("threads")));
-            if (cmd.hasOption(FORCED_KEYWORDS.toString()))
-                config.getForcedKeywords().addAll(List.of(cmd.getOptionValues(FORCED_KEYWORDS.toString())));
+            if (cmd.hasOption(FORCED_KEYWORDS.prop()))
+                config.getForcedKeywords().addAll(List.of(cmd.getOptionValues(FORCED_KEYWORDS.prop())));
+            if (cmd.hasOption(EXCLUDE_DIRECTORY.prop()))
+                config.getExcludedDirectories().addAll(List.of(cmd.getOptionValues(EXCLUDE_DIRECTORY.prop())));
             config.isValid();
         } catch (ParseException e) {
             log.error(e);
@@ -53,10 +49,15 @@ public class Main {
         }
     }
 
-    private static Option create(String opt, String longOpt, int args, String desc) {
-        Option option = new Option(opt, desc);
-        option.setLongOpt(longOpt);
-        option.setArgs(args);
-        return option;
+    private static Options initOptions() {
+        Options options = new Options();
+        options.addOption(optionOf(HELP, "h", false));
+        options.addOption(optionOf(LIBRARY, "l", true, true));
+        options.addOption(optionOf(CONFIG_PATH, "c", false));
+        options.addOption(optionOf(THREADS, "t", true));
+        options.addOption(optionOf(SAFE_MODE, "s", false));
+        options.addOption(optionOf(FORCED_KEYWORDS, "k", Option.UNLIMITED_VALUES, false));
+        options.addOption(optionOf(EXCLUDE_DIRECTORY, "e", Option.UNLIMITED_VALUES, false));
+        return options;
     }
 }

@@ -30,6 +30,7 @@ public class Config {
     private List<AttributeConfig> attributeConfig;
     private int threadCount;
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs"));
+    private Set<String> excludedDirectories = new HashSet<>();
     @Getter(AccessLevel.NONE)
     private String mkvtoolnixPath;
     private String libraryPath;
@@ -73,6 +74,7 @@ public class Config {
             setMkvtoolnixPath(loadMkvToolNixPath(config));
             setWindows(System.getProperty("os.name").toLowerCase().contains("windows"));
             getForcedKeywords().addAll(loadForcedKeywords(config));
+            getExcludedDirectories().addAll(loadExcludeDirectories(config));
         } catch (YamlInvalidContentException | YamlKeyNotFoundException | IOException e) {
             log.fatal("Config could not be loaded: {}", e.getMessage());
         }
@@ -90,18 +92,22 @@ public class Config {
     }
 
     private int loadThreadCount(YAML config) throws YamlKeyNotFoundException {
-        return config.isSet(ConfigProperty.THREADS.toString())
-                ? Integer.parseInt(config.getString(ConfigProperty.THREADS.toString()))
+        return config.isSet(ConfigProperty.THREADS.prop())
+                ? Integer.parseInt(config.getString(ConfigProperty.THREADS.prop()))
                 : 1;
     }
 
     private List<String> loadForcedKeywords(YAML config) {
-        return config.getStringList(ConfigProperty.FORCED_KEYWORDS.toString(), new ArrayList<>());
+        return config.getStringList(ConfigProperty.FORCED_KEYWORDS.prop(), new ArrayList<>());
+    }
+
+    private List<String> loadExcludeDirectories(YAML config) {
+        return config.getStringList(ConfigProperty.EXCLUDE_DIRECTORY.prop(), new ArrayList<>());
     }
 
     private String loadMkvToolNixPath(YAML config) throws YamlKeyNotFoundException {
-        return config.isSet(MKV_TOOL_NIX.toString())
-                ? config.getString(MKV_TOOL_NIX.toString())
+        return config.isSet(MKV_TOOL_NIX.prop())
+                ? config.getString(MKV_TOOL_NIX.prop())
                 : defaultMkvToolNixPath();
     }
 

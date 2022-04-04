@@ -19,7 +19,7 @@ public class MkvFileCollector implements FileCollector {
     public List<File> loadFiles(String path) {
         File file = new File(path);
         if (file.isFile() && file.getAbsolutePath().endsWith(".mkv")) {
-            return new ArrayList<File>() {{
+            return new ArrayList<>() {{
                 add(file);
             }};
         } else if (file.isDirectory()) {
