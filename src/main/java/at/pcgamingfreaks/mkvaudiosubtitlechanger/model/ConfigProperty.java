@@ -8,7 +8,8 @@ public enum ConfigProperty {
     LIBRARY("library", "path to library"),
     SAFE_MODE("safe-mode", "Test run (no files will be changes)"),
     HELP("help", "\"for help this is\" - Yoda"),
-    EXCLUDE_DIRECTORY("exclude-directories", "Directories to exclude");
+    EXCLUDE_DIRECTORY("exclude-directories", "Directories to exclude"),
+    INCLUDE_PATTERN("include-pattern", "Include files matching pattern");
 
     private final String property;
     private final String description;

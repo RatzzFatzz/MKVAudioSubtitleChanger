@@ -1,5 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -28,6 +29,7 @@ public class MkvFileCollector implements FileCollector {
                         .filter(Files::isRegularFile)
                         .map(Path::toFile)
                         .filter(f -> f.getAbsolutePath().endsWith(".mkv"))
+                        .filter(f -> Config.getInstance().getIncludePattern().matcher(f.getName()).matches())
                         .collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("Couldn't find file or directory!", e);

@@ -15,9 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.MKV_TOOL_NIX;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
 
 @Log4j2
 @Getter
@@ -31,6 +33,7 @@ public class Config {
     private int threadCount;
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs"));
     private Set<String> excludedDirectories = new HashSet<>();
+    private Pattern includePattern;
     @Getter(AccessLevel.NONE)
     private String mkvtoolnixPath;
     private String libraryPath;
@@ -75,6 +78,7 @@ public class Config {
             setWindows(System.getProperty("os.name").toLowerCase().contains("windows"));
             getForcedKeywords().addAll(loadForcedKeywords(config));
             getExcludedDirectories().addAll(loadExcludeDirectories(config));
+            loadIncludePattern(config);
         } catch (YamlInvalidContentException | YamlKeyNotFoundException | IOException e) {
             log.fatal("Config could not be loaded: {}", e.getMessage());
         }
@@ -103,6 +107,23 @@ public class Config {
 
     private List<String> loadExcludeDirectories(YAML config) {
         return config.getStringList(ConfigProperty.EXCLUDE_DIRECTORY.prop(), new ArrayList<>());
+    }
+
+    private void loadIncludePattern(YAML config) throws  YamlKeyNotFoundException {
+        if (config.isSet(INCLUDE_PATTERN.prop())) {
+            includePattern = compilePattern(config.getString(INCLUDE_PATTERN.prop()), INCLUDE_PATTERN);
+        } else {
+            includePattern = Pattern.compile(".*");
+        }
+    }
+
+    public static Pattern compilePattern(String pattern, ConfigProperty origin) {
+        try {
+            return Pattern.compile(pattern);
+        } catch (PatternSyntaxException e) {
+            log.error("{} is not a valid regex pattern!", origin.prop());
+            throw new RuntimeException(String.format("%s is not a valid regex pattern!%n", origin.prop()));
+        }
     }
 
     private String loadMkvToolNixPath(YAML config) throws YamlKeyNotFoundException {

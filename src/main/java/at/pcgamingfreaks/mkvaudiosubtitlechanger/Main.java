@@ -41,6 +41,9 @@ public class Main {
                 config.getForcedKeywords().addAll(List.of(cmd.getOptionValues(FORCED_KEYWORDS.prop())));
             if (cmd.hasOption(EXCLUDE_DIRECTORY.prop()))
                 config.getExcludedDirectories().addAll(List.of(cmd.getOptionValues(EXCLUDE_DIRECTORY.prop())));
+            if (cmd.hasOption(INCLUDE_PATTERN.prop())) {
+                config.setIncludePattern(Config.compilePattern(cmd.getOptionValue(INCLUDE_PATTERN.prop()), INCLUDE_PATTERN));
+            }
             config.isValid();
         } catch (ParseException e) {
             log.error(e);
@@ -58,6 +61,7 @@ public class Main {
         options.addOption(optionOf(SAFE_MODE, "s", false));
         options.addOption(optionOf(FORCED_KEYWORDS, "k", Option.UNLIMITED_VALUES, false));
         options.addOption(optionOf(EXCLUDE_DIRECTORY, "e", Option.UNLIMITED_VALUES, false));
+        options.addOption(optionOf(INCLUDE_PATTERN, "i", true));
         return options;
     }
 }
