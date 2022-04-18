@@ -14,10 +14,6 @@ public class AttributeConfig {
         this.subtitleLanguage = subtitleLanguage;
     }
 
-    public boolean isValid() {
-        return audioLanguage != null && subtitleLanguage != null;
-    }
-
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("AttributeConfig{");

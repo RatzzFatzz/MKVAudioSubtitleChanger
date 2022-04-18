@@ -1,4 +1,4 @@
-mkvtoolnixPath: C:\Program Files\MKVToolNix
+mkvtoolnix: C:\Program Files\MKVToolNix
 # Recommendations for data stored on HDDs, increase when using SSDs
 threads: 2
 #forcedKeywords: ["forced", "signs"]

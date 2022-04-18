@@ -1,15 +1,15 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 public enum ConfigProperty {
-    MKV_TOOL_NIX("mkvtoolnixPath", "Path to mkv tool nix installation"),
-    THREADS("threads", "thread count"),
-    FORCED_KEYWORDS("forcedKeywords", "Additional keywords to identify forced tracks\""),
-    CONFIG_PATH("config", "path to config"),
-    LIBRARY("library", "path to library"),
+    CONFIG_PATH("config", "Path to config file"),
+    LIBRARY("library", "Path to library"),
     SAFE_MODE("safe-mode", "Test run (no files will be changes)"),
-    HELP("help", "\"for help this is\" - Yoda"),
-    EXCLUDE_DIRECTORY("exclude-directories", "Directories to exclude"),
-    INCLUDE_PATTERN("include-pattern", "Include files matching pattern");
+    THREADS("threads", "thread count (default: 2)"),
+    INCLUDE_PATTERN("include-pattern", "Include files matching pattern"),
+    MKV_TOOL_NIX("mkvtoolnix", "Path to mkv tool nix installation"),
+    FORCED_KEYWORDS("forcedKeywords", "Additional keywords to identify forced tracks, combines with config file"),
+    EXCLUDE_DIRECTORY("exclude-directories", "Directories to be excluded, combines with config file"),
+    HELP("help", "\"for help this is\" - Yoda");
 
     private final String property;
     private final String description;
