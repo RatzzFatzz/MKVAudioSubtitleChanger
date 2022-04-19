@@ -1,10 +1,5 @@
 mkvtoolnix: C:\Program Files\MKVToolNix
-# Recommendations for data stored on HDDs, increase when using SSDs
-threads: 2
-#forcedKeywords: ["forced", "signs"]
-#exclude-directories:
-#  - "D:/Path/To/File.mkv"
-#  - "D:/Path/To/Directory"
+
 config:
   1:
     audio: ger
@@ -12,3 +7,12 @@ config:
   2:
     audio: eng
     subtitle: ger
+
+# Recommendations for data stored on HDDs, increase when using SSDs
+#threads: 2
+#forcedKeywords: ["forced", "signs"]
+#exclude-directories:
+#  - "D:/Path/To/File.mkv"
+#  - "D:/Path/To/Directory"
+#include-pattern: "regex"
+
