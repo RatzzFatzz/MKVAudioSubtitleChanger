@@ -20,7 +20,9 @@
                 <directory>./</directory>
                 <includes>
                     <include>language-codes</include>
+                    <include>version.properties</include>
                 </includes>
+                <filtering>true</filtering>
             </resource>
         </resources>
         <testResources>

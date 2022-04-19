@@ -2,6 +2,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.VersionUtil;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import lombok.AccessLevel;
@@ -75,6 +76,7 @@ public class Config {
         }
 
         exitIfHelp(cmd, options);
+        exitIfVersion(cmd);
 
         configPath = loadConfigPath(cmd, errors);
         libraryPath = loadLibraryPath(cmd, errors);
@@ -101,6 +103,7 @@ public class Config {
     private static Options initOptions() {
         Options options = new Options();
         options.addOption(optionOf(HELP, "h", false));
+        options.addOption(optionOf(VERSION, "v", false));
         options.addOption(optionOf(LIBRARY, "l", true));
         options.addOption(optionOf(MKV_TOOL_NIX, "m", true));
         options.addOption(optionOf(CONFIG_PATH, "c", true));
@@ -117,6 +120,13 @@ public class Config {
             formatter.printHelp(106, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
                     "\nParameters:", options,
                     "\nFeature requests and bug reports: https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/issues");
+            System.exit(0);
+        }
+    }
+
+    private void exitIfVersion(CommandLine cmd) {
+        if (cmd.hasOption(VERSION.prop())) {
+            System.out.printf("MKV Audio Subtitle Changer Version %s%n", VersionUtil.getVersion());
             System.exit(0);
         }
     }

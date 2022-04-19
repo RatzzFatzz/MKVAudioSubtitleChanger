@@ -9,7 +9,8 @@ public enum ConfigProperty {
     MKV_TOOL_NIX("mkvtoolnix", "Path to mkv tool nix installation"),
     FORCED_KEYWORDS("forcedKeywords", "Additional keywords to identify forced tracks, combines with config file"),
     EXCLUDE_DIRECTORY("exclude-directories", "Directories to be excluded, combines with config file"),
-    HELP("help", "\"for help this is\" - Yoda");
+    HELP("help", "\"for help this is\" - Yoda"),
+    VERSION("version", "Display version");
 
     private final String property;
     private final String description;
