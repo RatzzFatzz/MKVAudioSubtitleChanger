@@ -54,6 +54,7 @@ public class AttributeUpdaterKernel {
 
         statistic.stopTimer();
         System.out.println(statistic);
+        log.info(statistic);
     }
 
     private void process(File file, ProgressBar progressBar) {
@@ -67,12 +68,16 @@ public class AttributeUpdaterKernel {
                     processor.update(file, fileInfo);
                     statistic.success();
                 } catch (IOException e) {
-                    statistic.failure();
+                    statistic.failedChanging();
                     log.warn("File couldn't be updated: {}", file.getAbsoluteFile());
                 }
             }
+        } else if (fileInfo.isUnableToApplyConfig()) {
+            statistic.noSuitableConfigFound();
+        } else if (fileInfo.isAlreadySuitable()){
+            statistic.alreadyFits();
         } else {
-            statistic.fits();
+            statistic.failure();
         }
         progressBar.step();
     }

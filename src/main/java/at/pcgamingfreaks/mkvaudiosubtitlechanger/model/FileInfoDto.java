@@ -14,6 +14,14 @@ public class FileInfoDto {
     private FileAttribute desiredAudioLane;
     private FileAttribute desiredSubtitleLane;
 
+    public boolean isUnableToApplyConfig() {
+        return desiredAudioLane == null && desiredSubtitleLane == null;
+    }
+
+    public boolean isAlreadySuitable() {
+        return desiredAudioLane == defaultAudioLane && desiredSubtitleLane == defaultSubtitleLane;
+    }
+
     public boolean isChangeNecessary() {
         return isAudioDifferent() || isSubtitleDifferent() || areForcedTracksDifferent();
     }
