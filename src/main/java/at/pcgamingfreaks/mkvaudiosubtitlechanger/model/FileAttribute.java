@@ -21,4 +21,17 @@ public class FileAttribute {
         this.forcedTrack = forcedTrack;
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("[");
+        sb.append("id=").append(id);
+        sb.append(", language='").append(language).append('\'');
+        sb.append(", trackName='").append(trackName).append('\'');
+        sb.append(", defaultTrack=").append(defaultTrack);
+        sb.append(", forcedTrack=").append(forcedTrack);
+        sb.append(", type=").append(type);
+        sb.append(']');
+        return sb.toString();
+    }
 }

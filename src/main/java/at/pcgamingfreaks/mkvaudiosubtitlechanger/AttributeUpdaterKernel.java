@@ -58,15 +58,16 @@ public class AttributeUpdaterKernel {
     }
 
     private void process(File file, ProgressBar progressBar) {
-        statistic.total();
         List<FileAttribute> attributes = processor.loadAttributes(file);
         FileInfoDto fileInfo = processor.filterAttributes(attributes);
+        statistic.total();
         if (fileInfo.isChangeNecessary()) {
             statistic.shouldChange();
             if (!Config.getInstance().isSafeMode()) {
                 try {
                     processor.update(file, fileInfo);
                     statistic.success();
+                    log.info("Updated {}", file.getAbsolutePath());
                 } catch (IOException e) {
                     statistic.failedChanging();
                     log.warn("File couldn't be updated: {}", file.getAbsoluteFile());

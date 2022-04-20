@@ -39,4 +39,16 @@ public class FileInfoDto {
     public boolean areForcedTracksDifferent() {
         return desiredForcedSubtitleLanes.size() > 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("[");
+        sb.append("defaultAudioLane=").append(defaultAudioLane);
+        sb.append(", defaultSubtitleLane=").append(defaultSubtitleLane);
+        sb.append(", desiredForcedSubtitleLanes=").append(desiredForcedSubtitleLanes);
+        sb.append(", desiredAudioLane=").append(desiredAudioLane);
+        sb.append(", desiredSubtitleLane=").append(desiredSubtitleLane);
+        sb.append(']');
+        return sb.toString();
+    }
 }

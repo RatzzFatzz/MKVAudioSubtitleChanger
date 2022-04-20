@@ -2,6 +2,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LogUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +61,8 @@ public class MkvFileProcessor implements FileProcessor {
                             LaneType.valueOf(((String) attribute.get("type")).toUpperCase(Locale.ENGLISH))));
                 }
             }
+
+            LogUtils.ifDebug(log, fileAttributes);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("File could not be found or loaded!");
@@ -76,6 +79,7 @@ public class MkvFileProcessor implements FileProcessor {
 
         detectCurrentConfiguration(attributes, info, nonForcedTracks);
         detectDesiredConfiguration(info, nonForcedTracks);
+        LogUtils.ifDebug(log, info);
 
         return info;
     }
@@ -117,7 +121,7 @@ public class MkvFileProcessor implements FileProcessor {
 
     @Override
     public void update(File file, FileInfoDto fileInfo) throws IOException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(format("\"%s\" ", Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT)));
         sb.append(format("\"%s\" ", file.getAbsolutePath()));
         if (fileInfo.isAudioDifferent()) {
@@ -139,6 +143,6 @@ public class MkvFileProcessor implements FileProcessor {
         }
 
         InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
-        log.debug(IOUtils.toString(new InputStreamReader(inputstream)));
+        LogUtils.ifDebug(log, IOUtils.toString(new InputStreamReader(inputstream)));
     }
 }
