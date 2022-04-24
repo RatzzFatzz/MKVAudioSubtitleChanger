@@ -11,7 +11,7 @@ This program helps to change audio and subtitle lines of mkv files.
 
 ### Requirements
 
- - Java 8 or higher
+ - Java 11 or higher
  - mkvtoolnix installation
  
 ### Running

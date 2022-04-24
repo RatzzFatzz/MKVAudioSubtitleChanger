@@ -3,13 +3,14 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 public class FileInfoDto {
-    private FileAttribute defaultAudioLane;
-    private FileAttribute defaultSubtitleLane;
+    private Set<FileAttribute> defaultAudioLanes = new HashSet<>();
+    private Set<FileAttribute> defaultSubtitleLanes = new HashSet<>();
     private Set<FileAttribute> desiredForcedSubtitleLanes;
     private FileAttribute desiredAudioLane;
     private FileAttribute desiredSubtitleLane;
@@ -19,7 +20,7 @@ public class FileInfoDto {
     }
 
     public boolean isAlreadySuitable() {
-        return desiredAudioLane == defaultAudioLane && desiredSubtitleLane == defaultSubtitleLane;
+        return defaultAudioLanes.contains(desiredAudioLane) && defaultSubtitleLanes.contains(desiredSubtitleLane);
     }
 
     public boolean isChangeNecessary() {
@@ -28,12 +29,12 @@ public class FileInfoDto {
 
     public boolean isAudioDifferent() {
         return desiredAudioLane != null &&
-                (defaultAudioLane == null || defaultAudioLane.getId() != desiredAudioLane.getId());
+                (defaultAudioLanes == null || !defaultAudioLanes.contains(desiredAudioLane));
     }
 
     public boolean isSubtitleDifferent() {
         return desiredSubtitleLane != null &&
-                (defaultSubtitleLane == null || defaultSubtitleLane.getId() != desiredSubtitleLane.getId());
+                (defaultSubtitleLanes == null || !defaultSubtitleLanes.contains(desiredSubtitleLane));
     }
 
     public boolean areForcedTracksDifferent() {
@@ -42,13 +43,11 @@ public class FileInfoDto {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("[");
-        sb.append("defaultAudioLane=").append(defaultAudioLane);
-        sb.append(", defaultSubtitleLane=").append(defaultSubtitleLane);
-        sb.append(", desiredForcedSubtitleLanes=").append(desiredForcedSubtitleLanes);
-        sb.append(", desiredAudioLane=").append(desiredAudioLane);
-        sb.append(", desiredSubtitleLane=").append(desiredSubtitleLane);
-        sb.append(']');
-        return sb.toString();
+        return "[" + "defaultAudioLanes=" + defaultAudioLanes +
+                ", defaultSubtitleLanes=" + defaultSubtitleLanes +
+                ", desiredForcedSubtitleLanes=" + desiredForcedSubtitleLanes +
+                ", desiredAudioLane=" + desiredAudioLane +
+                ", desiredSubtitleLane=" + desiredSubtitleLane +
+                ']';
     }
 }

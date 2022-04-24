@@ -1,5 +1,8 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public enum ConfigProperty {
     CONFIG_PATH("config", "Path to config file"),
     LIBRARY("library", "Path to library"),
@@ -14,11 +17,6 @@ public enum ConfigProperty {
 
     private final String property;
     private final String description;
-
-    ConfigProperty(String property, String description) {
-        this.property = property;
-        this.description = description;
-    }
 
     public String desc() {
         return description;
