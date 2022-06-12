@@ -49,6 +49,7 @@ public class Config {
     private boolean isWindows;
 
     private final Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs"));
+    private final Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
     private final Set<String> excludedDirectories = new HashSet<>();
 
     private List<AttributeConfig> attributeConfig;
