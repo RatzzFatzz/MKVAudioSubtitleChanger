@@ -1,11 +1,15 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
-import config.MKVToolProperties;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileCollector;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileProcessor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class Main {
     public static void main(String[] args) {
-        MKVToolProperties.getInstance().defineMKVToolNixPath();
-        AttributeUpdaterKernel kernel = new AttributeUpdaterKernel();
+        Config.getInstance().initConfig(args);
+        AttributeUpdaterKernel kernel = new AttributeUpdaterKernel(new MkvFileCollector(), new MkvFileProcessor());
         kernel.execute();
     }
 }
