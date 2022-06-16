@@ -2,6 +2,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.SetUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -73,17 +74,23 @@ public class MkvFileProcessor implements FileProcessor {
     public FileInfoDto filterAttributes(List<FileAttribute> attributes) {
         FileInfoDto info = new FileInfoDto();
         List<FileAttribute> nonForcedTracks = attributes.stream()
-                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(), forcedKeywords))
+                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
+                        Config.getInstance().getForcedKeywords().toArray(new CharSequence[0])))
+                .filter(elem -> !elem.isForcedTrack())
+                .collect(Collectors.toList());
+        List<FileAttribute> nonCommentaryTracks = attributes.stream()
+                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
+                        Config.getInstance().getCommentaryKeywords().toArray(new CharSequence[0])))
                 .collect(Collectors.toList());
 
-        detectDefaultTracks(attributes, info, nonForcedTracks);
-        detectDesiredTracks(info, nonForcedTracks);
+        detectDefaultTracks(info, attributes, nonForcedTracks);
+        detectDesiredTracks(info, nonForcedTracks, nonCommentaryTracks);
         log.debug(info);
 
         return info;
     }
 
-    private void detectDefaultTracks(List<FileAttribute> attributes, FileInfoDto info, List<FileAttribute> nonForcedTracks) {
+    private void detectDefaultTracks(FileInfoDto info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks) {
         Set<FileAttribute> detectedForcedSubtitleLanes = new HashSet<>();
         for (FileAttribute attribute : attributes) {
             if (attribute.isDefaultTrack() && AUDIO.equals(attribute.getType()))
@@ -101,11 +108,11 @@ public class MkvFileProcessor implements FileProcessor {
         );
     }
 
-    private void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks) {
+    private void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks) {
         for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
             FileAttribute desiredAudio = null;
             FileAttribute desiredSubtitle = null;
-            for (FileAttribute attribute : nonForcedTracks) {
+            for (FileAttribute attribute : SetUtils.retainOf(nonForcedTracks, nonCommentaryTracks)) {
                 if (attribute.getLanguage().equals(config.getAudioLanguage())
                         && AUDIO.equals(attribute.getType())) desiredAudio = attribute;
                 if (attribute.getLanguage().equals(config.getSubtitleLanguage())
