@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up JDK 11
-        uses: action-setup-java@v2
+        uses: action/setup-java@v2
         with:
           distribution: temurin
           java-version: 11
