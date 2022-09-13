@@ -14,7 +14,7 @@ public class OperatingSystemValidator extends BooleanValidator {
 
     @Override
     public ValidationResult validate(YAML yaml, CommandLine cmd) {
-        System.out.printf("Checking %s... ", property.prop());
+        System.out.printf("%s: ", property.prop());
         Boolean result = StringUtils.containsIgnoreCase(System.getProperty("os.name"), "windows");
 
         if (!isValid(result) || !setValue(result)) {

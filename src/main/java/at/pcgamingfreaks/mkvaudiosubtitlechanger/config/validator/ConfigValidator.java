@@ -13,6 +13,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -23,24 +26,34 @@ public abstract class ConfigValidator<FieldType> {
 	protected final FieldType defaultValue;
 
     public ValidationResult validate(YAML yaml, CommandLine cmd) {
-		System.out.printf("Checking %s... ", property.prop());
-		String resultString = null;
+		System.out.printf("%s: ", property.prop());
+		FieldType result;
 
-		if (cmd.hasOption(property.prop())) {
-			resultString = cmd.getOptionValue(property.prop());
-		} else if (yaml.isSet(property.prop())) {
-			try {
-				resultString = yaml.getString(property.prop());
-			} catch (YamlKeyNotFoundException ignored) {}
-		} else if (required) {
-			System.out.println("missing");
-			return ValidationResult.MISSING;
+		Optional<FieldType> cmdResult = provideDataCmd().apply(cmd, property);
+		Optional<FieldType> yamlResult = provideDataYaml().apply(yaml, property);
+
+		if (cmdResult.isPresent()) {
+			result = cmdResult.get();
+		} else if (yamlResult.isPresent()) {
+			result = yamlResult.get();
 		} else {
-			System.out.println("ok");
-			return ValidationResult.NOT_PRESENT;
+			if (defaultValue != null) {
+				if (setValue(defaultValue)) {
+					System.out.println("default");
+					return ValidationResult.DEFAULT;
+				} else {
+					System.out.println("invalid");
+					return ValidationResult.INVALID;
+				}
+			}
+			if (required) {
+				System.out.println("missing");
+				return ValidationResult.MISSING;
+			} else {
+				System.out.println("ok");
+				return ValidationResult.NOT_PRESENT;
+			}
 		}
-
-		FieldType result = parse(resultString);
 
 		if (!isValid(result) || !setValue(result)) {
 			System.out.println("invalid");
@@ -49,6 +62,28 @@ public abstract class ConfigValidator<FieldType> {
 
 		System.out.println("ok");
 		return ValidationResult.VALID;
+	}
+
+	protected BiFunction<YAML, ConfigProperty, Optional<FieldType>> provideDataYaml() {
+		return (yaml, property) -> {
+			if (yaml.isSet(property.prop())) {
+				try {
+					return  Optional.of(parse(yaml.getString(property.prop())));
+				} catch (YamlKeyNotFoundException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			return Optional.empty();
+		};
+	}
+
+	protected BiFunction<CommandLine, ConfigProperty, Optional<FieldType>> provideDataCmd() {
+		return (cmd, property) -> {
+			if (cmd.hasOption(property.prop())) {
+				return  Optional.of(parse(cmd.getOptionValue(property.prop())));
+			}
+			return Optional.empty();
+		};
 	}
 
 	abstract FieldType parse(String value);

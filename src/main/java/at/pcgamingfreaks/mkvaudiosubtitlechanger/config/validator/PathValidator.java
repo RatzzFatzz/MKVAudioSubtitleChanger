@@ -13,7 +13,7 @@ public class PathValidator extends ConfigValidator<File> {
 
     @Override
     protected File parse(String value) {
-        return value != null ? Path.of(value).toFile() : defaultValue;
+        return Path.of(value).toFile();
     }
 
     @Override

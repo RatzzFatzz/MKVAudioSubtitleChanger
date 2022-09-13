@@ -9,6 +9,7 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -17,7 +18,7 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsU
 
 public class ConfigLoader {
     private static final List<ConfigValidator<?>> VALIDATORS = List.of(
-            new PathValidator(CONFIG_PATH, false, Path.of("./").toFile()),
+//            new PathValidator(CONFIG_PATH, false, Path.of("./").toFile()), Singelton for yaml instance
             new PathValidator(LIBRARY, true, null),
             new ThreadValidator(THREADS, false, 2),
             new MkvToolNixPathValidator(MKV_TOOL_NIX, true, Path.of("C:\\Program Files\\MKVToolNix").toFile()),
@@ -26,13 +27,13 @@ public class ConfigLoader {
             new PatternValidator(INCLUDE_PATTERN, false, Pattern.compile(".*")),
             new SetValidator(FORCED_KEYWORDS, false, true),
             new SetValidator(COMMENTARY_KEYWORDS, false, true),
-            new SetValidator(EXCLUDE_DIRECTORY, false, true)
+            new SetValidator(EXCLUDE_DIRECTORY, false, true),
+            new AttributeConfigValidator()
     );
 
-    public static void initConfig(String[] args) throws InvalidConfigException {
+    public static void initConfig(String[] args) {
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
-        ConfigErrors errors = new ConfigErrors();
         CommandLine cmd = null;
         Options options = initOptions();
 
@@ -49,17 +50,14 @@ public class ConfigLoader {
         exitIfHelp(cmd, options, formatter);
         exitIfVersion(cmd);
 
-        File configPath = loadConfigPath(cmd, errors);
-
-        try (YAML config = new YAML(configPath)) {
+        List<ValidationResult> results = new ArrayList<>();
+        try (YAML config = new YAML(loadConfigPath(cmd))) {
             for (ConfigValidator<?> validator : VALIDATORS) {
-                if (validator.validate(config, cmd).equals(ValidationResult.INVALID)) {
-                    throw new InvalidConfigException(new ConfigErrors());
-                }
+                results.add(validator.validate(config, cmd));
             }
         } catch (IOException | YamlInvalidContentException ignored) {}
 
-        System.out.println(Config.getInstance());
+        if (results.contains(ValidationResult.INVALID)) System.exit(1);
     }
 
     private static Options initOptions() {
@@ -93,11 +91,12 @@ public class ConfigLoader {
         }
     }
 
-    private static File loadConfigPath(CommandLine cmd, ConfigErrors errors) {
+    private static File loadConfigPath(CommandLine cmd) {
         File configPath = new File(cmd.getOptionValue(CONFIG_PATH.prop(), "config.yaml"));
         if (configPath.isFile()) return configPath;
 
-        errors.add("invalid config path");
+        System.out.println("invalid config path");
+        System.exit(1);
         return null;
     }
 }

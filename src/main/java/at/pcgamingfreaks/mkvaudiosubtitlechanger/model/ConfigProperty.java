@@ -16,16 +16,17 @@ public enum ConfigProperty {
     EXCLUDE_DIRECTORY("exclude-directories", "Directories to be excluded, combines with config file"),
     HELP("help", "\"for help this is\" - Yoda"),
     VERSION("version", "Display version"),
-    ARGUMENTS("arguments", "List of arguments");
+    ARGUMENTS("arguments", "List of arguments"),
+    ATTRIBUTE_CONFIG("attribute-config", "Attribute config to decide which tracks to choose when");
 
     private final String property;
     private final String description;
 
-    public String desc() {
-        return description;
-    }
-
     public String prop() {
         return property;
+    }
+
+    public String desc() {
+        return description;
     }
 }

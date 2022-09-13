@@ -5,6 +5,7 @@ import lombok.Setter;
 
 public enum ValidationResult {
     VALID,
+    DEFAULT,
     NOT_PRESENT,
     MISSING,
     INVALID;

@@ -10,8 +10,7 @@ import lombok.extern.log4j.Log4j2;
 public class Main {
     public static void main(String[] args) {
         ConfigLoader.initConfig(args);
-//        Config.getInstance().initConfig(args);
-//        AttributeUpdaterKernel kernel = new AttributeUpdaterKernel(new MkvFileCollector(), new MkvFileProcessor());
-//        kernel.execute();
+        AttributeUpdaterKernel kernel = new AttributeUpdaterKernel(new MkvFileCollector(), new MkvFileProcessor());
+        kernel.execute();
     }
 }

@@ -3,9 +3,12 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validator;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import at.pcgamingfreaks.yaml.YAML;
+import at.pcgamingfreaks.yaml.YamlKeyNotFoundException;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.ARGUMENTS;
 
@@ -15,30 +18,23 @@ public class BooleanValidator extends ConfigValidator<Boolean> {
         super(property, required, null);
     }
 
-    public ValidationResult validate(YAML yaml, CommandLine cmd) {
-        System.out.printf("Checking %s... ", property.prop());
-        boolean result;
+    protected BiFunction<YAML, ConfigProperty, Optional<Boolean>> provideDataYaml() {
+        return (yaml, property) -> {
+            if (yaml.isSet(ARGUMENTS.prop())
+                    && yaml.getStringList(ARGUMENTS.prop(), List.of()).contains(property.prop())) {
+                return Optional.of(true);
+            }
+            return Optional.empty();
+        };
+    }
 
-        if (cmd.hasOption(property.prop())) {
-            result = true;
-        } else if (yaml.isSet(ARGUMENTS.prop())
-                && yaml.getStringList(ARGUMENTS.prop(), List.of()).contains(property.prop())) {
-            result = true;
-        } else if (required) {
-            System.out.println("missing");
-            return ValidationResult.MISSING;
-        } else {
-            System.out.println("ok");
-            return ValidationResult.NOT_PRESENT;
-        }
-
-        if (!isValid(result) || !setValue(result)) {
-            System.out.println("invalid");
-            return ValidationResult.INVALID;
-        }
-
-        System.out.println("ok");
-        return ValidationResult.VALID;
+    protected BiFunction<CommandLine, ConfigProperty, Optional<Boolean>> provideDataCmd() {
+        return (cmd, property) -> {
+            if (cmd.hasOption(property.prop())) {
+                return  Optional.of(true);
+            }
+            return Optional.empty();
+        };
     }
 
     @Override

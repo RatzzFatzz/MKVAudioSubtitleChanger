@@ -9,10 +9,8 @@ import org.apache.commons.cli.CommandLine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class SetValidator extends ConfigValidator<Set<String>> {
@@ -24,7 +22,7 @@ public class SetValidator extends ConfigValidator<Set<String>> {
     }
 
     public ValidationResult validate(YAML yaml, CommandLine cmd) {
-        System.out.printf("Checking %s... ", property.prop());
+        System.out.printf("%s: ", property.prop());
         List<String> resultList = null;
 
         if (cmd.hasOption(property.prop())) {
@@ -50,6 +48,27 @@ public class SetValidator extends ConfigValidator<Set<String>> {
 
         System.out.println("ok");
         return ValidationResult.VALID;
+    }
+
+    protected BiFunction<YAML, ConfigProperty, Optional<Set<String>>> provideDataYaml() {
+        return (yaml, property) -> {
+            if (yaml.isSet(property.prop())) {
+                try {
+                    return Optional.of(parse(yaml.getStringList(property.prop())));
+                } catch (YamlKeyNotFoundException ignored) {
+                }
+            }
+            return Optional.empty();
+        };
+    }
+
+    protected BiFunction<CommandLine, ConfigProperty, Optional<Set<String>>> provideDataCmd() {
+        return (cmd, property) -> {
+            if (cmd.hasOption(property.prop())) {
+                return Optional.of(parse(List.of(cmd.getOptionValues(property.prop()))));
+            }
+            return Optional.empty();
+        };
     }
     @Override
     Set<String> parse(String value) {
