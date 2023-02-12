@@ -70,6 +70,7 @@ public class SetValidator extends ConfigValidator<Set<String>> {
             return Optional.empty();
         };
     }
+
     @Override
     Set<String> parse(String value) {
         throw new RuntimeException("This should not be called");
@@ -84,6 +85,7 @@ public class SetValidator extends ConfigValidator<Set<String>> {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     protected boolean setValue(Set<String> result) {
         List<Method> methods = append
                 ? Arrays.stream(Config.getInstance().getClass().getDeclaredMethods())

@@ -17,8 +17,9 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
 
 public class ConfigLoader {
+    private static final ConfigValidator<?> CONFIG_VALIDATOR =
+            new ConfigPathValidator(CONFIG_PATH, false, Path.of("./config.yaml").toFile());
     private static final List<ConfigValidator<?>> VALIDATORS = List.of(
-//            new PathValidator(CONFIG_PATH, false, Path.of("./").toFile()), Singelton for yaml instance
             new PathValidator(LIBRARY, true, null),
             new ThreadValidator(THREADS, false, 2),
             new MkvToolNixPathValidator(MKV_TOOL_NIX, true, Path.of("C:\\Program Files\\MKVToolNix").toFile()),
@@ -32,32 +33,24 @@ public class ConfigLoader {
     );
 
     public static void initConfig(String[] args) {
-        CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd = null;
-        Options options = initOptions();
 
-        try {
-            cmd = parser.parse(options, args);
-            if (cmd == null) throw new NullPointerException();
-        } catch (ParseException | NullPointerException e) {
-            formatter.printHelp(106, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
-                    "\nParameters:", options,
-                    "\nFeature requests and bug reports: https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/issues");
-            System.exit(1);
-        }
+        Options options = initOptions();
+        CommandLine cmd = parseCommandLineArgs(formatter, options, args);
 
         exitIfHelp(cmd, options, formatter);
         exitIfVersion(cmd);
+        exitIfConfigIsMissing(cmd);
 
         List<ValidationResult> results = new ArrayList<>();
-        try (YAML config = new YAML(loadConfigPath(cmd))) {
+        try (YAML config = new YAML(Config.getInstance().getConfigPath())) {
             for (ConfigValidator<?> validator : VALIDATORS) {
                 results.add(validator.validate(config, cmd));
             }
         } catch (IOException | YamlInvalidContentException ignored) {}
 
         if (results.contains(ValidationResult.INVALID)) System.exit(1);
+        System.out.println();
     }
 
     private static Options initOptions() {
@@ -75,6 +68,22 @@ public class ConfigLoader {
         return options;
     }
 
+    private static CommandLine parseCommandLineArgs(HelpFormatter formatter, Options options, String[] args) {
+        CommandLineParser parser = new DefaultParser();
+
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            if (cmd == null) throw new NullPointerException();
+            return cmd;
+        } catch (ParseException | NullPointerException e) {
+            formatter.printHelp(106, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
+                    "\nParameters:", options,
+                    "\nFeature requests and bug reports: https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/issues");
+            System.exit(1);
+        }
+        return null; // can't be reached
+    }
+
     private static void exitIfHelp(CommandLine cmd, Options options, HelpFormatter formatter) {
         if (cmd.hasOption("help")) {
             formatter.printHelp(106, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
@@ -89,6 +98,13 @@ public class ConfigLoader {
             System.out.printf("MKV Audio Subtitle Changer Version %s%n", VersionUtil.getVersion());
             System.exit(0);
         }
+    }
+
+    private static void exitIfConfigIsMissing(CommandLine cmd) {
+        if (CONFIG_VALIDATOR.validate(null, cmd).equals(ValidationResult.INVALID)) {
+            System.out.println("\nPlease use a valid config path!");
+            System.exit(0);
+        };
     }
 
     private static File loadConfigPath(CommandLine cmd) {

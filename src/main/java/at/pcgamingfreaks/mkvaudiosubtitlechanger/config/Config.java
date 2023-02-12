@@ -2,24 +2,18 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.VersionUtil;
-import at.pcgamingfreaks.yaml.YAML;
-import at.pcgamingfreaks.yaml.YamlInvalidContentException;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
-
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isLanguageValid;
 
 @Log4j2
 @Getter
@@ -27,14 +21,12 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUt
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Config {
     @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private static Config config = null;
+    @Getter(AccessLevel.NONE)
     CommandLineParser parser = new DefaultParser();
     @Getter(AccessLevel.NONE)
     HelpFormatter formatter = new HelpFormatter();
-
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private static Config config = null;
-
     private File configPath;
     private File libraryPath;
     @Getter(AccessLevel.NONE)
@@ -45,14 +37,18 @@ public class Config {
     private boolean windows;
     private boolean safeMode;
 
-    private final Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs"));
-    private final Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
-    private final Set<String> excludedDirectories = new HashSet<>();
+    private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs"));
+    private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
+    private Set<String> excludedDirectories = new HashSet<>();
 
     private List<AttributeConfig> attributeConfig;
 
     public static Config getInstance() {
-        if (config == null) {
+        return getInstance(false);
+    }
+
+    public static Config getInstance(boolean reset) {
+        if (config == null || reset) {
             config = new Config();
         }
         return config;

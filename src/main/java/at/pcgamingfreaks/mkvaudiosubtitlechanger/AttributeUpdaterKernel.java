@@ -68,9 +68,9 @@ public class AttributeUpdaterKernel {
                     processor.update(file, fileInfo);
                     statistic.success();
                     log.info("Updated {}", file.getAbsolutePath());
-                } catch (IOException e) {
+                } catch (IOException | RuntimeException e) {
                     statistic.failedChanging();
-                    log.warn("File couldn't be updated: {}", file.getAbsoluteFile());
+                    log.warn("File couldn't be updated: '{}', Error: {}", file.getAbsoluteFile(), e.getMessage().replaceAll("\\R|\\n", "\\s"));
                 }
             }
         } else if (fileInfo.isUnableToApplyConfig()) {
