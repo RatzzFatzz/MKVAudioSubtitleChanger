@@ -29,7 +29,7 @@ class BooleanValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(SAFE_MODE, "s", false));
+        options.addOption(optionOf(SAFE_MODE, SAFE_MODE.abrv(), false));
     }
 
     private static Stream<Arguments> provideTestCases() {

@@ -9,7 +9,7 @@ public enum ConfigProperty {
     SAFE_MODE("safe-mode", "s", "Test run (no files will be changes)"),
     WINDOWS("windows", null, "Is operating system windows"),
     THREADS("threads", "t", "thread count (default: 2)"),
-    INCLUDE_PATTERN("include-pattern", "i", "Include files matching pattern"),
+    INCLUDE_PATTERN("include-pattern", "p", "Include files matching pattern"),
     MKV_TOOL_NIX("mkvtoolnix", "m", "Path to mkv tool nix installation"),
     FORCED_KEYWORDS("forcedKeywords", "fk", "Additional keywords to identify forced tracks"),
     COMMENTARY_KEYWORDS("commentary-keywords", "ck", "Additional keywords to identify commentary tracks"),

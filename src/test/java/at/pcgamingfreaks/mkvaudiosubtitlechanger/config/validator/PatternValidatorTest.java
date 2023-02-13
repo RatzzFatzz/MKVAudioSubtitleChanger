@@ -13,17 +13,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.File;
-import java.nio.file.Path;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.*;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.MISSING;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.INVALID;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.INCLUDE_PATTERN;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TestUtil.argumentsOf;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MkvToolNixPathValidatorTest {
+class PatternValidatorTest {
     private static CommandLineParser parser;
     private static Options options;
 
@@ -31,31 +31,34 @@ class MkvToolNixPathValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(MKV_TOOL_NIX, MKV_TOOL_NIX.abrv(), true));
+        options.addOption(optionOf(INCLUDE_PATTERN, INCLUDE_PATTERN.abrv(), true));
     }
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of(MKV_TOOL_NIX, false, null, "", new String[]{"-m", "\"C:\\Program Files\\MKVToolNix\""}, VALID),
-                Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{"-m", "\"C:\\Program Files\\MKVToolNix\""}, VALID),
-                Arguments.of(MKV_TOOL_NIX, false, null, "mkvtoolnix: C:\\Program Files\\MKVToolNix", new String[]{}, VALID),
-                Arguments.of(MKV_TOOL_NIX, true, null, "mkvtoolnix: C:\\Program Files\\MKVToolNix", new String[]{}, VALID),
-                Arguments.of(MKV_TOOL_NIX, false, Path.of("C:\\Program Files\\MKVToolNix").toFile(), "", new String[]{}, DEFAULT),
-                Arguments.of(MKV_TOOL_NIX, false, null, "", new String[]{}, NOT_PRESENT),
-                Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{}, MISSING),
-                Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{"-m", "\"C:\\Program Files\\MKVTool\""}, INVALID)
+                argumentsOf(INCLUDE_PATTERN, false, null, "include-pattern: \"[abd]?.*\"", new String[]{}, VALID),
+                argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{"-p", "[abd]?.*"}, VALID),
+
+                argumentsOf(INCLUDE_PATTERN, false, Pattern.compile(".*"), "", new String[]{}, DEFAULT),
+                argumentsOf(INCLUDE_PATTERN, true, Pattern.compile(".*"), "", new String[]{}, DEFAULT),
+
+                argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{}, MISSING),
+                argumentsOf(INCLUDE_PATTERN, false, null, "", new String[]{}, NOT_PRESENT),
+
+                argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{"-p", "?."}, INVALID),
+                argumentsOf(INCLUDE_PATTERN, false, null, "include-pattern: \"[arst*\"", new String[]{}, INVALID),
+                argumentsOf(INCLUDE_PATTERN, true, Pattern.compile(".?"), "", new String[]{"-p", "?."}, INVALID)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void validate(ConfigProperty property, boolean required, File defaultValue, String yamlArgs, String[] cmdArgs,
+    void validate(ConfigProperty property, boolean required, Pattern defaultValue, String yamlArgs, String[] cmdArgs,
                   ValidationResult expectedResult) throws ParseException, YamlInvalidContentException {
-        MkvToolNixPathValidator underTest = new MkvToolNixPathValidator(property, required, defaultValue);
+        PatternValidator underTest = new PatternValidator(property, required, defaultValue);
 
         ValidationResult result = underTest.validate(new YAML(yamlArgs), parser.parse(options, cmdArgs));
 
         assertEquals(expectedResult, result);
     }
-
 }
