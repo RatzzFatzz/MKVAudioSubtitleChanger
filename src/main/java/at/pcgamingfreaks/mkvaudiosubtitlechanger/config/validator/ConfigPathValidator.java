@@ -16,4 +16,9 @@ public class ConfigPathValidator extends PathValidator {
     protected BiFunction<YAML, ConfigProperty, Optional<File>> provideDataYaml() {
         return (yaml, property) -> Optional.empty();
     }
+
+    @Override
+    protected boolean isValid(File result) {
+        return super.isValid(result) && (result.getAbsolutePath().endsWith(".yml") || result.getAbsolutePath().endsWith(".yaml"));
+    }
 }
