@@ -20,13 +20,11 @@ import java.util.stream.Stream;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.*;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.INVALID;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.CONFIG_PATH;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.LIBRARY;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TestUtil.argumentsOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigPathValidatorTest {
-    private static final String TEST_DIR = "src/test/resources/test-dir";
     private static final String TEST_FILE = "src/test/resources/test-dir/test-file.mkv";
     private static final String TEST_CONFIG = "src/test/resources/test-dir/test-config.yml";
 
@@ -42,11 +40,11 @@ class ConfigPathValidatorTest {
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                argumentsOf(CONFIG_PATH, true, null, "", new String[]{"-c", TEST_CONFIG}, VALID),
+                argumentsOf(CONFIG_PATH, true, null, "", new String[]{"-p", TEST_CONFIG}, VALID),
                 argumentsOf(CONFIG_PATH, true, null, "config-path: " + TEST_CONFIG, new String[]{}, MISSING),
                 argumentsOf(CONFIG_PATH, false, null, "config-path: " + TEST_CONFIG, new String[]{}, NOT_PRESENT),
                 argumentsOf(CONFIG_PATH, false, Path.of(TEST_CONFIG).toFile(), "", new String[]{}, DEFAULT),
-                argumentsOf(CONFIG_PATH, true, null, "", new String[]{"-c", TEST_FILE}, INVALID)
+                argumentsOf(CONFIG_PATH, true, null, "", new String[]{"-p", TEST_FILE}, INVALID)
         );
     }
 

@@ -3,7 +3,6 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validator;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,8 +15,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -25,14 +22,9 @@ import java.util.stream.Stream;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.*;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TestUtil.argumentsOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AttributeConfigValidatorTest {
-    private static final String TEST_DIR = "src/test/resources/test-dir";
-    private static final String TEST_FILE = "src/test/resources/test-dir/test-file.mkv";
-    private static final String TEST_CONFIG = "src/test/resources/test-dir/test-config.yml";
-
     private static CommandLineParser parser;
     private static Options options;
 
@@ -71,13 +63,13 @@ class AttributeConfigValidatorTest {
     }
 
     private static String attrConfYaml(String... languages) {
-        String yaml = "attribute-config: ";
+        StringBuilder yaml = new StringBuilder("attribute-config: ");
         int counter = 0;
         for (int i = 0; i < languages.length; i += 2) {
             counter++;
-            yaml += String.format("\n %s:\n  audio: %s\n  subtitle: %s", counter, languages[0], languages[1]);
+            yaml.append(String.format("\n %s:\n  audio: %s\n  subtitle: %s", counter, languages[0], languages[1]));
         }
-        return yaml;
+        return yaml.toString();
     }
 
     private static List<AttributeConfig> attrConf(String... languages) {

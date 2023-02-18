@@ -37,7 +37,7 @@ class PatternValidatorTest {
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
                 argumentsOf(INCLUDE_PATTERN, false, null, "include-pattern: \"[abd]?.*\"", new String[]{}, VALID),
-                argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{"-p", "[abd]?.*"}, VALID),
+                argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{"-i", "[abd]?.*"}, VALID),
 
                 argumentsOf(INCLUDE_PATTERN, false, Pattern.compile(".*"), "", new String[]{}, DEFAULT),
                 argumentsOf(INCLUDE_PATTERN, true, Pattern.compile(".*"), "", new String[]{}, DEFAULT),
@@ -45,9 +45,9 @@ class PatternValidatorTest {
                 argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{}, MISSING),
                 argumentsOf(INCLUDE_PATTERN, false, null, "", new String[]{}, NOT_PRESENT),
 
-                argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{"-p", "?."}, INVALID),
+                argumentsOf(INCLUDE_PATTERN, true, null, "", new String[]{"-i", "?."}, INVALID),
                 argumentsOf(INCLUDE_PATTERN, false, null, "include-pattern: \"[arst*\"", new String[]{}, INVALID),
-                argumentsOf(INCLUDE_PATTERN, true, Pattern.compile(".?"), "", new String[]{"-p", "?."}, INVALID)
+                argumentsOf(INCLUDE_PATTERN, true, Pattern.compile(".?"), "", new String[]{"-i", "?."}, INVALID)
         );
     }
 
