@@ -32,7 +32,7 @@ class SetValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(COMMENTARY_KEYWORDS, COMMENTARY_KEYWORDS.abrv(), true));
+        options.addOption(optionOf(COMMENTARY_KEYWORDS, COMMENTARY_KEYWORDS.abrv(), COMMENTARY_KEYWORDS.args()));
     }
 
     @BeforeEach
@@ -46,7 +46,6 @@ class SetValidatorTest {
                 argumentsOf(COMMENTARY_KEYWORDS, true, false, COMMENTARY_KEYWORDS.prop() + ": [test]", new String[]{}, VALID, 1),
                 argumentsOf(COMMENTARY_KEYWORDS, false, true, COMMENTARY_KEYWORDS.prop() + ": [test]", new String[]{}, VALID, 3),
                 argumentsOf(COMMENTARY_KEYWORDS, false, false, "", new String[]{"-ck", "test"}, VALID, 1),
-
                 argumentsOf(COMMENTARY_KEYWORDS, true, true, COMMENTARY_KEYWORDS.prop() + ": [commentary]", new String[]{}, VALID, 2),
 
                 argumentsOf(COMMENTARY_KEYWORDS, true, true, "", new String[]{}, MISSING, 2),

@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.cli.Option;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,36 +10,41 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public enum ConfigProperty {
-    CONFIG_PATH("config-path", "p", "Path to config file"),
-    LIBRARY("library", "l", "Path to library"),
-    SAFE_MODE("safe-mode", "s", "Test run (no files will be changes)"),
-    WINDOWS("windows", null, "Is operating system windows"),
-    THREADS("threads", "t", "thread count (default: 2)"),
-    INCLUDE_PATTERN("include-pattern", "i", "Include files matching pattern"),
-    MKV_TOOL_NIX("mkvtoolnix", "m", "Path to mkv tool nix installation"),
-    FORCED_KEYWORDS("forcedKeywords", "fk", "Additional keywords to identify forced tracks"),
-    COMMENTARY_KEYWORDS("commentary-keywords", "ck", "Additional keywords to identify commentary tracks"),
-    EXCLUDE_DIRECTORY("exclude-directories", "e", "Directories to be excluded, combines with config file"),
-    COHERENT("coherent", "c", "Try to match whole series with same config"),
-    HELP("help", "h", "\"for help this is\" - Yoda"),
-    VERSION("version", "v", "Display version"),
-    ARGUMENTS("arguments", null, "List of arguments"),
-    ATTRIBUTE_CONFIG("attribute-config", "a", "Attribute config to decide which tracks to choose when");
+    CONFIG_PATH("config-path", "Path to config file", "p", 1),
+    LIBRARY("library", "Path to library", "l", 1),
+    SAFE_MODE("safe-mode", "Test run (no files will be changes)", "s", 0),
+    WINDOWS("windows", "Is operating system windows", null, 0),
+    THREADS("threads", "thread count (default: 2)", "t", 1),
+    INCLUDE_PATTERN("include-pattern", "Include files matching pattern", "i", 1),
+    MKV_TOOL_NIX("mkvtoolnix", "Path to mkv tool nix installation", "m", 1),
+    FORCED_KEYWORDS("forcedKeywords", "Additional keywords to identify forced tracks", "fk", Option.UNLIMITED_VALUES),
+    COMMENTARY_KEYWORDS("commentary-keywords", "Additional keywords to identify commentary tracks", "ck", Option.UNLIMITED_VALUES),
+    EXCLUDE_DIRECTORY("exclude-directories", "Directories to be excluded, combines with config file", "e", 1),
+    COHERENT("coherent", "Try to match whole series with same config", "c", 0),
+    HELP("help", "\"for help this is\" - Yoda", "h", 0),
+    VERSION("version", "Display version", "v", 0),
+    ARGUMENTS("arguments", "List of arguments", null, 0),
+    ATTRIBUTE_CONFIG("attribute-config", "Attribute config to decide which tracks to choose when", "a", 1);
 
     private final String property;
-    private final String shortParameter;
     private final String description;
+    private final String shortParameter;
+    private final int args;
 
     public String prop() {
         return property;
+    }
+
+    public String desc() {
+        return description;
     }
 
     public String abrv() {
         return shortParameter;
     }
 
-    public String desc() {
-        return description;
+    public int args() {
+        return args;
     }
 
     /*

@@ -24,6 +24,10 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsU
 import static org.junit.jupiter.api.Assertions.*;
 
 class MkvToolNixPathValidatorTest {
+    private static final String TEST_INVALID_DIR = "src/test/resources/test-dir";
+    private static final String TEST_MKVTOOLNIX_DIR = "src/test/resources/mkvtoolnix";
+    private static final String TEST_MKVTOOLNIX_EXE_DIR = "src/test/resources/mkvtoolnix_exe";
+
     private static CommandLineParser parser;
     private static Options options;
 
@@ -31,19 +35,19 @@ class MkvToolNixPathValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(MKV_TOOL_NIX, MKV_TOOL_NIX.abrv(), true));
+        options.addOption(optionOf(MKV_TOOL_NIX, MKV_TOOL_NIX.abrv(), MKV_TOOL_NIX.args()));
     }
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of(MKV_TOOL_NIX, false, null, "", new String[]{"-m", "\"C:\\Program Files\\MKVToolNix\""}, VALID),
-                Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{"-m", "\"C:\\Program Files\\MKVToolNix\""}, VALID),
-                Arguments.of(MKV_TOOL_NIX, false, null, "mkvtoolnix: C:\\Program Files\\MKVToolNix", new String[]{}, VALID),
-                Arguments.of(MKV_TOOL_NIX, true, null, "mkvtoolnix: C:\\Program Files\\MKVToolNix", new String[]{}, VALID),
-                Arguments.of(MKV_TOOL_NIX, false, Path.of("C:\\Program Files\\MKVToolNix").toFile(), "", new String[]{}, DEFAULT),
+                Arguments.of(MKV_TOOL_NIX, false, null, "", new String[]{"-m", TEST_MKVTOOLNIX_DIR}, VALID),
+                Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{"-m", TEST_MKVTOOLNIX_EXE_DIR}, VALID),
+                Arguments.of(MKV_TOOL_NIX, false, null, "mkvtoolnix: " + TEST_MKVTOOLNIX_EXE_DIR, new String[]{}, VALID),
+                Arguments.of(MKV_TOOL_NIX, true, null, "mkvtoolnix: " + TEST_MKVTOOLNIX_DIR, new String[]{}, VALID),
+                Arguments.of(MKV_TOOL_NIX, false, Path.of(TEST_MKVTOOLNIX_EXE_DIR).toFile(), "", new String[]{}, DEFAULT),
                 Arguments.of(MKV_TOOL_NIX, false, null, "", new String[]{}, NOT_PRESENT),
                 Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{}, MISSING),
-                Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{"-m", "\"C:\\Program Files\\MKVTool\""}, INVALID)
+                Arguments.of(MKV_TOOL_NIX, true, null, "", new String[]{"-m", TEST_INVALID_DIR}, INVALID)
         );
     }
 

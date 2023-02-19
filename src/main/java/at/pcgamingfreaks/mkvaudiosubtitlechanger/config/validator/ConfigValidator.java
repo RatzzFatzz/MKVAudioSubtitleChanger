@@ -24,6 +24,13 @@ public abstract class ConfigValidator<FieldType> {
 	protected final boolean required;
 	protected final FieldType defaultValue;
 
+	/**
+	 * Validate the user input. Parameters of cmd are prioritised.
+	 *
+	 * @param yaml config file
+	 * @param cmd command line parameters
+	 * @return {@link ValidationResult} containing validity of input.
+	 */
     public ValidationResult validate(YAML yaml, CommandLine cmd) {
 		System.out.printf("%s: ", property.prop());
 		FieldType result;
@@ -63,6 +70,9 @@ public abstract class ConfigValidator<FieldType> {
 		return ValidationResult.VALID;
 	}
 
+	/**
+	 * @return parsed input of yaml config for property
+	 */
 	protected BiFunction<YAML, ConfigProperty, Optional<FieldType>> provideDataYaml() {
 		return (yaml, property) -> {
 			if (yaml.isSet(property.prop())) {
@@ -76,6 +86,9 @@ public abstract class ConfigValidator<FieldType> {
 		};
 	}
 
+	/**
+	 * @return parsed input of command line parameters config for property
+	 */
 	protected BiFunction<CommandLine, ConfigProperty, Optional<FieldType>> provideDataCmd() {
 		return (cmd, property) -> {
 			if (cmd.hasOption(property.prop())) {
@@ -85,10 +98,28 @@ public abstract class ConfigValidator<FieldType> {
 		};
 	}
 
+	/**
+	 * Parse input parameter to desired format.
+	 *
+	 * @param value input parameter
+	 * @return parsed property
+	 */
 	abstract FieldType parse(String value);
 
+	/**
+	 * Validate if the data has the desired and allowed format.
+	 *
+	 * @param result parsed property
+	 * @return true if data is in desired format.
+	 */
 	abstract boolean isValid(FieldType result);
 
+	/**
+	 * Sets valid properties to {@link Config} via reflections.
+	 *
+	 * @param result parsed property
+	 * @return false if method invocation failed
+	 */
 	protected boolean setValue(FieldType result) {
         List<Method> methods = Arrays.stream(Config.getInstance().getClass().getDeclaredMethods())
                 .filter(containsSetterOf(property))

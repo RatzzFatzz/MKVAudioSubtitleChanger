@@ -54,9 +54,15 @@ public class Config {
         return config;
     }
 
-    public String getPathFor(MkvToolNix exe) {
-        return mkvToolNix.getAbsolutePath().endsWith("/") ? mkvToolNix.getAbsolutePath() + exe + ".exe" :
-                mkvToolNix.getAbsolutePath() + "/" + exe + ".exe";
+    /**
+     * Get path to specific mkvtoolnix application.
+     *
+     * @return absolute path to desired application.
+     */
+    public String getPathFor(MkvToolNix application) {
+        String executable = isWindows() ? application + ".exe" : application.toString();
+        return mkvToolNix.getAbsolutePath().endsWith("/") ? mkvToolNix.getAbsolutePath() + executable :
+                    mkvToolNix.getAbsolutePath() + "/" + executable;
     }
 
     @Override

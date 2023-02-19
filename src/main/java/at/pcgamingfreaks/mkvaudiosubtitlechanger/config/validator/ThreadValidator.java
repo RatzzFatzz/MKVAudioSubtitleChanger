@@ -8,11 +8,17 @@ public class ThreadValidator extends ConfigValidator<Integer>{
         super(property, required, defaultValue);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Integer parse(String value) {
         return NumberUtils.isParsable(value) ? Integer.parseInt(value) : defaultValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     boolean isValid(Integer result) {
         return result > 0;

@@ -35,7 +35,7 @@ class ConfigPathValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(CONFIG_PATH, CONFIG_PATH.abrv(), true));
+        options.addOption(optionOf(CONFIG_PATH, CONFIG_PATH.abrv(), CONFIG_PATH.args()));
     }
 
     private static Stream<Arguments> provideTestCases() {

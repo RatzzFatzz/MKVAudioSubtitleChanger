@@ -17,9 +17,8 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
 
 public class ConfigLoader {
-    private static final ConfigValidator<?> CONFIG_VALIDATOR =
-            new ConfigPathValidator(CONFIG_PATH, false, Path.of("./config.yaml").toFile());
     private static final List<ConfigValidator<?>> VALIDATORS = List.of(
+            new ConfigPathValidator(CONFIG_PATH, false, Path.of("./config.yaml").toFile()),
             new PathValidator(LIBRARY, true, null),
             new ThreadValidator(THREADS, false, 2),
             new MkvToolNixPathValidator(MKV_TOOL_NIX, true, Path.of("C:\\Program Files\\MKVToolNix").toFile()),
@@ -34,20 +33,26 @@ public class ConfigLoader {
 
     public static void initConfig(String[] args) {
         HelpFormatter formatter = new HelpFormatter();
+        YAML yamlConfig = null;
 
         Options options = initOptions();
         CommandLine cmd = parseCommandLineArgs(formatter, options, args);
 
         exitIfHelp(cmd, options, formatter);
         exitIfVersion(cmd);
-        exitIfConfigIsMissing(cmd);
 
         List<ValidationResult> results = new ArrayList<>();
-        try (YAML config = new YAML(Config.getInstance().getConfigPath())) {
-            for (ConfigValidator<?> validator : VALIDATORS) {
-                results.add(validator.validate(config, cmd));
+
+        for (ConfigValidator<?> validator: VALIDATORS) {
+            results.add(validator.validate(yamlConfig, cmd));
+            if (yamlConfig == null && Config.getInstance().getConfigPath() != null) {
+                try {
+                    yamlConfig = Config.getInstance().getConfigPath() != null
+                            ? new YAML(Config.getInstance().getConfigPath())
+                            : new YAML("");
+                } catch (IOException | YamlInvalidContentException ignored) {}
             }
-        } catch (IOException | YamlInvalidContentException ignored) {}
+        }
 
         if (results.contains(ValidationResult.INVALID)) System.exit(1);
         System.out.println();
@@ -55,16 +60,16 @@ public class ConfigLoader {
 
     private static Options initOptions() {
         Options options = new Options();
-        options.addOption(optionOf(HELP, "h", false));
-        options.addOption(optionOf(VERSION, "v", false));
-        options.addOption(optionOf(LIBRARY, "l", true));
-        options.addOption(optionOf(MKV_TOOL_NIX, "m", true));
-        options.addOption(optionOf(CONFIG_PATH, "c", true));
-        options.addOption(optionOf(THREADS, "t", true));
-        options.addOption(optionOf(SAFE_MODE, "s", false));
-        options.addOption(optionOf(FORCED_KEYWORDS, "k", Option.UNLIMITED_VALUES, false));
-        options.addOption(optionOf(EXCLUDE_DIRECTORY, "e", Option.UNLIMITED_VALUES, false));
-        options.addOption(optionOf(INCLUDE_PATTERN, "i", true));
+        options.addOption(optionOf(HELP, HELP.abrv(), HELP.args()));
+        options.addOption(optionOf(VERSION, VERSION.abrv(), VERSION.args()));
+        options.addOption(optionOf(LIBRARY, LIBRARY.abrv(), LIBRARY.args() ));
+        options.addOption(optionOf(MKV_TOOL_NIX, MKV_TOOL_NIX.abrv(), MKV_TOOL_NIX.args() ));
+        options.addOption(optionOf(CONFIG_PATH, CONFIG_PATH.abrv(), CONFIG_PATH.args() ));
+        options.addOption(optionOf(THREADS, THREADS.abrv(), THREADS.args()));
+        options.addOption(optionOf(SAFE_MODE, SAFE_MODE.abrv(), SAFE_MODE.args() ));
+        options.addOption(optionOf(FORCED_KEYWORDS, FORCED_KEYWORDS.abrv(), FORCED_KEYWORDS.args()));
+        options.addOption(optionOf(EXCLUDE_DIRECTORY, FORCED_KEYWORDS.abrv(), FORCED_KEYWORDS.args()));
+        options.addOption(optionOf(INCLUDE_PATTERN, INCLUDE_PATTERN.abrv(), INCLUDE_PATTERN.args()));
         return options;
     }
 
@@ -98,13 +103,6 @@ public class ConfigLoader {
             System.out.printf("MKV Audio Subtitle Changer Version %s%n", VersionUtil.getVersion());
             System.exit(0);
         }
-    }
-
-    private static void exitIfConfigIsMissing(CommandLine cmd) {
-        if (CONFIG_VALIDATOR.validate(null, cmd).equals(ValidationResult.INVALID)) {
-            System.out.println("\nPlease use a valid config path!");
-            System.exit(0);
-        };
     }
 
     private static File loadConfigPath(CommandLine cmd) {

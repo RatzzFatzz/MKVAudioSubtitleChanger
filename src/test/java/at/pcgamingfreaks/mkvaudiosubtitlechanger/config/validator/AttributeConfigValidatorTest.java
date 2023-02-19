@@ -32,7 +32,7 @@ class AttributeConfigValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(ATTRIBUTE_CONFIG, ATTRIBUTE_CONFIG.abrv(), true));
+        options.addOption(optionOf(ATTRIBUTE_CONFIG, ATTRIBUTE_CONFIG.abrv(), ATTRIBUTE_CONFIG.args()));
     }
 
     @BeforeEach

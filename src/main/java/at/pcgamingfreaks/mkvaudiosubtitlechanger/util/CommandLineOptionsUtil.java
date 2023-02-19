@@ -4,8 +4,8 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import org.apache.commons.cli.Option;
 
 public class CommandLineOptionsUtil {
-    public static Option optionOf(ConfigProperty property, String opt, boolean hasArg) {
-        return optionOf(property, opt, hasArg ? 1 : 0, false);
+    public static Option optionOf(ConfigProperty property, String opt, int args) {
+        return optionOf(property, opt, args, false);
     }
 
     public static Option optionOf(ConfigProperty property, String opt, boolean hasArg, boolean required) {

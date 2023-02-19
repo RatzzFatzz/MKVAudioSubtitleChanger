@@ -34,7 +34,7 @@ class PathValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(LIBRARY, LIBRARY.abrv(), true));
+        options.addOption(optionOf(LIBRARY, LIBRARY.abrv(), LIBRARY.args()));
     }
 
     private static Stream<Arguments> provideTestCases() {

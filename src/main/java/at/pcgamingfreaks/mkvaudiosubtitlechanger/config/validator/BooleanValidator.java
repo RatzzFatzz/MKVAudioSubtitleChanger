@@ -18,6 +18,9 @@ public class BooleanValidator extends ConfigValidator<Boolean> {
         super(property, required, null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected BiFunction<YAML, ConfigProperty, Optional<Boolean>> provideDataYaml() {
         return (yaml, property) -> {
             if (yaml.isSet(ARGUMENTS.prop())
@@ -28,6 +31,9 @@ public class BooleanValidator extends ConfigValidator<Boolean> {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected BiFunction<CommandLine, ConfigProperty, Optional<Boolean>> provideDataCmd() {
         return (cmd, property) -> {
             if (cmd.hasOption(property.prop())) {
@@ -37,11 +43,19 @@ public class BooleanValidator extends ConfigValidator<Boolean> {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     * This should not be used.
+     */
     @Override
     Boolean parse(String value) {
         throw new RuntimeException("This should not be called");
     }
 
+    /**
+     * {@inheritDoc}
+     * Validation is skipped.
+     */
     @Override
     boolean isValid(Boolean result) {
         return true; // skip

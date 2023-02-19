@@ -35,7 +35,7 @@ public class SetValidator extends ConfigValidator<Set<String>> {
             System.out.println("missing");
             return ValidationResult.MISSING;
         } else {
-            System.out.println("not present");
+            System.out.println("ok");
             return ValidationResult.NOT_PRESENT;
         }
 

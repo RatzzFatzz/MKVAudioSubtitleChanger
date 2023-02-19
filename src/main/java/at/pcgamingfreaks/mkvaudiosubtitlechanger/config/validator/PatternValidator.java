@@ -12,6 +12,9 @@ public class PatternValidator extends ConfigValidator<Pattern> {
         super(property, required, defaultValue);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Pattern parse(String value) {
         try {
@@ -21,6 +24,9 @@ public class PatternValidator extends ConfigValidator<Pattern> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     boolean isValid(Pattern result) {
         return !result.equals(EMPTY_PATTERN);

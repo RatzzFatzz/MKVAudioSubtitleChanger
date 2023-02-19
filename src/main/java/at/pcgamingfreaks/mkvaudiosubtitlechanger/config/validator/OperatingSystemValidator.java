@@ -12,6 +12,9 @@ public class OperatingSystemValidator extends BooleanValidator {
         super(property, false);
     }
 
+    /**
+     * Gather operating system from system properties.
+     */
     @Override
     public ValidationResult validate(YAML yaml, CommandLine cmd) {
         System.out.printf("%s: ", property.prop());

@@ -30,7 +30,7 @@ class ThreadValidatorTest {
     static void before() {
         parser = new DefaultParser();
         options = new Options();
-        options.addOption(optionOf(THREADS, "t", true));
+        options.addOption(optionOf(THREADS, "t", THREADS.args()));
     }
 
     private static Stream<Arguments> provideTestCases() {

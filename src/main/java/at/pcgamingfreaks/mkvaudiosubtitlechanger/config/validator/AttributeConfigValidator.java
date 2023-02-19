@@ -18,6 +18,9 @@ public class AttributeConfigValidator extends ConfigValidator<List<AttributeConf
         super(ConfigProperty.ATTRIBUTE_CONFIG, true, null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ValidationResult validate(YAML yaml, CommandLine cmd) {
         System.out.printf("%s: ", property.prop());
         List<AttributeConfig> result;
@@ -48,11 +51,17 @@ public class AttributeConfigValidator extends ConfigValidator<List<AttributeConf
         return ValidationResult.VALID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     List<AttributeConfig> parse(String value) {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     boolean isValid(List<AttributeConfig> result) {
         if (result.isEmpty()) {

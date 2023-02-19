@@ -11,11 +11,17 @@ public class PathValidator extends ConfigValidator<File> {
         super(property, required, defaultValue);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected File parse(String value) {
         return Path.of(value).toFile();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected boolean isValid(File result) {
         return result.isDirectory() || result.isFile();
