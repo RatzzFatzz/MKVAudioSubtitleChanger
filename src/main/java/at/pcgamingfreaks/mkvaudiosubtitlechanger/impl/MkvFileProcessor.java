@@ -22,12 +22,12 @@ import static java.lang.String.format;
 @Log4j2
 public class MkvFileProcessor implements FileProcessor {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final String[] forcedKeywords = new String[]{"forced", "signs"};
     private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0 ";
     private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1 ";
     private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1 ";
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<FileAttribute> loadAttributes(File file) {
         Map<String, Object> jsonMap;
@@ -90,7 +90,7 @@ public class MkvFileProcessor implements FileProcessor {
         return info;
     }
 
-    private void detectDefaultTracks(FileInfoDto info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks) {
+    protected void detectDefaultTracks(FileInfoDto info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks) {
         Set<FileAttribute> detectedForcedSubtitleLanes = new HashSet<>();
         for (FileAttribute attribute : attributes) {
             if (attribute.isDefaultTrack() && AUDIO.equals(attribute.getType()))
@@ -108,7 +108,7 @@ public class MkvFileProcessor implements FileProcessor {
         );
     }
 
-    private void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks) {
+    protected void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks) {
         for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
             FileAttribute desiredAudio = null;
             FileAttribute desiredSubtitle = null;
@@ -127,7 +127,7 @@ public class MkvFileProcessor implements FileProcessor {
     }
 
     @Override
-    public void update(File file, FileInfoDto fileInfo) throws IOException {
+    public void update(File file, FileInfoDto fileInfo) throws IOException, RuntimeException {
         StringBuilder sb = new StringBuilder();
         sb.append(format("\"%s\" ", Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT)));
         sb.append(format("\"%s\" ", file.getAbsolutePath()));
@@ -154,6 +154,8 @@ public class MkvFileProcessor implements FileProcessor {
         }
 
         InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
-        log.debug(IOUtils.toString(new InputStreamReader(inputstream)));
+        String output = IOUtils.toString(new InputStreamReader(inputstream));
+        log.debug(output);
+        if (output.contains("Error")) throw new RuntimeException(output);
     }
 }

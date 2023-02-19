@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class AttributeUpdaterKernel {
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreadCount());
+    private final ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreads());
     private final FileCollector collector;
     private final FileProcessor processor;
     private final ResultStatistic statistic = new ResultStatistic();
@@ -43,7 +43,7 @@ public class AttributeUpdaterKernel {
                     .map(collector::loadFiles)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList());
-            List<File> files = collector.loadFiles(Config.getInstance().getLibraryPath()).stream()
+            List<File> files = collector.loadFiles(Config.getInstance().getLibraryPath().getAbsolutePath()).stream()
                     .filter(file -> !excludedFiles.contains(file))
                     .collect(Collectors.toList());
             progressBar.maxHint(files.size());
@@ -68,9 +68,9 @@ public class AttributeUpdaterKernel {
                     processor.update(file, fileInfo);
                     statistic.success();
                     log.info("Updated {}", file.getAbsolutePath());
-                } catch (IOException e) {
+                } catch (IOException | RuntimeException e) {
                     statistic.failedChanging();
-                    log.warn("File couldn't be updated: {}", file.getAbsoluteFile());
+                    log.warn("File couldn't be updated: '{}', Error: {}", file.getAbsoluteFile(), e.getMessage().replaceAll("\\r|\\n", " "));
                 }
             }
         } else if (fileInfo.isUnableToApplyConfig()) {

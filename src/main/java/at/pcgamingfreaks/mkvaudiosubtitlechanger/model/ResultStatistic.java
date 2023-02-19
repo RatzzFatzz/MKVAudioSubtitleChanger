@@ -12,7 +12,7 @@ public class ResultStatistic {
             "├─ No suitable config found: %s%n" +
             "├─ Already fit config: %s%n" +
             "└─ Failed: %s%n" +
-            "Runtime: %ss";
+            "Runtime: %s";
 
     private int filesTotal = 0;
 
@@ -64,9 +64,26 @@ public class ResultStatistic {
         runtime = System.currentTimeMillis() - startTime;
     }
 
+    private String formatTimer() {
+        int seconds = (int) (runtime / 1000);
+        int minutes = seconds / 60;
+        int hours = minutes / 60;
+        int days = hours / 24;
+
+        if (days >= 1) {
+            return String.format("%sd %sh %sm %ss", days, hours % 24, minutes % 60, seconds % 60);
+        } else if (hours >= 1) {
+            return String.format("%sh %sm %ss", hours, minutes % 60, seconds % 60);
+        } else if (minutes >= 1) {
+            return String.format("%sm %ss", minutes , seconds % 60);
+        } else {
+            return String.format("%ss", seconds % 60);
+        }
+    }
+
     @Override
     public String toString() {
         return String.format(result, filesTotal, shouldChange, failedChanging, successfullyChanged,
-                noSuitableConfigFound, alreadyFits, failed, runtime / 1000);
+                noSuitableConfigFound, alreadyFits, failed, formatTimer());
     }
 }

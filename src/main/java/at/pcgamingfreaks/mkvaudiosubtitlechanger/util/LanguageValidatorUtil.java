@@ -1,7 +1,5 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.util;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ConfigErrors;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,11 +25,5 @@ public class LanguageValidatorUtil {
 
     public static boolean isLanguageValid(String language) {
         return ISO3_LANGUAGES.contains(language);
-    }
-
-    public static void isLanguageValid(String language, ConfigErrors errors) {
-        if (!isLanguageValid(language)) {
-            errors.add(String.format("%s is not a valid language", language));
-        }
     }
 }
