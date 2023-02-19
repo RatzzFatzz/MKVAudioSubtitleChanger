@@ -70,7 +70,7 @@ public class AttributeUpdaterKernel {
                     log.info("Updated {}", file.getAbsolutePath());
                 } catch (IOException | RuntimeException e) {
                     statistic.failedChanging();
-                    log.warn("File couldn't be updated: '{}', Error: {}", file.getAbsoluteFile(), e.getMessage().replaceAll("\\R|\\n", "\\s"));
+                    log.warn("File couldn't be updated: '{}', Error: {}", file.getAbsoluteFile(), e.getMessage().replaceAll("\\r|\\n", " "));
                 }
             }
         } else if (fileInfo.isUnableToApplyConfig()) {

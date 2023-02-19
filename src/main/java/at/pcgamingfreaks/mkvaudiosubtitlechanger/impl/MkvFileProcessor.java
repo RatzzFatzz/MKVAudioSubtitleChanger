@@ -22,12 +22,12 @@ import static java.lang.String.format;
 @Log4j2
 public class MkvFileProcessor implements FileProcessor {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final String[] forcedKeywords = new String[]{"forced", "signs"};
     private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0 ";
     private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1 ";
     private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1 ";
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<FileAttribute> loadAttributes(File file) {
         Map<String, Object> jsonMap;
@@ -155,7 +155,7 @@ public class MkvFileProcessor implements FileProcessor {
 
         InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
         String output = IOUtils.toString(new InputStreamReader(inputstream));
-        if (output.contains("Error")) throw new RuntimeException(output);
         log.debug(output);
+        if (output.contains("Error")) throw new RuntimeException(output);
     }
 }

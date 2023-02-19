@@ -18,12 +18,11 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsU
 
 public class ConfigLoader {
     private static final List<ConfigValidator<?>> VALIDATORS = List.of(
-            new ConfigPathValidator(CONFIG_PATH, false, Path.of("./config.yaml").toFile()),
+            new ConfigPathValidator(CONFIG_PATH, true, Path.of("./config.yaml").toFile()),
             new PathValidator(LIBRARY, true, null),
             new ThreadValidator(THREADS, false, 2),
             new MkvToolNixPathValidator(MKV_TOOL_NIX, true, Path.of("C:\\Program Files\\MKVToolNix").toFile()),
             new BooleanValidator(SAFE_MODE, false),
-            new OperatingSystemValidator(WINDOWS),
             new PatternValidator(INCLUDE_PATTERN, false, Pattern.compile(".*")),
             new SetValidator(FORCED_KEYWORDS, false, true),
             new SetValidator(COMMENTARY_KEYWORDS, false, true),
@@ -103,14 +102,5 @@ public class ConfigLoader {
             System.out.printf("MKV Audio Subtitle Changer Version %s%n", VersionUtil.getVersion());
             System.exit(0);
         }
-    }
-
-    private static File loadConfigPath(CommandLine cmd) {
-        File configPath = new File(cmd.getOptionValue(CONFIG_PATH.prop(), "config.yaml"));
-        if (configPath.isFile()) return configPath;
-
-        System.out.println("invalid config path");
-        System.exit(1);
-        return null;
     }
 }

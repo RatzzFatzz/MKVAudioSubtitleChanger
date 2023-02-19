@@ -34,7 +34,6 @@ public class Config {
 
     private int threads;
     private Pattern includePattern;
-    private boolean windows;
     private boolean safeMode;
 
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs"));
@@ -60,9 +59,8 @@ public class Config {
      * @return absolute path to desired application.
      */
     public String getPathFor(MkvToolNix application) {
-        String executable = isWindows() ? application + ".exe" : application.toString();
-        return mkvToolNix.getAbsolutePath().endsWith("/") ? mkvToolNix.getAbsolutePath() + executable :
-                    mkvToolNix.getAbsolutePath() + "/" + executable;
+        return mkvToolNix.getAbsolutePath().endsWith("/") ? mkvToolNix.getAbsolutePath() + application :
+                    mkvToolNix.getAbsolutePath() + "/" + application;
     }
 
     @Override
@@ -72,7 +70,6 @@ public class Config {
                 .add("formatter=" + formatter).add("\n")
                 .add("configPath=" + configPath).add("\n")
                 .add("libraryPath=" + libraryPath).add("\n")
-                .add("isWindows=" + windows).add("\n")
                 .add("isSafeMode=" + safeMode).add("\n")
                 .add("forcedKeywords=" + forcedKeywords).add("\n")
                 .add("commentaryKeywords=" + commentaryKeywords).add("\n")

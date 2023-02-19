@@ -6,7 +6,7 @@
 
     <groupId>MKVAudioSubtileChanger</groupId>
     <artifactId>MKVAudioSubtitleChanger</artifactId>
-    <version>2.1</version>
+    <version>3.0</version>
 
     <build>
         <defaultGoal>clean package</defaultGoal>
@@ -155,12 +155,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.13.1</version>
+            <version>2.13.4</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.2.1</version>
+            <version>2.13.4</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
