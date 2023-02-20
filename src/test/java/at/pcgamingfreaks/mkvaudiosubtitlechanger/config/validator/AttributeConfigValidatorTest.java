@@ -43,8 +43,11 @@ class AttributeConfigValidatorTest {
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
                 Arguments.of(attrConfYaml("jpn", "ger"), new String[]{}, VALID, attrConf("jpn", "ger")),
+                Arguments.of("", new String[]{"-a", "jpn:ger"}, VALID, attrConf("jpn", "ger")),
                 Arguments.of(attrConfYaml("jpn", "ger", "jpn", "eng"), new String[]{}, VALID, attrConf("jpn", "ger", "jpn", "eng")),
+                Arguments.of("", new String[]{"-a", "jpn:ger", "jpn:eng"}, VALID, attrConf("jpn", "ger", "jpn", "eng")),
                 Arguments.of(attrConfYaml("jpn", "ger", "jpn", "OFF"), new String[]{}, VALID, attrConf("jpn", "ger", "jpn", "OFF")),
+                Arguments.of("", new String[]{"-a", "jpn:ger", "jpn:OFF"}, VALID, attrConf("jpn", "ger", "jpn", "OFF")),
                 Arguments.of(attrConfYaml("jpn", "invalid"), new String[]{}, INVALID, null),
                 Arguments.of("", new String[]{}, MISSING, null)
         );
@@ -67,7 +70,7 @@ class AttributeConfigValidatorTest {
         int counter = 0;
         for (int i = 0; i < languages.length; i += 2) {
             counter++;
-            yaml.append(String.format("\n %s:\n  audio: %s\n  subtitle: %s", counter, languages[0], languages[1]));
+            yaml.append(String.format("\n %s:\n  audio: %s\n  subtitle: %s", counter, languages[i], languages[i+1]));
         }
         return yaml.toString();
     }
@@ -75,7 +78,7 @@ class AttributeConfigValidatorTest {
     private static List<AttributeConfig> attrConf(String... languages) {
         List<AttributeConfig> conf = new ArrayList<>();
         for (int i = 0; i < languages.length; i += 2) {
-            conf.add(new AttributeConfig(languages[0], languages[1]));
+            conf.add(new AttributeConfig(languages[i], languages[i+1]));
         }
         return conf;
     }
