@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isLanguageValid;
 
 public class AttributeConfigValidator extends ConfigValidator<List<AttributeConfig>> {
+    private static final String SEPARATOR = ":";
 
     public AttributeConfigValidator() {
         super(ConfigProperty.ATTRIBUTE_CONFIG, true, null);
@@ -25,10 +26,18 @@ public class AttributeConfigValidator extends ConfigValidator<List<AttributeConf
         System.out.printf("%s: ", property.prop());
         List<AttributeConfig> result;
 
-        Function<String, String> audio = key -> yaml.getString(key + ".audio", null);
-        Function<String, String> subtitle = key -> yaml.getString(key + ".subtitle", null);
 
-        if (yaml.getKeysFiltered(property.prop() + ".*").size() > 0) {
+        if (cmd.hasOption(property.prop())) {
+            List<String> values = List.of(cmd.getOptionValues(property.prop()));
+            result = values.stream().anyMatch(pair -> !pair.contains(SEPARATOR))
+                    ? List.of()
+                    : values.stream().map(pair -> pair.split(SEPARATOR))
+                    .map(split -> new AttributeConfig(split[0], split[1]))
+                    .collect(Collectors.toList());
+        } else if(yaml.getKeysFiltered(property.prop() + ".*").size() > 0) {
+            Function<String, String> audio = key -> yaml.getString(key + ".audio", null);
+            Function<String, String> subtitle = key -> yaml.getString(key + ".subtitle", null);
+
             result = yaml.getKeysFiltered(".*audio.*").stream()
                     .sorted()
                     .map(key -> key.replace(".audio", ""))
@@ -67,7 +76,7 @@ public class AttributeConfigValidator extends ConfigValidator<List<AttributeConf
         if (result.isEmpty()) {
             return false;
         }
-        boolean isValid = true;
+        boolean isValid;
         for (AttributeConfig attributeConfig : result) {
             isValid = isLanguageValid(attributeConfig.getAudioLanguage())
                             && isLanguageValid(attributeConfig.getSubtitleLanguage());

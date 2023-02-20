@@ -10,21 +10,21 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public enum ConfigProperty {
-    CONFIG_PATH("config-path", "Path to config file", "p", 1),
     LIBRARY("library", "Path to library", "l", 1),
-    SAFE_MODE("safe-mode", "Test run (no files will be changes)", "s", 0),
-    WINDOWS("windows", "Is operating system windows", null, 0),
-    THREADS("threads", "thread count (default: 2)", "t", 1),
-    INCLUDE_PATTERN("include-pattern", "Include files matching pattern", "i", 1),
+    ATTRIBUTE_CONFIG("attribute-config", "Attribute config to decide which tracks to choose when", "a", Option.UNLIMITED_VALUES),
+    CONFIG_PATH("config-path", "Path to config file", "p", 1),
     MKV_TOOL_NIX("mkvtoolnix", "Path to mkv tool nix installation", "m", 1),
+    SAFE_MODE("safe-mode", "Test run (no files will be changes)", "s", 0),
+    COHERENT("coherent", "Try to match whole series with same config", "c", 0),
+    WINDOWS("windows", "Is operating system windows", null, 0),
+    THREADS("threads", "Thread count (default: 2)", "t", 1),
+    INCLUDE_PATTERN("include-pattern", "Include files matching pattern (default: \".*\")", "i", 1),
+    EXCLUDE_DIRECTORY("exclude-directories", "Directories to be excluded, combines with config file", "e", 1),
     FORCED_KEYWORDS("forcedKeywords", "Additional keywords to identify forced tracks", "fk", Option.UNLIMITED_VALUES),
     COMMENTARY_KEYWORDS("commentary-keywords", "Additional keywords to identify commentary tracks", "ck", Option.UNLIMITED_VALUES),
-    EXCLUDE_DIRECTORY("exclude-directories", "Directories to be excluded, combines with config file", "e", 1),
-    COHERENT("coherent", "Try to match whole series with same config", "c", 0),
-    HELP("help", "\"for help this is\" - Yoda", "h", 0),
-    VERSION("version", "Display version", "v", 0),
     ARGUMENTS("arguments", "List of arguments", null, 0),
-    ATTRIBUTE_CONFIG("attribute-config", "Attribute config to decide which tracks to choose when", "a", 1);
+    VERSION("version", "Display version", "v", 0),
+    HELP("help", "\"For help this is\" - Yoda", "h", 0);
 
     private final String property;
     private final String description;

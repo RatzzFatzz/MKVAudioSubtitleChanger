@@ -1,15 +1,16 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validator.*;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.VersionUtil;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import org.apache.commons.cli.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsU
 
 public class ConfigLoader {
     private static final List<ConfigValidator<?>> VALIDATORS = List.of(
-            new ConfigPathValidator(CONFIG_PATH, true, Path.of("./config.yaml").toFile()),
+            new ConfigPathValidator(CONFIG_PATH, false),
             new PathValidator(LIBRARY, true, null),
             new ThreadValidator(THREADS, false, 2),
             new MkvToolNixPathValidator(MKV_TOOL_NIX, true, Path.of("C:\\Program Files\\MKVToolNix").toFile()),
@@ -32,6 +33,7 @@ public class ConfigLoader {
 
     public static void initConfig(String[] args) {
         HelpFormatter formatter = new HelpFormatter();
+        formatter.setOptionComparator(null);
         YAML yamlConfig = null;
 
         Options options = initOptions();
@@ -44,7 +46,7 @@ public class ConfigLoader {
 
         for (ConfigValidator<?> validator: VALIDATORS) {
             results.add(validator.validate(yamlConfig, cmd));
-            if (yamlConfig == null && Config.getInstance().getConfigPath() != null) {
+            if (yamlConfig == null) {
                 try {
                     yamlConfig = Config.getInstance().getConfigPath() != null
                             ? new YAML(Config.getInstance().getConfigPath())
@@ -59,16 +61,10 @@ public class ConfigLoader {
 
     private static Options initOptions() {
         Options options = new Options();
-        options.addOption(optionOf(HELP, HELP.abrv(), HELP.args()));
-        options.addOption(optionOf(VERSION, VERSION.abrv(), VERSION.args()));
-        options.addOption(optionOf(LIBRARY, LIBRARY.abrv(), LIBRARY.args() ));
-        options.addOption(optionOf(MKV_TOOL_NIX, MKV_TOOL_NIX.abrv(), MKV_TOOL_NIX.args() ));
-        options.addOption(optionOf(CONFIG_PATH, CONFIG_PATH.abrv(), CONFIG_PATH.args() ));
-        options.addOption(optionOf(THREADS, THREADS.abrv(), THREADS.args()));
-        options.addOption(optionOf(SAFE_MODE, SAFE_MODE.abrv(), SAFE_MODE.args() ));
-        options.addOption(optionOf(FORCED_KEYWORDS, FORCED_KEYWORDS.abrv(), FORCED_KEYWORDS.args()));
-        options.addOption(optionOf(EXCLUDE_DIRECTORY, FORCED_KEYWORDS.abrv(), FORCED_KEYWORDS.args()));
-        options.addOption(optionOf(INCLUDE_PATTERN, INCLUDE_PATTERN.abrv(), INCLUDE_PATTERN.args()));
+        Arrays.stream(ConfigProperty.values())
+                .filter(prop -> prop.abrv() != null)
+                .map(prop -> optionOf(prop, prop.abrv(), prop.args()))
+                .forEach(options::addOption);
         return options;
     }
 
