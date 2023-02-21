@@ -44,6 +44,7 @@ class SetValidatorTest {
         return Stream.of(
                 argumentsOf(COMMENTARY_KEYWORDS, true, true, "", new String[]{"-ck", "test"}, VALID, 3),
                 argumentsOf(COMMENTARY_KEYWORDS, true, false, COMMENTARY_KEYWORDS.prop() + ": [test]", new String[]{}, VALID, 1),
+                argumentsOf(COMMENTARY_KEYWORDS, true, false, COMMENTARY_KEYWORDS.prop() + ":\n - test\n - test2", new String[]{}, VALID, 2),
                 argumentsOf(COMMENTARY_KEYWORDS, false, true, COMMENTARY_KEYWORDS.prop() + ": [test]", new String[]{}, VALID, 3),
                 argumentsOf(COMMENTARY_KEYWORDS, false, false, "", new String[]{"-ck", "test"}, VALID, 1),
                 argumentsOf(COMMENTARY_KEYWORDS, true, true, COMMENTARY_KEYWORDS.prop() + ": [commentary]", new String[]{}, VALID, 2),
