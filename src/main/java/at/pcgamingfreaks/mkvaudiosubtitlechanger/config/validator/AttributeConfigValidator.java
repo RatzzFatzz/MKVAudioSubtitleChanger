@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isAudioLanguageValid;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isLanguageValid;
 
 public class AttributeConfigValidator extends ConfigValidator<List<AttributeConfig>> {
@@ -78,7 +79,7 @@ public class AttributeConfigValidator extends ConfigValidator<List<AttributeConf
         }
         boolean isValid;
         for (AttributeConfig attributeConfig : result) {
-            isValid = isLanguageValid(attributeConfig.getAudioLanguage())
+            isValid = isAudioLanguageValid(attributeConfig.getAudioLanguage())
                             && isLanguageValid(attributeConfig.getSubtitleLanguage());
             if (!isValid) return false;
         }

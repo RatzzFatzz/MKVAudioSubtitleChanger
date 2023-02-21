@@ -23,6 +23,10 @@ public class LanguageValidatorUtil {
         }
     }
 
+    public static boolean isAudioLanguageValid(String language) {
+        return !language.equals("OFF") && ISO3_LANGUAGES.contains(language);
+    }
+
     public static boolean isLanguageValid(String language) {
         return ISO3_LANGUAGES.contains(language);
     }

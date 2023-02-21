@@ -1,4 +1,5 @@
 mkvtoolnix: C:\Program Files\MKVToolNix
+library: X:/Files
 
 config:
   1:
@@ -10,9 +11,18 @@ config:
 
 # Recommendations for data stored on HDDs, increase when using SSDs
 #threads: 2
-#forcedKeywords: ["forced", "signs"]
+
+#forced-keywords: ["forced", "signs"]
+#commentary-keywords: ["commentary", "director"]
+
 #exclude-directories:
 #  - "D:/Path/To/File.mkv"
 #  - "D:/Path/To/Directory"
+
+# If pattern is negated, can be used to exclude files
 #include-pattern: "regex"
+
+safe-mode:
+#coherent:
+
 
