@@ -1,6 +1,7 @@
 ## Introduction
 
 This program helps to change audio and subtitle tracks of mkv files without rewriting the file. Only track properties will be updated.
+![](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/blob/master/example.gif)
 
 ## Requirements
 
