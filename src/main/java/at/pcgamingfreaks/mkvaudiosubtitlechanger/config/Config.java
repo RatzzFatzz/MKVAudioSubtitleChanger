@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.*;
 import java.util.regex.Pattern;
 
-@Log4j2
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

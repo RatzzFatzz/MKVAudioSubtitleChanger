@@ -19,7 +19,7 @@ public enum ConfigProperty {
     WINDOWS("windows", "Is operating system windows", null, 0),
     THREADS("threads", "Thread count (default: 2)", "t", 1),
     INCLUDE_PATTERN("include-pattern", "Include files matching pattern (default: \".*\")", "i", 1),
-    EXCLUDE_DIRECTORY("exclude-directories", "Directories to be excluded, combines with config file", "e", 1),
+    EXCLUDED_DIRECTORY("excluded-directories", "Directories to be excluded, combines with config file", "e", Option.UNLIMITED_VALUES),
     FORCED_KEYWORDS("forced-keywords", "Additional keywords to identify forced tracks", "fk", Option.UNLIMITED_VALUES),
     COMMENTARY_KEYWORDS("commentary-keywords", "Additional keywords to identify commentary tracks", "ck", Option.UNLIMITED_VALUES),
     ARGUMENTS("arguments", "List of arguments", null, 0),

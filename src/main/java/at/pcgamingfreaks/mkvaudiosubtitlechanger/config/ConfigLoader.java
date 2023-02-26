@@ -27,7 +27,7 @@ public class ConfigLoader {
             new PatternValidator(INCLUDE_PATTERN, false, Pattern.compile(".*")),
             new SetValidator(FORCED_KEYWORDS, false, true),
             new SetValidator(COMMENTARY_KEYWORDS, false, true),
-            new SetValidator(EXCLUDE_DIRECTORY, false, true),
+            new SetValidator(EXCLUDED_DIRECTORY, false, true),
             new AttributeConfigValidator()
     );
 
@@ -55,7 +55,7 @@ public class ConfigLoader {
             }
         }
 
-        if (results.contains(ValidationResult.INVALID)) System.exit(1);
+        if (results.contains(ValidationResult.INVALID) || results.contains(ValidationResult.MISSING)) System.exit(1);
         System.out.println();
     }
 

@@ -2,10 +2,13 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public class ResultStatistic {
     private static final String result = "Total files: %s%n" +
+            "├─ Excluded: %s%n" +
             "├─ Should change: %s%n" +
             "│  ├─ Failed changing: %s%n" +
             "│  └─ Successfully changed: %s%n" +
@@ -15,6 +18,7 @@ public class ResultStatistic {
             "Runtime: %s";
 
     private int filesTotal = 0;
+    private int excluded = 0;
 
     private int shouldChange = 0;
     private int failedChanging = 0;
@@ -28,8 +32,20 @@ public class ResultStatistic {
     private long startTime = 0;
     private long runtime = 0;
 
+    public void increaseTotalBy(int amount) {
+        filesTotal += amount;
+    }
+
     public synchronized void total() {
         filesTotal++;
+    }
+
+    public void increaseExcludedBy(int amount) {
+        excluded += amount;
+    }
+
+    public synchronized void excluded() {
+        excluded++;
     }
 
     public synchronized void shouldChange() {
@@ -64,6 +80,11 @@ public class ResultStatistic {
         runtime = System.currentTimeMillis() - startTime;
     }
 
+    public void printResult() {
+        System.out.println(this);
+        log.info(this.toString());
+    }
+
     private String formatTimer() {
         int seconds = (int) (runtime / 1000);
         int minutes = seconds / 60;
@@ -83,7 +104,7 @@ public class ResultStatistic {
 
     @Override
     public String toString() {
-        return String.format(result, filesTotal, shouldChange, failedChanging, successfullyChanged,
+        return String.format(result, filesTotal, excluded, shouldChange, failedChanging, successfullyChanged,
                 noSuitableConfigFound, alreadyFits, failed, formatTimer());
     }
 }
