@@ -36,6 +36,8 @@ public class Config {
     private Pattern includePattern;
     private boolean safeMode;
 
+    private Integer coherent;
+
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
     private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
     private Set<String> excludedDirectories = new HashSet<>();
