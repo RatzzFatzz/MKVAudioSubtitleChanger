@@ -28,7 +28,8 @@ public class ConfigLoader {
             new SetValidator(FORCED_KEYWORDS, false, true),
             new SetValidator(COMMENTARY_KEYWORDS, false, true),
             new SetValidator(EXCLUDED_DIRECTORY, false, true),
-            new AttributeConfigValidator()
+            new AttributeConfigValidator(),
+            new CoherentConfigValidator(COHERENT, false)
     );
 
     public static void initConfig(String[] args) {

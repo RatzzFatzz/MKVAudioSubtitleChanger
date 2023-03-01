@@ -15,10 +15,12 @@ import me.tongfei.progressbar.ProgressBarStyle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -55,6 +57,16 @@ public abstract class AttributeUpdaterKernel {
 
         statistic.stopTimer();
         statistic.printResult();
+    }
+
+    protected List<File> loadExcludedFiles() {
+        List<File> excludedFiles = Config.getInstance().getExcludedDirectories().stream()
+                .map(collector::loadFiles)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        statistic.increaseTotalBy(excludedFiles.size());
+        statistic.increaseExcludedBy(excludedFiles.size());
+        return excludedFiles;
     }
 
     /**

@@ -15,7 +15,7 @@ public enum ConfigProperty {
     CONFIG_PATH("config-path", "Path to config file", "p", 1),
     MKV_TOOL_NIX("mkvtoolnix", "Path to mkv tool nix installation", "m", 1),
     SAFE_MODE("safe-mode", "Test run (no files will be changes)", "s", 0),
-    COHERENT("coherent", "Try to match whole series with same config", null, 0),
+    COHERENT("coherent", "Try to match whole series with same config", "c", 1),
     WINDOWS("windows", "Is operating system windows", null, 0),
     THREADS("threads", "Thread count (default: 2)", "t", 1),
     INCLUDE_PATTERN("include-pattern", "Include files matching pattern (default: \".*\")", "i", 1),

@@ -16,12 +16,30 @@ import java.util.stream.Stream;
 public class MkvFileCollector implements FileCollector {
     private static final String[] fileExtensions = new String[]{".mkv", ".mka", ".mks", ".mk3d"};
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<File> loadFiles(String path) {
         try (Stream<Path> paths = Files.walk(Paths.get(path))) {
             return paths.filter(Files::isRegularFile)
                     .map(Path::toFile)
                     .filter(file -> FileFilter.accept(file, fileExtensions))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error("Couldn't find file or directory!", e);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<File> loadDirectories(String path, int depth) {
+        try (Stream<Path> paths = Files.walk(Paths.get(path), depth)) {
+            return paths.map(Path::toFile)
+                    .filter(File::isDirectory)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             log.error("Couldn't find file or directory!", e);

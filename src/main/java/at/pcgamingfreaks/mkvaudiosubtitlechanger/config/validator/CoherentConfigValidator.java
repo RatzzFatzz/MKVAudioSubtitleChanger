@@ -17,6 +17,6 @@ public class CoherentConfigValidator extends ConfigValidator<Integer> {
 
     @Override
     boolean isValid(Integer result) {
-        return result > 0;
+        return result >= 0;
     }
 }

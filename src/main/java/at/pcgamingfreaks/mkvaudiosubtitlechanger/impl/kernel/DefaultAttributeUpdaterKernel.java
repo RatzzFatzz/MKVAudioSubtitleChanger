@@ -25,12 +25,7 @@ public class DefaultAttributeUpdaterKernel extends AttributeUpdaterKernel {
      */
     @Override
     List<File> loadFiles(String path) {
-        List<File> excludedFiles = Config.getInstance().getExcludedDirectories().stream()
-                .map(collector::loadFiles)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        statistic.increaseTotalBy(excludedFiles.size());
-        statistic.increaseExcludedBy(excludedFiles.size());
+        List<File> excludedFiles = loadExcludedFiles();
         return collector.loadFiles(Config.getInstance().getLibraryPath().getAbsolutePath()).stream()
                 .filter(file -> !excludedFiles.contains(file))
                 .collect(Collectors.toList());
