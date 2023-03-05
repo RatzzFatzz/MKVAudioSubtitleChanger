@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
 
@@ -31,8 +32,14 @@ public interface FileProcessor {
      * @param info to be populated
      * @param nonForcedTracks List of all not forced tracks
      * @param nonCommentaryTracks  List of all not commentary tracks
+     * @param configs
      */
-    void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks);
+    void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks,
+                             AttributeConfig... configs);
+
+    List<FileAttribute> retrieveNonForcedTracks(List<FileAttribute> attributes);
+
+    List<FileAttribute> retrieveNonCommentaryTracks(List<FileAttribute> attributes);
 
     /**
      * Update the file.

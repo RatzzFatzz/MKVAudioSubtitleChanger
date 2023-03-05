@@ -6,6 +6,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.SetUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.IOUtils;
 
 import java.io.File;
@@ -95,8 +96,9 @@ public class MkvFileProcessor implements FileProcessor {
      * {@inheritDoc}
      */
     @Override
-    public void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks) {
-        for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
+    public void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks,
+                                    AttributeConfig... configs) {
+        for (AttributeConfig config : configs) {
             FileAttribute desiredAudio = null;
             FileAttribute desiredSubtitle = null;
             for (FileAttribute attribute : SetUtils.retainOf(nonForcedTracks, nonCommentaryTracks)) {
@@ -111,6 +113,23 @@ public class MkvFileProcessor implements FileProcessor {
                 break;
             }
         }
+    }
+
+    @Override
+    public List<FileAttribute> retrieveNonForcedTracks(List<FileAttribute> attributes) {
+        return attributes.stream()
+                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
+                        Config.getInstance().getForcedKeywords().toArray(new CharSequence[0])))
+                .filter(elem -> !elem.isForcedTrack())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FileAttribute> retrieveNonCommentaryTracks(List<FileAttribute> attributes) {
+        return attributes.stream()
+                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
+                        Config.getInstance().getCommentaryKeywords().toArray(new CharSequence[0])))
+                .collect(Collectors.toList());
     }
 
     /**

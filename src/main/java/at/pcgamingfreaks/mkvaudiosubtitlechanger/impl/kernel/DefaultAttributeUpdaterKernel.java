@@ -39,16 +39,8 @@ public class DefaultAttributeUpdaterKernel extends AttributeUpdaterKernel {
         FileInfoDto fileInfo = new FileInfoDto(file);
         List<FileAttribute> attributes = processor.loadAttributes(file);
 
-        // TODO: extract this to a attributeProcessor?
-        List<FileAttribute> nonForcedTracks = attributes.stream()
-                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
-                        Config.getInstance().getForcedKeywords().toArray(new CharSequence[0])))
-                .filter(elem -> !elem.isForcedTrack())
-                .collect(Collectors.toList());
-        List<FileAttribute> nonCommentaryTracks = attributes.stream()
-                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
-                        Config.getInstance().getCommentaryKeywords().toArray(new CharSequence[0])))
-                .collect(Collectors.toList());
+        List<FileAttribute> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
+        List<FileAttribute> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
 
         processor.detectDefaultTracks(fileInfo, attributes, nonForcedTracks);
         processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks);
