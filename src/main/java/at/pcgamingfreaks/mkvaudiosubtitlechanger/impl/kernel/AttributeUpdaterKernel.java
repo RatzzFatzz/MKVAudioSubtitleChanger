@@ -4,6 +4,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,18 @@ public abstract class AttributeUpdaterKernel {
      *
      * @param file file or directory to update
      */
-    abstract void process(File file);
+    void process(File file) {
+        FileInfoDto fileInfo = new FileInfoDto(file);
+        List<FileAttribute> attributes = processor.loadAttributes(file);
+
+        List<FileAttribute> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
+        List<FileAttribute> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
+
+        processor.detectDefaultTracks(fileInfo, attributes, nonForcedTracks);
+        processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks);
+
+        updateFile(fileInfo);
+    }
 
     /**
      * Persist file changes.
@@ -92,7 +104,6 @@ public abstract class AttributeUpdaterKernel {
      * @param fileInfoDto contains information about file and desired configuration.
      */
     protected void updateFile(FileInfoDto fileInfoDto) {
-        statistic.total();
         switch (fileInfoDto.getStatus()) {
             case CHANGE_NECESSARY:
                 statistic.shouldChange();
@@ -117,6 +128,7 @@ public abstract class AttributeUpdaterKernel {
         }
 
         try {
+            statistic.total();
             processor.update(fileInfo.getFile(), fileInfo);
             statistic.success();
             log.info("Updated {}", fileInfo.getFile().getAbsolutePath());

@@ -61,6 +61,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
         }
 
         for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
+
             for (FileInfoDto fileInfo : fileInfos) {
                 List<FileAttribute> attributes = fileAttributeCache.get(fileInfo);
 
@@ -72,8 +73,10 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
             }
 
             if (fileInfos.stream().allMatch(elem -> elem.getDesiredSubtitleLane() != null && elem.getDesiredAudioLane() != null)) {
-                log.debug("Found {}/{} match for {}", config.getAudioLanguage(), config.getSubtitleLanguage(), file.getAbsolutePath());
-                break;
+                log.info("Found {}/{} match for {}", config.getAudioLanguage(), config.getSubtitleLanguage(), file.getAbsolutePath());
+                statistic.increaseTotalBy(fileInfos.size());
+                fileInfos.forEach(this::updateFile);
+                return; // match found, end process here
             }
 
             fileInfos.forEach(f -> {
@@ -82,8 +85,13 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
             });
         }
 
-        // apply config
-
-        // apply default process if nothing was found (if parameter is set)
+        for(FileInfoDto fileInfo: fileInfos) {
+            statistic.total();
+            if (Config.getInstance().isForceCoherent()) {
+                super.process(fileInfo.getFile());
+            } else {
+                statistic.excluded();
+            }
+        }
     }
 }

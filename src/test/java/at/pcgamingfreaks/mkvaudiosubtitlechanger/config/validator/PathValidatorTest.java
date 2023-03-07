@@ -39,7 +39,7 @@ class PathValidatorTest {
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                argumentsOf(LIBRARY, false, null, "library: " + TEST_DIR, new String[]{}, VALID),
+                argumentsOf(LIBRARY, false, null, "library-path: " + TEST_DIR, new String[]{}, VALID),
                 argumentsOf(LIBRARY, true, null, "", new String[]{"-l", TEST_FILE}, VALID),
 
                 argumentsOf(LIBRARY, false, TEST_DIR, "", new String[]{}, DEFAULT),
@@ -48,7 +48,7 @@ class PathValidatorTest {
                 argumentsOf(LIBRARY, false, null, "", new String[]{}, NOT_PRESENT),
 
                 argumentsOf(LIBRARY, true, null, "", new String[]{"-l", TEST_DIR + "/invalid"}, INVALID),
-                argumentsOf(LIBRARY, false, null, "library: " + TEST_DIR + "/invalid", new String[]{}, INVALID),
+                argumentsOf(LIBRARY, false, null, "library-path: " + TEST_DIR + "/invalid", new String[]{}, INVALID),
                 argumentsOf(LIBRARY, true, TEST_DIR, "", new String[]{"-l", TEST_DIR + "/invalid"}, INVALID)
         );
     }
