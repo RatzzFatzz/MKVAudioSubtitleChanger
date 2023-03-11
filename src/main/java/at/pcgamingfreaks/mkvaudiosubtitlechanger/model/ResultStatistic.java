@@ -16,7 +16,7 @@ public class ResultStatistic {
             "├─ Already fit config: %s%n" +
             "└─ Failed: %s%n" +
             "Runtime: %s";
-
+    private static ResultStatistic instance;
     private int filesTotal = 0;
     private int excluded = 0;
 
@@ -31,6 +31,13 @@ public class ResultStatistic {
     @Getter(AccessLevel.NONE)
     private long startTime = 0;
     private long runtime = 0;
+
+    public static ResultStatistic getInstance() {
+        if (instance == null) {
+            instance = new ResultStatistic();
+        }
+        return instance;
+    }
 
     public void increaseTotalBy(int amount) {
         filesTotal += amount;
@@ -81,7 +88,7 @@ public class ResultStatistic {
     }
 
     public void printResult() {
-        System.out.println(this);
+        System.out.println(prettyPrint());
         log.info(this.toString());
     }
 
@@ -96,15 +103,29 @@ public class ResultStatistic {
         } else if (hours >= 1) {
             return String.format("%sh %sm %ss", hours, minutes % 60, seconds % 60);
         } else if (minutes >= 1) {
-            return String.format("%sm %ss", minutes , seconds % 60);
+            return String.format("%sm %ss", minutes, seconds % 60);
         } else {
             return String.format("%ss", seconds % 60);
         }
     }
 
-    @Override
-    public String toString() {
+    public String prettyPrint() {
         return String.format(result, filesTotal, excluded, shouldChange, failedChanging, successfullyChanged,
                 noSuitableConfigFound, alreadyFits, failed, formatTimer());
+    }
+
+    @Override
+    public String toString() {
+        String sb = "ResultStatistic[" + "filesTotal=" + filesTotal +
+                ", excluded=" + excluded +
+                ", shouldChange=" + shouldChange +
+                " (failedChanging=" + failedChanging +
+                ", successfullyChanged=" + successfullyChanged +
+                "), noSuitableConfigFound=" + noSuitableConfigFound +
+                ", alreadyFits=" + alreadyFits +
+                ", failed=" + failed +
+                ", runtime=" + formatTimer() +
+                ']';
+        return sb;
     }
 }

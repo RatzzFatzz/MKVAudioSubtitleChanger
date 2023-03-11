@@ -29,10 +29,10 @@ public abstract class AttributeUpdaterKernel {
 
     protected final FileCollector collector;
     protected final FileProcessor processor;
-    protected final ResultStatistic statistic = new ResultStatistic();
+    protected final ResultStatistic statistic = ResultStatistic.getInstance();
     private final ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreads());
 
-    private static ProgressBarBuilder pbBuilder() {
+    protected ProgressBarBuilder pbBuilder() {
         return new ProgressBarBuilder()
                 .setStyle(ProgressBarStyle.ASCII)
                 .setUpdateIntervalMillis(250)

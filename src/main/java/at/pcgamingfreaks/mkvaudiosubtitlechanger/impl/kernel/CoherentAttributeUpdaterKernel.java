@@ -7,6 +7,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
 import lombok.extern.slf4j.Slf4j;
+import me.tongfei.progressbar.ProgressBarBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -20,6 +21,12 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
 
     public CoherentAttributeUpdaterKernel(FileCollector collector, FileProcessor processor) {
         super(collector, processor);
+    }
+
+    @Override
+    protected ProgressBarBuilder pbBuilder() {
+        return super.pbBuilder()
+                .setUnit(" directories", 1);
     }
 
     /**
@@ -43,10 +50,17 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
     }
 
     /**
-     * {@inheritDoc}
+     * Update files in directory, if possible, with the same {@link AttributeConfig}.
+     * If {@link Config#isForceCoherent()} then there will be no changes to the file if they don't match the same config.
+     * Otherwise, the default behaviour is executed.
+     * This method is called by the executor and is run in parallel.
+     *
+     * @param file directory containing files
      */
     @Override
     void process(File file) {
+        // TODO: Implement level crawl if coherence is not possible on user entered depth
+        // IMPL idea: recursive method call, cache needs to be implemented
         List<FileInfoDto> fileInfos = collector.loadFiles(file.getAbsolutePath())
                 .stream().map(FileInfoDto::new)
                 .collect(Collectors.toList());
@@ -85,7 +99,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
             });
         }
 
-        for(FileInfoDto fileInfo: fileInfos) {
+        for (FileInfoDto fileInfo : fileInfos) {
             statistic.total();
             if (Config.getInstance().isForceCoherent()) {
                 super.process(fileInfo.getFile());
