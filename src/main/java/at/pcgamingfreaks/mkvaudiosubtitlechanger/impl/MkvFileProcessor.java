@@ -1,10 +1,11 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.SetUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.IOUtils;
 
@@ -19,13 +20,12 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType.AUDIO;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType.SUBTITLES;
 import static java.lang.String.format;
 
-@Log4j2
+@Slf4j
 public class MkvFileProcessor implements FileProcessor {
     private final ObjectMapper mapper = new ObjectMapper();
     private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0 ";
     private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1 ";
     private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1 ";
-
 
     @SuppressWarnings("unchecked")
     @Override
@@ -62,7 +62,7 @@ public class MkvFileProcessor implements FileProcessor {
                 }
             }
 
-            log.debug(fileAttributes);
+            log.debug(fileAttributes.toString());
         } catch (IOException e) {
             e.printStackTrace();
             log.error("File could not be found or loaded!");
@@ -70,27 +70,11 @@ public class MkvFileProcessor implements FileProcessor {
         return fileAttributes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public FileInfoDto filterAttributes(List<FileAttribute> attributes) {
-        FileInfoDto info = new FileInfoDto();
-        List<FileAttribute> nonForcedTracks = attributes.stream()
-                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
-                        Config.getInstance().getForcedKeywords().toArray(new CharSequence[0])))
-                .filter(elem -> !elem.isForcedTrack())
-                .collect(Collectors.toList());
-        List<FileAttribute> nonCommentaryTracks = attributes.stream()
-                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
-                        Config.getInstance().getCommentaryKeywords().toArray(new CharSequence[0])))
-                .collect(Collectors.toList());
-
-        detectDefaultTracks(info, attributes, nonForcedTracks);
-        detectDesiredTracks(info, nonForcedTracks, nonCommentaryTracks);
-        log.debug(info);
-
-        return info;
-    }
-
-    protected void detectDefaultTracks(FileInfoDto info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks) {
+    public void detectDefaultTracks(FileInfoDto info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks) {
         Set<FileAttribute> detectedForcedSubtitleLanes = new HashSet<>();
         for (FileAttribute attribute : attributes) {
             if (attribute.isDefaultTrack() && AUDIO.equals(attribute.getType()))
@@ -108,8 +92,13 @@ public class MkvFileProcessor implements FileProcessor {
         );
     }
 
-    protected void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks) {
-        for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks,
+                                    AttributeConfig... configs) {
+        for (AttributeConfig config : configs) {
             FileAttribute desiredAudio = null;
             FileAttribute desiredSubtitle = null;
             for (FileAttribute attribute : SetUtils.retainOf(nonForcedTracks, nonCommentaryTracks)) {
@@ -127,10 +116,31 @@ public class MkvFileProcessor implements FileProcessor {
     }
 
     @Override
-    public void update(File file, FileInfoDto fileInfo) throws IOException, RuntimeException {
+    public List<FileAttribute> retrieveNonForcedTracks(List<FileAttribute> attributes) {
+        return attributes.stream()
+                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
+                        Config.getInstance().getForcedKeywords().toArray(new CharSequence[0])))
+                .filter(elem -> !elem.isForcedTrack())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FileAttribute> retrieveNonCommentaryTracks(List<FileAttribute> attributes) {
+        return attributes.stream()
+                .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.getTrackName(),
+                        Config.getInstance().getCommentaryKeywords().toArray(new CharSequence[0])))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void update(File file, FileInfoDto fileInfo) throws IOException, MkvToolNixException {
         StringBuilder sb = new StringBuilder();
         sb.append(format("\"%s\" ", Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT)));
         sb.append(format("\"%s\" ", file.getAbsolutePath()));
+
         if (fileInfo.isAudioDifferent()) {
             if (fileInfo.getDefaultAudioLanes() != null && !fileInfo.getDefaultSubtitleLanes().isEmpty()) {
                 for (FileAttribute track: fileInfo.getDefaultAudioLanes()) {
@@ -139,6 +149,7 @@ public class MkvFileProcessor implements FileProcessor {
             }
             sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredAudioLane().getId()));
         }
+
         if (fileInfo.isSubtitleDifferent()) {
             if (fileInfo.getDefaultSubtitleLanes() != null && !fileInfo.getDefaultSubtitleLanes().isEmpty()) {
                 for (FileAttribute track: fileInfo.getDefaultSubtitleLanes()) {
@@ -147,6 +158,7 @@ public class MkvFileProcessor implements FileProcessor {
             }
             sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredSubtitleLane().getId()));
         }
+
         if (fileInfo.areForcedTracksDifferent()) {
             for (FileAttribute attribute : fileInfo.getDesiredForcedSubtitleLanes()) {
                 sb.append(format(ENABLE_FORCED_TRACK, attribute.getId()));
@@ -156,6 +168,6 @@ public class MkvFileProcessor implements FileProcessor {
         InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
         String output = IOUtils.toString(new InputStreamReader(inputstream));
         log.debug(output);
-        if (output.contains("Error")) throw new RuntimeException(output);
+        if (output.contains("Error")) throw new MkvToolNixException(output);
     }
 }

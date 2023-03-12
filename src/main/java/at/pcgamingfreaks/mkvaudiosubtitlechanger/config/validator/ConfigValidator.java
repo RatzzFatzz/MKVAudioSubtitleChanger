@@ -121,27 +121,27 @@ public abstract class ConfigValidator<FieldType> {
 	 * @return false if method invocation failed
 	 */
 	protected boolean setValue(FieldType result) {
-        List<Method> methods = Arrays.stream(Config.getInstance().getClass().getDeclaredMethods())
-                .filter(containsSetterOf(property))
-                .collect(Collectors.toList());
-        if (methods.size() != 1) {
-            return false;
-        }
-        try {
-			methods.get(0).invoke(Config.getInstance(), result);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-		return true;
+		for (Method method: Config.getInstance().getClass().getDeclaredMethods()) {
+			if(containsSetterOf(property).test(method)) {
+				try {
+					method.invoke(Config.getInstance(), result);
+					return true;
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+
+		return false;
     }
 
 	protected Predicate<Method> containsSetterOf(ConfigProperty property) {
-		return method -> StringUtils.containsIgnoreCase(method.getName(), "set")
-				&& StringUtils.containsIgnoreCase(method.getName(), property.prop().replace("-", ""));
+		return method -> StringUtils.startsWith(method.getName(), "set")
+				&& StringUtils.equalsIgnoreCase(method.getName().replace("set", ""), property.prop().replace("-", ""));
 	}
 
 	protected Predicate<Method> containsGetterOf(ConfigProperty property) {
-		return method -> StringUtils.containsIgnoreCase(method.getName(), "get")
+		return method -> StringUtils.startsWith(method.getName(), "get")
 				&& StringUtils.containsIgnoreCase(method.getName(), property.prop().replace("-", ""));
 	}
 

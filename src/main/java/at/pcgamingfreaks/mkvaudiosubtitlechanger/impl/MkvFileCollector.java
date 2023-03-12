@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,16 +12,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Log4j2
+@Slf4j
 public class MkvFileCollector implements FileCollector {
     private static final String[] fileExtensions = new String[]{".mkv", ".mka", ".mks", ".mk3d"};
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<File> loadFiles(String path) {
         try (Stream<Path> paths = Files.walk(Paths.get(path))) {
             return paths.filter(Files::isRegularFile)
                     .map(Path::toFile)
                     .filter(file -> FileFilter.accept(file, fileExtensions))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error("Couldn't find file or directory!", e);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<File> loadDirectories(String path, int depth) {
+        try (Stream<Path> paths = Files.walk(Paths.get(path), depth)) {
+            return paths.map(Path::toFile)
+                    .filter(File::isDirectory)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             log.error("Couldn't find file or directory!", e);

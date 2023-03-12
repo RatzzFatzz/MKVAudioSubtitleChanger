@@ -2,10 +2,13 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public class ResultStatistic {
     private static final String result = "Total files: %s%n" +
+            "├─ Excluded: %s%n" +
             "├─ Should change: %s%n" +
             "│  ├─ Failed changing: %s%n" +
             "│  └─ Successfully changed: %s%n" +
@@ -13,8 +16,9 @@ public class ResultStatistic {
             "├─ Already fit config: %s%n" +
             "└─ Failed: %s%n" +
             "Runtime: %s";
-
+    private static ResultStatistic instance;
     private int filesTotal = 0;
+    private int excluded = 0;
 
     private int shouldChange = 0;
     private int failedChanging = 0;
@@ -28,8 +32,27 @@ public class ResultStatistic {
     private long startTime = 0;
     private long runtime = 0;
 
+    public static ResultStatistic getInstance() {
+        if (instance == null) {
+            instance = new ResultStatistic();
+        }
+        return instance;
+    }
+
+    public void increaseTotalBy(int amount) {
+        filesTotal += amount;
+    }
+
     public synchronized void total() {
         filesTotal++;
+    }
+
+    public void increaseExcludedBy(int amount) {
+        excluded += amount;
+    }
+
+    public synchronized void excluded() {
+        excluded++;
     }
 
     public synchronized void shouldChange() {
@@ -64,6 +87,11 @@ public class ResultStatistic {
         runtime = System.currentTimeMillis() - startTime;
     }
 
+    public void printResult() {
+        System.out.println(prettyPrint());
+        log.info(this.toString());
+    }
+
     private String formatTimer() {
         int seconds = (int) (runtime / 1000);
         int minutes = seconds / 60;
@@ -75,15 +103,29 @@ public class ResultStatistic {
         } else if (hours >= 1) {
             return String.format("%sh %sm %ss", hours, minutes % 60, seconds % 60);
         } else if (minutes >= 1) {
-            return String.format("%sm %ss", minutes , seconds % 60);
+            return String.format("%sm %ss", minutes, seconds % 60);
         } else {
             return String.format("%ss", seconds % 60);
         }
     }
 
+    public String prettyPrint() {
+        return String.format(result, filesTotal, excluded, shouldChange, failedChanging, successfullyChanged,
+                noSuitableConfigFound, alreadyFits, failed, formatTimer());
+    }
+
     @Override
     public String toString() {
-        return String.format(result, filesTotal, shouldChange, failedChanging, successfullyChanged,
-                noSuitableConfigFound, alreadyFits, failed, formatTimer());
+        String sb = "ResultStatistic[" + "filesTotal=" + filesTotal +
+                ", excluded=" + excluded +
+                ", shouldChange=" + shouldChange +
+                " (failedChanging=" + failedChanging +
+                ", successfullyChanged=" + successfullyChanged +
+                "), noSuitableConfigFound=" + noSuitableConfigFound +
+                ", alreadyFits=" + alreadyFits +
+                ", failed=" + failed +
+                ", runtime=" + formatTimer() +
+                ']';
+        return sb;
     }
 }
