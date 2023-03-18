@@ -42,6 +42,7 @@ public class Config {
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
     private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
     private Set<String> excludedDirectories = new HashSet<>();
+    private Set<String> preferredSubtitles = new HashSet<>(Arrays.asList("unstyled"));
 
     private List<AttributeConfig> attributeConfig;
 

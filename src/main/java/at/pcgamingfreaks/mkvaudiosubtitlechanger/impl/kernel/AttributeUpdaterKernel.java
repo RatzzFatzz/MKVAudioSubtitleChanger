@@ -4,6 +4,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
@@ -93,7 +94,8 @@ public abstract class AttributeUpdaterKernel {
         List<FileAttribute> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
 
         processor.detectDefaultTracks(fileInfo, attributes, nonForcedTracks);
-        processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks);
+        processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks,
+                Config.getInstance().getAttributeConfig().toArray(new AttributeConfig[]{}));
 
         updateFile(fileInfo);
     }
