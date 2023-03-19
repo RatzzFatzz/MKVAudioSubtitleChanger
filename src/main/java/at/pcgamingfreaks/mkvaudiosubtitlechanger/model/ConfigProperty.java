@@ -23,9 +23,25 @@ public enum ConfigProperty {
     EXCLUDED_DIRECTORY("excluded-directories", "Directories to be excluded, combines with config file", "e", Option.UNLIMITED_VALUES),
     FORCED_KEYWORDS("forced-keywords", "Additional keywords to identify forced tracks", "fk", Option.UNLIMITED_VALUES),
     COMMENTARY_KEYWORDS("commentary-keywords", "Additional keywords to identify commentary tracks", "ck", Option.UNLIMITED_VALUES),
+    PREFERRED_SUBTITLES("preferred-subtitles", "Additional keywords to prefer specific subtitle tracks", "ps", Option.UNLIMITED_VALUES),
     ARGUMENTS("arguments", "List of arguments", null, 0),
     VERSION("version", "Display version", "v", 0),
     HELP("help", "\"For help this is\" - Yoda", "h", 0);
+
+    /*
+     * Verify at startup that there are no duplicated shortParameters.
+     */
+    static {
+        Set<String> shortParameters = new HashSet<>();
+        for (String param : Arrays.stream(ConfigProperty.values()).map(ConfigProperty::abrv).collect(Collectors.toList())) {
+            if (shortParameters.contains(param)) {
+                throw new IllegalStateException("It is not allowed to have multiple properties with the same abbreviation!");
+            }
+            if (param != null) {
+                shortParameters.add(param);
+            }
+        }
+    }
 
     private final String property;
     private final String description;
@@ -46,20 +62,5 @@ public enum ConfigProperty {
 
     public int args() {
         return args;
-    }
-
-    /*
-     * Verify at startup that there are no duplicated shortParameters.
-     */
-    static {
-        Set<String> shortParameters = new HashSet<>();
-        for (String param: Arrays.stream(ConfigProperty.values()).map(ConfigProperty::abrv).collect(Collectors.toList())) {
-            if (shortParameters.contains(param)) {
-                throw new IllegalStateException("It is not allowed to have multiple properties with the same abbreviation!");
-            }
-            if (param != null) {
-                shortParameters.add(param);
-            }
-        }
     }
 }
