@@ -28,6 +28,7 @@ public class ConfigLoader {
             new SetValidator(FORCED_KEYWORDS, false, true),
             new SetValidator(COMMENTARY_KEYWORDS, false, true),
             new SetValidator(EXCLUDED_DIRECTORY, false, true),
+            new SetValidator(PREFERRED_SUBTITLES, false, true),
             new AttributeConfigValidator(),
             new CoherentConfigValidator(COHERENT, false),
             new BooleanValidator(FORCE_COHERENT, false)

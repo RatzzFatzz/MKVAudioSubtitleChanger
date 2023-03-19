@@ -142,7 +142,7 @@ public abstract class ConfigValidator<FieldType> {
 
 	protected Predicate<Method> containsGetterOf(ConfigProperty property) {
 		return method -> StringUtils.startsWith(method.getName(), "get")
-				&& StringUtils.containsIgnoreCase(method.getName(), property.prop().replace("-", ""));
+				&& StringUtils.equalsIgnoreCase(method.getName().replace("get", ""), property.prop().replace("-", ""));
 	}
 
 

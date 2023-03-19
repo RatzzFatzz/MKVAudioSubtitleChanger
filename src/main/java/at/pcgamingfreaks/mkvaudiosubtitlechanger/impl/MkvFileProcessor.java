@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType.AUDIO;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType.SUBTITLES;
@@ -23,6 +24,10 @@ import static java.lang.String.format;
 @Slf4j
 public class MkvFileProcessor implements FileProcessor {
     private final ObjectMapper mapper = new ObjectMapper();
+
+    private static final SubtitleTrackComparator subtitleTrackComparator =
+            new SubtitleTrackComparator(Config.getInstance().getPreferredSubtitles().toArray(new String[0]));
+
     private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0 ";
     private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1 ";
     private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1 ";
@@ -98,21 +103,29 @@ public class MkvFileProcessor implements FileProcessor {
     @Override
     public void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks,
                                     AttributeConfig... configs) {
+        Set<FileAttribute> tracks = SetUtils.retainOf(nonForcedTracks, nonCommentaryTracks);
+        Set<FileAttribute> audioTracks = tracks.stream().filter(a -> AUDIO.equals(a.getType())).collect(Collectors.toSet());
+        Set<FileAttribute> subtitleTracks = tracks.stream().filter(a -> SUBTITLES.equals(a.getType())).collect(Collectors.toSet());
+
         for (AttributeConfig config : configs) {
-            FileAttribute desiredAudio = null;
-            FileAttribute desiredSubtitle = null;
-            for (FileAttribute attribute : SetUtils.retainOf(nonForcedTracks, nonCommentaryTracks)) {
-                if (attribute.getLanguage().equals(config.getAudioLanguage())
-                        && AUDIO.equals(attribute.getType())) desiredAudio = attribute;
-                if (attribute.getLanguage().equals(config.getSubtitleLanguage())
-                        && SUBTITLES.equals(attribute.getType())) desiredSubtitle = attribute;
-            }
-            if (desiredAudio != null && desiredSubtitle != null) {
-                info.setDesiredAudioLane(desiredAudio);
-                info.setDesiredSubtitleLane(desiredSubtitle);
+            Optional<FileAttribute> desiredAudio = detectDesiredTrack(config.getAudioLanguage(), audioTracks).findFirst();
+            Optional<FileAttribute> desiredSubtitle = detectDesiredSubtitleTrack(config.getSubtitleLanguage(), subtitleTracks).findFirst();
+
+            if (desiredAudio.isPresent() && desiredSubtitle.isPresent()) {
+                info.setDesiredAudioLane(desiredAudio.get());
+                info.setDesiredSubtitleLane(desiredSubtitle.get());
                 break;
             }
         }
+    }
+
+    private Stream<FileAttribute> detectDesiredTrack(String language, Set<FileAttribute> tracks) {
+        return tracks.stream().filter(track -> language.equals(track.getLanguage()));
+    }
+
+    private Stream<FileAttribute> detectDesiredSubtitleTrack(String language, Set<FileAttribute> tracks) {
+        return detectDesiredTrack(language, tracks)
+                .sorted(subtitleTrackComparator.reversed());
     }
 
     @Override
