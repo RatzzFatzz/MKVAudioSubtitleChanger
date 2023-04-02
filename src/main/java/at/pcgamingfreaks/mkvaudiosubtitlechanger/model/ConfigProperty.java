@@ -18,6 +18,8 @@ public enum ConfigProperty {
     COHERENT("coherent", "Try to match all files in dir of depth with the same config", "c", 1),
     FORCE_COHERENT("force-coherent", "Force coherent and don't update anything if config fits not whole config (default: false)", "cf", 0),
     WINDOWS("windows", "Is operating system windows", null, 0),
+    ONLY_NEW_FILES("only-new-files", "Sets filter-date to last successful execution (Overwrites input of filter-date)", "n", 0),
+    FILTER_DATE("filter-date", "Only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")", "d", 1),
     THREADS("threads", "Thread count (default: 2)", "t", 1),
     INCLUDE_PATTERN("include-pattern", "Include files matching pattern (default: \".*\")", "i", 1),
     EXCLUDED_DIRECTORY("excluded-directories", "Directories to be excluded, combines with config file", "e", Option.UNLIMITED_VALUES),

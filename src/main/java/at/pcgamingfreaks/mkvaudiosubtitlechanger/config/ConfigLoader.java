@@ -24,6 +24,8 @@ public class ConfigLoader {
             new ThreadValidator(THREADS, false, 2),
             new MkvToolNixPathValidator(MKV_TOOL_NIX, true, Path.of("C:\\Program Files\\MKVToolNix").toFile()),
             new BooleanValidator(SAFE_MODE, false),
+            new BooleanValidator(ONLY_NEW_FILES, false),
+            new DateValidator(FILTER_DATE, false),
             new PatternValidator(INCLUDE_PATTERN, false, Pattern.compile(".*")),
             new SetValidator(FORCED_KEYWORDS, false, true),
             new SetValidator(COMMENTARY_KEYWORDS, false, true),

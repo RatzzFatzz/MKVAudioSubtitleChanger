@@ -38,6 +38,8 @@ public class Config {
 
     private Integer coherent;
     private boolean forceCoherent;
+    private boolean onlyNewFiles;
+    private Date filterDate;
 
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
     private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
