@@ -48,10 +48,10 @@ public class FileFilter {
     }
 
     private static boolean isNewerThanLastExecution(File pathName) {
-        if (Config.getInstance().isOnlyNewFiles()) {
-            return isNewer(pathName);
-        }
-        return true;
-//        return Config.getInstance().isOnlyNewFiles() && isNewer(pathName);
+//        if (Config.getInstance().isOnlyNewFiles()) {
+//            return isNewer(pathName);
+//        }
+//        return true;
+        return !Config.getInstance().isOnlyNewFiles() || isNewer(pathName);
     }
 }

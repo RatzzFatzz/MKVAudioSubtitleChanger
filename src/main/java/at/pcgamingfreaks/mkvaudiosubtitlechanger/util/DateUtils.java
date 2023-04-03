@@ -15,11 +15,11 @@ public class DateUtils {
      * Convert String to date.
      * @return parsed date, null if exception occurs
      */
-    public static Date convert(String date) {
+    public static Date convert(String date, Date defaultDate) {
         try {
             return dateFormat.parse(date);
         } catch (ParseException e) {
-            return null;
+            return defaultDate;
         }
     }
 }

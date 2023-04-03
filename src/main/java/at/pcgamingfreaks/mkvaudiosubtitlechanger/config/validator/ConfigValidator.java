@@ -11,12 +11,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class ConfigValidator<FieldType> {
@@ -38,7 +37,9 @@ public abstract class ConfigValidator<FieldType> {
 		Optional<FieldType> cmdResult = provideDataCmd().apply(cmd, property);
 		Optional<FieldType> yamlResult = provideDataYaml().apply(yaml, property);
 
-		if (cmdResult.isPresent()) {
+		if (isOverwritingNecessary()){
+			result = overwriteValue();
+		} else if (cmdResult.isPresent()) {
 			result = cmdResult.get();
 		} else if (yamlResult.isPresent()) {
 			result = yamlResult.get();
@@ -98,6 +99,14 @@ public abstract class ConfigValidator<FieldType> {
 		};
 	}
 
+	protected boolean isOverwritingNecessary() {
+		return false;
+	}
+
+	protected FieldType overwriteValue() {
+		return null;
+	}
+
 	/**
 	 * Parse input parameter to desired format.
 	 *
@@ -145,5 +154,11 @@ public abstract class ConfigValidator<FieldType> {
 				&& StringUtils.equalsIgnoreCase(method.getName().replace("get", ""), property.prop().replace("-", ""));
 	}
 
+	protected static Set<Integer> getDependentValidators() {
+		return Set.of();
+	}
 
+	public static int getWeight() {
+		return getDependentValidators().stream().sorted().findFirst().orElse(100) - 1;
+	}
 }
