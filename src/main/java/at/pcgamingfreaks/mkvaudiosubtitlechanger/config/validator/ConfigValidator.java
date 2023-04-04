@@ -154,11 +154,7 @@ public abstract class ConfigValidator<FieldType> {
 				&& StringUtils.equalsIgnoreCase(method.getName().replace("get", ""), property.prop().replace("-", ""));
 	}
 
-	protected static Set<Integer> getDependentValidators() {
-		return Set.of();
-	}
-
-	public static int getWeight() {
-		return getDependentValidators().stream().sorted().findFirst().orElse(100) - 1;
+	public int getWeight() {
+		return 50;
 	}
 }

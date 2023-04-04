@@ -2,7 +2,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validator.*;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.VersionUtil;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import org.apache.commons.cli.*;
@@ -11,14 +11,17 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.*;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
 
 public class ConfigLoader {
-    private static final List<ConfigValidator<?>> VALIDATORS = List.of(
+    private static final List<ConfigValidator<?>> VALIDATORS = Stream.of(
             new ConfigPathValidator(CONFIG_PATH, false),
             new PathValidator(LIBRARY, true, null),
             new ThreadValidator(THREADS, false, 2),
@@ -34,7 +37,7 @@ public class ConfigLoader {
             new AttributeConfigValidator(),
             new CoherentConfigValidator(COHERENT, false),
             new BooleanValidator(FORCE_COHERENT, false)
-    );
+    ).sorted(Comparator.comparing((ConfigValidator<?> validator) -> validator.getWeight()).reversed()).collect(Collectors.toList());
 
     public static void initConfig(String[] args) {
         HelpFormatter formatter = new HelpFormatter();
@@ -100,7 +103,7 @@ public class ConfigLoader {
 
     private static void exitIfVersion(CommandLine cmd) {
         if (cmd.hasOption(VERSION.prop())) {
-            System.out.printf("MKV Audio Subtitle Changer Version %s%n", VersionUtil.getVersion());
+            System.out.printf("MKV Audio Subtitle Changer Version %s%n", ProjectUtil.getVersion());
             System.exit(0);
         }
     }

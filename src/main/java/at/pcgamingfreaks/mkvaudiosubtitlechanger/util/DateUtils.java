@@ -22,4 +22,8 @@ public class DateUtils {
             return defaultDate;
         }
     }
+
+    public static String convert(Date date) {
+        return dateFormat.format(date);
+    }
 }

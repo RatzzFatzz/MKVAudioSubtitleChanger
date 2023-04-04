@@ -27,4 +27,9 @@ public class ConfigPathValidator extends PathValidator {
     protected boolean isValid(File result) {
         return super.isValid(result) && (result.getAbsolutePath().endsWith(".yml") || result.getAbsolutePath().endsWith(".yaml"));
     }
+
+    @Override
+    public int getWeight() {
+        return 100;
+    }
 }

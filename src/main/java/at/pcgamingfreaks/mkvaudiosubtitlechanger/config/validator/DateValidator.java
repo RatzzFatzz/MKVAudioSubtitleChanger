@@ -3,16 +3,21 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validator;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
+import at.pcgamingfreaks.yaml.YAML;
+import at.pcgamingfreaks.yaml.YamlInvalidContentException;
 import lombok.extern.slf4j.Slf4j;
+import net.harawata.appdirs.AppDirsFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Date;
-import java.util.Properties;
-import java.util.Set;
 
 @Slf4j
 public class DateValidator extends ConfigValidator<Date> {
-    private static final Date DEFAULT_DATE = new Date(0);
+    private static final Date INVALID_DATE = new Date(0);
+    private static final Date DEFAULT_DATE = new Date(1);
 
     public DateValidator(ConfigProperty property, boolean required) {
         super(property, required, null);
@@ -25,27 +30,32 @@ public class DateValidator extends ConfigValidator<Date> {
 
     @Override
     protected Date overwriteValue() {
-        Properties prop = new Properties();
         try {
-            prop.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("/last-execution.properties"));
-            return parse(prop.getProperty(Config.getInstance().getLibraryPath().getAbsolutePath()));
-        } catch (IOException e) {
+            String filePath = AppDirsFactory.getInstance().getUserConfigDir(ProjectUtil.getProjectName(), null, null);
+            File lastExecutionFile = Path.of(filePath + "/last-execution.yml").toFile();
+            if (!lastExecutionFile.exists()) {
+                return DEFAULT_DATE;
+            }
+            YAML yaml = new YAML(lastExecutionFile);
+            return parse(yaml.getString(Config.getInstance().getLibraryPath().getAbsolutePath(), DateUtils.convert(DEFAULT_DATE)));
+        } catch (YamlInvalidContentException | IOException e) {
             log.error("Couldn't open last-execution.properties");
-            return DEFAULT_DATE;
+            return INVALID_DATE;
         }
     }
 
     @Override
     Date parse(String value) {
-        return DateUtils.convert(value, DEFAULT_DATE);
+        return DateUtils.convert(value, INVALID_DATE);
     }
 
     @Override
     boolean isValid(Date result) {
-        return !result.equals(DEFAULT_DATE);
+        return !result.equals(INVALID_DATE);
     }
 
-    protected static Set<Integer> getDependentValidators() {
-        return Set.of(PathValidator.getWeight(), BooleanValidator.getWeight());
+    @Override
+    public int getWeight() {
+        return 40;
     }
 }
