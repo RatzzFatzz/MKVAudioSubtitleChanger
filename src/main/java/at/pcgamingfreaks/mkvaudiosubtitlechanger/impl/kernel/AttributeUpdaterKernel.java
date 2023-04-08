@@ -150,6 +150,10 @@ public abstract class AttributeUpdaterKernel {
     }
 
     protected void endProcess() {
+        if (Config.getInstance().isSafeMode()) {
+            return;
+        }
+
         try {
             String filePath = AppDirsFactory.getInstance().getUserConfigDir(ProjectUtil.getProjectName(), null, null);
 
@@ -162,7 +166,7 @@ public abstract class AttributeUpdaterKernel {
             }
 
             YAML yaml = new YAML(lastExecutionFile);
-            yaml.set(Config.getInstance().getLibraryPath().getAbsolutePath(), DateUtils.convert(new Date()));
+            yaml.set(Config.getInstance().getLibraryPath().getAbsolutePath().replace("\\", "/"), DateUtils.convert(new Date()));
             yaml.save(lastExecutionFile);
         } catch (IOException | YamlInvalidContentException e) {
             log.error("last-execution.yml could not be created: ", e); // TODO

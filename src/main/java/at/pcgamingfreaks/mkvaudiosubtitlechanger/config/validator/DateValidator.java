@@ -17,7 +17,7 @@ import java.util.Date;
 @Slf4j
 public class DateValidator extends ConfigValidator<Date> {
     private static final Date INVALID_DATE = new Date(0);
-    private static final Date DEFAULT_DATE = new Date(1);
+    private static final Date DEFAULT_DATE = new Date(1000);
 
     public DateValidator(ConfigProperty property, boolean required) {
         super(property, required, null);
@@ -37,7 +37,7 @@ public class DateValidator extends ConfigValidator<Date> {
                 return DEFAULT_DATE;
             }
             YAML yaml = new YAML(lastExecutionFile);
-            return parse(yaml.getString(Config.getInstance().getLibraryPath().getAbsolutePath(), DateUtils.convert(DEFAULT_DATE)));
+            return parse(yaml.getString(Config.getInstance().getLibraryPath().getAbsolutePath().replace("\\", "/"), DateUtils.convert(DEFAULT_DATE)));
         } catch (YamlInvalidContentException | IOException e) {
             log.error("Couldn't open last-execution.properties");
             return INVALID_DATE;
