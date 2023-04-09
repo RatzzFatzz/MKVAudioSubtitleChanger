@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>MKVAudioSubtileChanger</groupId>
+    <groupId>at.pcgamingfreaks</groupId>
     <artifactId>MKVAudioSubtitleChanger</artifactId>
     <version>3.0</version>
 
@@ -20,7 +20,7 @@
                 <directory>./</directory>
                 <includes>
                     <include>language-codes</include>
-                    <include>version.properties</include>
+                    <include>project.properties</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -193,6 +193,12 @@
             <groupId>at.pcgamingfreaks</groupId>
             <artifactId>YAML-Parser</artifactId>
             <version>2.0-SNAPSHOT</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/net.harawata/appdirs -->
+        <dependency>
+            <groupId>net.harawata</groupId>
+            <artifactId>appdirs</artifactId>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
 

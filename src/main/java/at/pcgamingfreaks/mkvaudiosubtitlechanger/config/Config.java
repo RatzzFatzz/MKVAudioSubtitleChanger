@@ -38,6 +38,8 @@ public class Config {
 
     private Integer coherent;
     private boolean forceCoherent;
+    private boolean onlyNewFiles;
+    private Date filterDate;
 
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
     private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
@@ -67,20 +69,29 @@ public class Config {
                     mkvToolNix.getAbsolutePath() + "/" + application;
     }
 
+    public String getNormalizedLibraryPath() {
+        return this.getLibraryPath().getAbsolutePath().replace("\\", "/");
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", Config.class.getSimpleName() + "[", "]")
-                .add("parser=" + parser).add("\n")
-                .add("formatter=" + formatter).add("\n")
-                .add("configPath=" + configPath).add("\n")
-                .add("libraryPath=" + libraryPath).add("\n")
-                .add("isSafeMode=" + safeMode).add("\n")
-                .add("forcedKeywords=" + forcedKeywords).add("\n")
-                .add("commentaryKeywords=" + commentaryKeywords).add("\n")
-                .add("excludedDirectories=" + excludedDirectories).add("\n")
-                .add("threadCount=" + threads).add("\n")
-                .add("includePattern=" + includePattern).add("\n")
-                .add("mkvToolNixPath='" + mkvToolNix + "'").add("\n")
+                .add("parser=" + parser)
+                .add("formatter=" + formatter)
+                .add("configPath=" + configPath)
+                .add("libraryPath=" + libraryPath)
+                .add("mkvToolNix=" + mkvToolNix)
+                .add("threads=" + threads)
+                .add("includePattern=" + includePattern)
+                .add("safeMode=" + safeMode)
+                .add("coherent=" + coherent)
+                .add("forceCoherent=" + forceCoherent)
+                .add("onlyNewFiles=" + onlyNewFiles)
+                .add("filterDate=" + filterDate)
+                .add("forcedKeywords=" + forcedKeywords)
+                .add("commentaryKeywords=" + commentaryKeywords)
+                .add("excludedDirectories=" + excludedDirectories)
+                .add("preferredSubtitles=" + preferredSubtitles)
                 .add("attributeConfig=" + attributeConfig)
                 .toString();
     }
