@@ -13,7 +13,7 @@ public class DateUtils {
 
     /**
      * Convert String to date.
-     * @return parsed date, null if exception occurs
+     * @return parsed date, defaultDate if exception occurs
      */
     public static Date convert(String date, Date defaultDate) {
         try {

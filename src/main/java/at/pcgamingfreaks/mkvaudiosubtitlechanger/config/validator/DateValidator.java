@@ -37,7 +37,7 @@ public class DateValidator extends ConfigValidator<Date> {
                 return DEFAULT_DATE;
             }
             YAML yaml = new YAML(lastExecutionFile);
-            return parse(yaml.getString(Config.getInstance().getLibraryPath().getAbsolutePath().replace("\\", "/"), DateUtils.convert(DEFAULT_DATE)));
+            return parse(yaml.getString(Config.getInstance().getNormalizedLibraryPath(), DateUtils.convert(DEFAULT_DATE)));
         } catch (YamlInvalidContentException | IOException e) {
             log.error("Couldn't open last-execution.properties");
             return INVALID_DATE;

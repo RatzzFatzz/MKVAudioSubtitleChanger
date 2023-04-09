@@ -161,15 +161,13 @@ public abstract class AttributeUpdaterKernel {
             if (!configDir.exists()) configDir.mkdirs();
 
             File lastExecutionFile = Path.of(filePath + "/last-execution.yml").toFile();
-            if (!lastExecutionFile.exists()) {
-                lastExecutionFile.createNewFile();
-            }
+            if (!lastExecutionFile.exists()) lastExecutionFile.createNewFile();
 
             YAML yaml = new YAML(lastExecutionFile);
-            yaml.set(Config.getInstance().getLibraryPath().getAbsolutePath().replace("\\", "/"), DateUtils.convert(new Date()));
+            yaml.set(Config.getInstance().getNormalizedLibraryPath(), DateUtils.convert(new Date()));
             yaml.save(lastExecutionFile);
         } catch (IOException | YamlInvalidContentException e) {
-            log.error("last-execution.yml could not be created: ", e); // TODO
+            log.error("last-execution.yml could not be created or read.", e);
         }
     }
 }

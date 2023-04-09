@@ -69,6 +69,10 @@ public class Config {
                     mkvToolNix.getAbsolutePath() + "/" + application;
     }
 
+    public String getNormalizedLibraryPath() {
+        return this.getLibraryPath().getAbsolutePath().replace("\\", "/");
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", Config.class.getSimpleName() + "[", "]")

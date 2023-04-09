@@ -100,10 +100,16 @@ public abstract class ConfigValidator<FieldType> {
         };
     }
 
+    /**
+     * @return true if overwriting this property is necessary.
+     */
     protected boolean isOverwritingNecessary() {
         return false;
     }
 
+    /**
+     * @return {@link FieldType} to overwrite result with.
+     */
     protected FieldType overwriteValue() {
         return null;
     }
