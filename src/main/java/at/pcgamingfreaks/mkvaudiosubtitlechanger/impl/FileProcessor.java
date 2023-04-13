@@ -30,9 +30,8 @@ public interface FileProcessor {
     /**
      * Populate FileInfoDto with the desired tracks, based on AttributeConfig.
      * @param info to be populated
-     * @param nonForcedTracks List of all not forced tracks
-     * @param nonCommentaryTracks  List of all not commentary tracks
-     * @param configs
+     * @param nonForcedTracks List of all non-forced tracks
+     * @param nonCommentaryTracks  List of all non-commentary tracks
      */
     void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks,
                              AttributeConfig... configs);
@@ -45,7 +44,7 @@ public interface FileProcessor {
      * Update the file.
      * @param file to be updated
      * @param fileInfo information to update file
-     * @throws IOException
+     * @throws IOException when error occurs accessing file retrieving information
      * @throws MkvToolNixException when error occurs while sending query to mkvpropedit
      */
     void update(File file, FileInfoDto fileInfo) throws IOException, MkvToolNixException;
