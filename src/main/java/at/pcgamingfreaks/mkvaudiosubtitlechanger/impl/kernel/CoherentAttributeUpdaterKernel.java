@@ -34,8 +34,12 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
      */
     @Override
     List<File> loadFiles(String path) {
+        return loadFiles(path, Config.getInstance().getCoherent());
+    }
+
+    List<File> loadFiles(String path, int depth) {
         List<File> excludedFiles = loadExcludedFiles();
-        List<File> directories = collector.loadDirectories(path, Config.getInstance().getCoherent())
+        List<File> directories = collector.loadDirectories(path, depth)
                 .stream().filter(file -> !excludedFiles.contains(file))
                 .collect(Collectors.toList());
         return directories.stream()
@@ -59,25 +63,20 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
      */
     @Override
     void process(File file) {
+        process(file, Config.getInstance().getCoherent());
+    }
+
+    void process(File file, int depth) {
         // TODO: Implement level crawl if coherence is not possible on user entered depth
         // IMPL idea: recursive method call, cache needs to be implemented
-        List<FileInfoDto> fileInfos = collector.loadFiles(file.getAbsolutePath())
-                .stream().map(FileInfoDto::new)
+        List<FileInfoDto> fileInfos = collector.loadFiles(file.getAbsolutePath()).stream()
+                .map(FileInfoDto::new)
                 .collect(Collectors.toList());
-
-        Map<FileInfoDto, List<FileAttribute>> fileAttributeCache = new HashMap<>();
-        for (FileInfoDto fileInfo : fileInfos) {
-            if (!Config.getInstance().getIncludePattern().matcher(fileInfo.getFile().getAbsolutePath()).matches()) {
-                statistic.excluded();
-                continue;
-            }
-            fileAttributeCache.put(fileInfo, processor.loadAttributes(fileInfo.getFile()));
-        }
 
         for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
 
             for (FileInfoDto fileInfo : fileInfos) {
-                List<FileAttribute> attributes = fileAttributeCache.get(fileInfo);
+                List<FileAttribute> attributes = processor.loadAttributes(fileInfo.getFile());
 
                 List<FileAttribute> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
                 List<FileAttribute> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
@@ -88,7 +87,6 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
 
             if (fileInfos.stream().allMatch(elem -> elem.getDesiredSubtitleLane() != null && elem.getDesiredAudioLane() != null)) {
                 log.info("Found {}/{} match for {}", config.getAudioLanguage(), config.getSubtitleLanguage(), file.getAbsolutePath());
-                statistic.increaseTotalBy(fileInfos.size());
                 fileInfos.forEach(this::updateFile);
                 return; // match found, end process here
             }
@@ -99,9 +97,10 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
             });
         }
 
+        log.info("No coherent match found for {}", file.getAbsoluteFile());
+
         for (FileInfoDto fileInfo : fileInfos) {
-            statistic.total();
-            if (Config.getInstance().isForceCoherent()) {
+            if (!Config.getInstance().isForceCoherent()) {
                 super.process(fileInfo.getFile());
             } else {
                 statistic.excluded();

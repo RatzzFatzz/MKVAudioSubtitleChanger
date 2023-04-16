@@ -1,7 +1,7 @@
 mkvtoolnix: C:\Program Files\MKVToolNix
 library: X:/Files
 
-config:
+attribute-config:
   1:
     audio: ger
     subtitle: OFF
@@ -14,6 +14,7 @@ config:
 
 #forced-keywords: ["forced", "signs"]
 #commentary-keywords: ["commentary", "director"]
+#preferred-subtitles: ["unstyled"]
 
 #exclude-directories:
 #  - "D:/Path/To/File.mkv"
@@ -22,7 +23,12 @@ config:
 # If pattern is negated, can be used to exclude files
 #include-pattern: "regex"
 
+# Only files newer than
+#filter-date: 20.03.2021-10:11:12
+
 safe-mode:
 #coherent:
+#force-coherent:
+#only-new-files:
 
 

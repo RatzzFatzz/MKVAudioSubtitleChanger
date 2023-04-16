@@ -84,7 +84,7 @@ public class ConfigLoader {
             if (cmd == null) throw new NullPointerException();
             return cmd;
         } catch (ParseException | NullPointerException e) {
-            formatter.printHelp(106, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
+            formatter.printHelp(130, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
                     "\nParameters:", options,
                     "\nFeature requests and bug reports: https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/issues");
             System.exit(1);
@@ -94,7 +94,7 @@ public class ConfigLoader {
 
     private static void exitIfHelp(CommandLine cmd, Options options, HelpFormatter formatter) {
         if (cmd.hasOption("help")) {
-            formatter.printHelp(106, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
+            formatter.printHelp(130, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
                     "\nParameters:", options,
                     "\nFeature requests and bug reports: https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/issues");
             System.exit(0);
