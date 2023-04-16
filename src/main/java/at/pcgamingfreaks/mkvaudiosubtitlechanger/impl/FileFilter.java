@@ -21,6 +21,7 @@ public class FileFilter {
             return true;
         }
 
+        ResultStatistic.getInstance().total();
         ResultStatistic.getInstance().excluded();
         return false;
     }

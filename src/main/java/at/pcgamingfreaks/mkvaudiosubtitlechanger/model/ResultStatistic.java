@@ -116,7 +116,7 @@ public class ResultStatistic {
 
     @Override
     public String toString() {
-        return "ResultStatistic[" + "filesTotal=" + filesTotal +
+        return "ResultStatistic: " + "filesTotal=" + filesTotal +
                 ", excluded=" + excluded +
                 ", shouldChange=" + shouldChange +
                 " (failedChanging=" + failedChanging +
@@ -124,7 +124,6 @@ public class ResultStatistic {
                 "), noSuitableConfigFound=" + noSuitableConfigFound +
                 ", alreadyFits=" + alreadyFits +
                 ", failed=" + failed +
-                ", runtime=" + formatTimer() +
-                ']';
+                ", runtime=" + formatTimer();
     }
 }

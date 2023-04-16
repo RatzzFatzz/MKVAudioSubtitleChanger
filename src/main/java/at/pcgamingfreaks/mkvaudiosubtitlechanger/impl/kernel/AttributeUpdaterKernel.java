@@ -115,6 +115,7 @@ public abstract class AttributeUpdaterKernel {
      * @param fileInfoDto contains information about file and desired configuration.
      */
     protected void updateFile(FileInfoDto fileInfoDto) {
+        statistic.total();
         switch (fileInfoDto.getStatus()) {
             case CHANGE_NECESSARY:
                 statistic.shouldChange();
@@ -139,7 +140,6 @@ public abstract class AttributeUpdaterKernel {
         }
 
         try {
-            statistic.total();
             processor.update(fileInfo.getFile(), fileInfo);
             statistic.success();
             log.info("Updated {}", fileInfo.getFile().getAbsolutePath());
