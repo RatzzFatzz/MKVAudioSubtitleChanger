@@ -100,7 +100,6 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
         log.info("No coherent match found for {}", file.getAbsoluteFile());
 
         for (FileInfoDto fileInfo : fileInfos) {
-            statistic.total();
             if (!Config.getInstance().isForceCoherent()) {
                 super.process(fileInfo.getFile());
             } else {
