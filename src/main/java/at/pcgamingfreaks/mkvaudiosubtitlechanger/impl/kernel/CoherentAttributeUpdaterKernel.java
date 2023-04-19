@@ -85,7 +85,8 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
                 processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks, config);
             }
 
-            if (fileInfos.stream().allMatch(elem -> elem.getDesiredSubtitleLane() != null && elem.getDesiredAudioLane() != null)) {
+            if (fileInfos.stream().allMatch(elem -> ("OFF".equals(config.getSubtitleLanguage()) || elem.getDesiredSubtitleLane() != null)
+                    && elem.getDesiredAudioLane() != null)) {
                 log.info("Found {}/{} match for {}", config.getAudioLanguage(), config.getSubtitleLanguage(), file.getAbsolutePath());
                 fileInfos.forEach(this::updateFile);
                 return; // match found, end process here
