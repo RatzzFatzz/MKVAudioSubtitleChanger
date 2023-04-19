@@ -111,9 +111,10 @@ public class MkvFileProcessor implements FileProcessor {
             Optional<FileAttribute> desiredAudio = detectDesiredTrack(config.getAudioLanguage(), audioTracks).findFirst();
             Optional<FileAttribute> desiredSubtitle = detectDesiredSubtitleTrack(config.getSubtitleLanguage(), subtitleTracks).findFirst();
 
-            if (desiredAudio.isPresent() && desiredSubtitle.isPresent()) {
+            if (desiredAudio.isPresent() && ("OFF".equals(config.getSubtitleLanguage()) || desiredSubtitle.isPresent())) {
+                info.setMatchedConfig(config);
                 info.setDesiredAudioLane(desiredAudio.get());
-                info.setDesiredSubtitleLane(desiredSubtitle.get());
+                info.setDesiredSubtitleLane(desiredSubtitle.orElse(null));
                 break;
             }
         }
@@ -169,7 +170,9 @@ public class MkvFileProcessor implements FileProcessor {
                     sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
             }
-            sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredSubtitleLane().getId()));
+            if (fileInfo.getDesiredSubtitleLane() != null) {
+                sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredSubtitleLane().getId()));
+            }
         }
 
         if (fileInfo.areForcedTracksDifferent()) {
@@ -178,6 +181,7 @@ public class MkvFileProcessor implements FileProcessor {
             }
         }
 
+        log.info(sb.toString());
         InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
         String output = IOUtils.toString(new InputStreamReader(inputstream));
         log.debug(output);

@@ -18,15 +18,25 @@ public class FileInfoDto {
     private Set<FileAttribute> desiredForcedSubtitleLanes;
     private FileAttribute desiredAudioLane;
     private FileAttribute desiredSubtitleLane;
+    private AttributeConfig matchedConfig;
 
     public boolean isAudioDifferent() {
         return desiredAudioLane != null &&
-                (defaultAudioLanes == null || !defaultAudioLanes.contains(desiredAudioLane));
+                (defaultAudioLanes == null || !defaultAudioLanes.contains(desiredAudioLane) || defaultAudioLanes.size() > 1);
     }
 
     public boolean isSubtitleDifferent() {
-        return desiredSubtitleLane != null &&
-                (defaultSubtitleLanes == null || !defaultSubtitleLanes.contains(desiredSubtitleLane));
+        return isSubtitleMatchDifferent() || isSubtitleOFF();
+    }
+
+    private boolean isSubtitleMatchDifferent() {
+        return desiredSubtitleLane != null
+                && (defaultSubtitleLanes == null || !defaultSubtitleLanes.contains(desiredSubtitleLane) || defaultAudioLanes.size() > 1);
+    }
+
+    private boolean isSubtitleOFF() {
+        return desiredSubtitleLane == null && "OFF".equals(matchedConfig.getSubtitleLanguage()) &&
+                (defaultAudioLanes != null || !defaultAudioLanes.isEmpty());
     }
 
     public boolean areForcedTracksDifferent() {
