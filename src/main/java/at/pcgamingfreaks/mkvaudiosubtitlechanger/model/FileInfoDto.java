@@ -31,12 +31,12 @@ public class FileInfoDto {
 
     private boolean isSubtitleMatchDifferent() {
         return desiredSubtitleLane != null
-                && (defaultSubtitleLanes == null || !defaultSubtitleLanes.contains(desiredSubtitleLane) || defaultAudioLanes.size() > 1);
+                && (defaultSubtitleLanes == null || !defaultSubtitleLanes.contains(desiredSubtitleLane) || defaultSubtitleLanes.size() > 1);
     }
 
     private boolean isSubtitleOFF() {
         return desiredSubtitleLane == null && "OFF".equals(matchedConfig.getSubtitleLanguage()) &&
-                (defaultAudioLanes != null || !defaultAudioLanes.isEmpty());
+                (defaultSubtitleLanes != null && !defaultSubtitleLanes.isEmpty());
     }
 
     public boolean areForcedTracksDifferent() {
