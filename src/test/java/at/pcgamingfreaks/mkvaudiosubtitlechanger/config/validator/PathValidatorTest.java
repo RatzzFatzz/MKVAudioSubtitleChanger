@@ -20,13 +20,12 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.config.ValidationResult.INVALID;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.LIBRARY;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_DIR;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_FILE;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TestUtil.argumentsOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PathValidatorTest {
-    private static final String TEST_DIR = "src/test/resources/test-dir";
-    private static final String TEST_FILE = "src/test/resources/test-dir/test-file.mkv";
-
     private static CommandLineParser parser;
     private static Options options;
 
