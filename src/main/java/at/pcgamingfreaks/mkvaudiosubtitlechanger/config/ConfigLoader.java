@@ -93,7 +93,7 @@ public class ConfigLoader {
     }
 
     private static void exitIfHelp(CommandLine cmd, Options options, HelpFormatter formatter) {
-        if (cmd.hasOption("help")) {
+        if (cmd.hasOption(HELP.prop())) {
             formatter.printHelp(130, "java -jar MKVAudioSubtitlesChanger.jar -l <path_to_library>",
                     "\nParameters:", options,
                     "\nFeature requests and bug reports: https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/issues");
