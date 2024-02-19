@@ -156,7 +156,7 @@ public class MkvFileProcessor implements FileProcessor {
         sb.append(format("\"%s\" ", file.getAbsolutePath()));
 
         if (fileInfo.isAudioDifferent()) {
-            if (fileInfo.getDefaultAudioLanes() != null && !fileInfo.getDefaultSubtitleLanes().isEmpty()) {
+            if (fileInfo.getDefaultAudioLanes() != null && !fileInfo.getDefaultAudioLanes().isEmpty()) {
                 for (FileAttribute track: fileInfo.getDefaultAudioLanes()) {
                     sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
