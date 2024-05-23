@@ -30,6 +30,7 @@ public class MkvFileProcessor implements FileProcessor {
 
     private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0 ";
     private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1 ";
+    private static final String DISABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=0 ";
     private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1 ";
 
     @SuppressWarnings("unchecked")
@@ -69,8 +70,8 @@ public class MkvFileProcessor implements FileProcessor {
 
             log.debug(fileAttributes.toString());
         } catch (IOException e) {
-            e.printStackTrace();
-            log.error("File could not be found or loaded!");
+            log.error("File could not be found or loaded: ", e);
+            System.out.println("File could not be found or loaded: " + file.getAbsolutePath());
         }
         return fileAttributes;
     }
@@ -80,21 +81,17 @@ public class MkvFileProcessor implements FileProcessor {
      */
     @Override
     public void detectDefaultTracks(FileInfoDto info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks) {
-        Set<FileAttribute> detectedForcedSubtitleLanes = new HashSet<>();
         for (FileAttribute attribute : attributes) {
-            if (attribute.isDefaultTrack() && AUDIO.equals(attribute.getType()))
-                info.getDefaultAudioLanes().add(attribute);
-            if (attribute.isDefaultTrack() && SUBTITLES.equals(attribute.getType()))
-                info.getDefaultSubtitleLanes().add(attribute);
-            if (attribute.isForcedTrack() && SUBTITLES.equals(attribute.getType()))
-                detectedForcedSubtitleLanes.add(attribute);
-        }
+            if (AUDIO.equals(attribute.getType())) {
+                if (attribute.isDefaultTrack()) info.getExistingDefaultAudioLanes().add(attribute);
+                if (attribute.isForcedTrack()) info.getExistingForcedAudioLanes().add(attribute);
+            } else if (SUBTITLES.equals(attribute.getType())) {
+                if (attribute.isDefaultTrack()) info.getExistingDefaultSubtitleLanes().add(attribute);
 
-        info.setDesiredForcedSubtitleLanes(attributes.stream()
-                .filter(e -> !nonForcedTracks.contains(e))
-                .filter(e -> !detectedForcedSubtitleLanes.contains(e))
-                .collect(Collectors.toSet())
-        );
+                if (attribute.isForcedTrack()) info.getExistingForcedSubtitleLanes().add(attribute);
+                else if (!nonForcedTracks.contains(attribute)) info.getDesiredForcedSubtitleLanes().add(attribute);
+            }
+        }
     }
 
     /**
@@ -113,8 +110,8 @@ public class MkvFileProcessor implements FileProcessor {
 
             if (desiredAudio.isPresent() && ("OFF".equals(config.getSubtitleLanguage()) || desiredSubtitle.isPresent())) {
                 info.setMatchedConfig(config);
-                info.setDesiredAudioLane(desiredAudio.get());
-                info.setDesiredSubtitleLane(desiredSubtitle.orElse(null));
+                info.setDesiredDefaultAudioLane(desiredAudio.get());
+                info.setDesiredDefaultSubtitleLane(desiredSubtitle.orElse(null));
                 break;
             }
         }
@@ -156,22 +153,28 @@ public class MkvFileProcessor implements FileProcessor {
         sb.append(format("\"%s\" ", file.getAbsolutePath()));
 
         if (fileInfo.isAudioDifferent()) {
-            if (fileInfo.getDefaultAudioLanes() != null && !fileInfo.getDefaultAudioLanes().isEmpty()) {
-                for (FileAttribute track: fileInfo.getDefaultAudioLanes()) {
+            if (fileInfo.getExistingDefaultAudioLanes() != null && !fileInfo.getExistingDefaultAudioLanes().isEmpty()) {
+                for (FileAttribute track: fileInfo.getExistingDefaultAudioLanes()) {
                     sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
             }
-            sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredAudioLane().getId()));
+            sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredDefaultAudioLane().getId()));
+        }
+
+        if (!fileInfo.getExistingForcedAudioLanes().isEmpty()) {
+            for (FileAttribute track: fileInfo.getExistingForcedAudioLanes()) {
+                sb.append(format(DISABLE_FORCED_TRACK, track.getId()));
+            }
         }
 
         if (fileInfo.isSubtitleDifferent()) {
-            if (fileInfo.getDefaultSubtitleLanes() != null && !fileInfo.getDefaultSubtitleLanes().isEmpty()) {
-                for (FileAttribute track: fileInfo.getDefaultSubtitleLanes()) {
+            if (fileInfo.getExistingDefaultSubtitleLanes() != null && !fileInfo.getExistingDefaultSubtitleLanes().isEmpty()) {
+                for (FileAttribute track: fileInfo.getExistingDefaultSubtitleLanes()) {
                     sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
             }
-            if (fileInfo.getDesiredSubtitleLane() != null) {
-                sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredSubtitleLane().getId()));
+            if (fileInfo.getDesiredDefaultSubtitleLane() != null) {
+                sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredDefaultSubtitleLane().getId()));
             }
         }
 
