@@ -11,9 +11,7 @@ import me.tongfei.progressbar.ProgressBarBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -85,16 +83,16 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
                 processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks, config);
             }
 
-            if (fileInfos.stream().allMatch(elem -> ("OFF".equals(config.getSubtitleLanguage()) || elem.getDesiredSubtitleLane() != null)
-                    && elem.getDesiredAudioLane() != null)) {
+            if (fileInfos.stream().allMatch(elem -> ("OFF".equals(config.getSubtitleLanguage()) || elem.getDesiredDefaultSubtitleLane() != null)
+                    && elem.getDesiredDefaultAudioLane() != null)) {
                 log.info("Found {}/{} match for {}", config.getAudioLanguage(), config.getSubtitleLanguage(), file.getAbsolutePath());
                 fileInfos.forEach(this::updateFile);
                 return; // match found, end process here
             }
 
             fileInfos.forEach(f -> {
-                f.setDesiredAudioLane(null);
-                f.setDesiredSubtitleLane(null);
+                f.setDesiredDefaultAudioLane(null);
+                f.setDesiredDefaultSubtitleLane(null);
             });
         }
 

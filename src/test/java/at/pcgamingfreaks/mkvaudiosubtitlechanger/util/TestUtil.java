@@ -31,15 +31,15 @@ public class TestUtil {
 
     public static FileInfoDto createFileInfo(Set<FileAttribute> defaultAudio, FileAttribute desiredAudio) {
         FileInfoDto fileInfoDto = new FileInfoDto(null);
-        fileInfoDto.setDefaultAudioLanes(defaultAudio);
-        fileInfoDto.setDesiredAudioLane(desiredAudio);
+        fileInfoDto.setExistingDefaultAudioLanes(defaultAudio);
+        fileInfoDto.setDesiredDefaultAudioLane(desiredAudio);
         return fileInfoDto;
     }
 
     public static FileInfoDto createFileInfo(Set<FileAttribute> defaultSubtitle, FileAttribute desiredSubtitle, AttributeConfig config) {
         FileInfoDto fileInfoDto = new FileInfoDto(null);
-        fileInfoDto.setDefaultSubtitleLanes(defaultSubtitle);
-        fileInfoDto.setDesiredSubtitleLane(desiredSubtitle);
+        fileInfoDto.setExistingDefaultSubtitleLanes(defaultSubtitle);
+        fileInfoDto.setDesiredDefaultSubtitleLane(desiredSubtitle);
         fileInfoDto.setMatchedConfig(config);
         return fileInfoDto;
     }

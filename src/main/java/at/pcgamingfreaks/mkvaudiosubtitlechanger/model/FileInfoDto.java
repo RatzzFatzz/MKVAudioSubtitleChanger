@@ -13,16 +13,21 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class FileInfoDto {
     private final File file;
-    private Set<FileAttribute> defaultAudioLanes = new HashSet<>();
-    private Set<FileAttribute> defaultSubtitleLanes = new HashSet<>();
-    private Set<FileAttribute> desiredForcedSubtitleLanes;
-    private FileAttribute desiredAudioLane;
-    private FileAttribute desiredSubtitleLane;
+
+    private Set<FileAttribute> existingDefaultAudioLanes = new HashSet<>();
+    private Set<FileAttribute> existingForcedAudioLanes = new HashSet<>();
+
+    private Set<FileAttribute> existingDefaultSubtitleLanes = new HashSet<>();
+    private Set<FileAttribute> existingForcedSubtitleLanes = new HashSet<>();
+
+    private Set<FileAttribute> desiredForcedSubtitleLanes = new HashSet<>();
+    private FileAttribute desiredDefaultAudioLane;
+    private FileAttribute desiredDefaultSubtitleLane;
     private AttributeConfig matchedConfig;
 
     public boolean isAudioDifferent() {
-        return desiredAudioLane != null &&
-                (defaultAudioLanes == null || !defaultAudioLanes.contains(desiredAudioLane) || defaultAudioLanes.size() > 1);
+        return desiredDefaultAudioLane != null &&
+                (existingDefaultAudioLanes == null || !existingDefaultAudioLanes.contains(desiredDefaultAudioLane) || existingDefaultAudioLanes.size() > 1);
     }
 
     public boolean isSubtitleDifferent() {
@@ -30,17 +35,17 @@ public class FileInfoDto {
     }
 
     private boolean isSubtitleMatchDifferent() {
-        return desiredSubtitleLane != null
-                && (defaultSubtitleLanes == null || !defaultSubtitleLanes.contains(desiredSubtitleLane) || defaultSubtitleLanes.size() > 1);
+        return desiredDefaultSubtitleLane != null
+                && (existingDefaultSubtitleLanes == null || !existingDefaultSubtitleLanes.contains(desiredDefaultSubtitleLane) || existingDefaultSubtitleLanes.size() > 1);
     }
 
     private boolean isSubtitleOFF() {
-        return desiredSubtitleLane == null && "OFF".equals(matchedConfig.getSubtitleLanguage()) &&
-                (defaultSubtitleLanes != null && !defaultSubtitleLanes.isEmpty());
+        return desiredDefaultSubtitleLane == null && "OFF".equals(matchedConfig.getSubtitleLanguage()) &&
+                (existingDefaultSubtitleLanes != null && !existingDefaultSubtitleLanes.isEmpty());
     }
 
     public boolean areForcedTracksDifferent() {
-        return desiredForcedSubtitleLanes.size() > 0;
+        return !desiredForcedSubtitleLanes.isEmpty();
     }
 
     public FileStatus getStatus() {
@@ -51,24 +56,24 @@ public class FileInfoDto {
     }
 
     private boolean isUnableToApplyConfig() {
-        return desiredAudioLane == null && desiredSubtitleLane == null;
+        return desiredDefaultAudioLane == null && desiredDefaultSubtitleLane == null;
     }
 
     private boolean isAlreadySuitable() {
-        return defaultAudioLanes.contains(desiredAudioLane) && defaultSubtitleLanes.contains(desiredSubtitleLane);
+        return existingDefaultAudioLanes.contains(desiredDefaultAudioLane) && existingDefaultSubtitleLanes.contains(desiredDefaultSubtitleLane);
     }
 
     private boolean isChangeNecessary() {
-        return isAudioDifferent() || isSubtitleDifferent() || areForcedTracksDifferent();
+        return isAudioDifferent() || isSubtitleDifferent() || areForcedTracksDifferent() || !existingForcedAudioLanes.isEmpty();
     }
 
     @Override
     public String toString() {
-        return "[" + "defaultAudioLanes=" + defaultAudioLanes +
-                ", defaultSubtitleLanes=" + defaultSubtitleLanes +
+        return "[" + "defaultAudioLanes=" + existingDefaultAudioLanes +
+                ", defaultSubtitleLanes=" + existingDefaultSubtitleLanes +
                 ", desiredForcedSubtitleLanes=" + desiredForcedSubtitleLanes +
-                ", desiredAudioLane=" + desiredAudioLane +
-                ", desiredSubtitleLane=" + desiredSubtitleLane +
+                ", desiredAudioLane=" + desiredDefaultAudioLane +
+                ", desiredSubtitleLane=" + desiredDefaultSubtitleLane +
                 ']';
     }
 }
