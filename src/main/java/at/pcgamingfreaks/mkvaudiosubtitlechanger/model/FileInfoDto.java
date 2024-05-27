@@ -45,7 +45,7 @@ public class FileInfoDto {
     }
 
     public boolean areForcedTracksDifferent() {
-        return desiredForcedSubtitleLanes.size() > 0;
+        return !desiredForcedSubtitleLanes.isEmpty();
     }
 
     public FileStatus getStatus() {
@@ -64,7 +64,7 @@ public class FileInfoDto {
     }
 
     private boolean isChangeNecessary() {
-        return isAudioDifferent() || isSubtitleDifferent() || areForcedTracksDifferent() || !existingForcedSubtitleLanes.isEmpty();
+        return isAudioDifferent() || isSubtitleDifferent() || areForcedTracksDifferent() || !existingForcedAudioLanes.isEmpty();
     }
 
     @Override
