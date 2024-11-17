@@ -3,6 +3,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validator;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import org.apache.commons.lang3.math.NumberUtils;
 
+@Deprecated
 public class ThreadValidator extends ConfigValidator<Integer>{
     public ThreadValidator(ConfigProperty property, boolean required, Integer defaultValue) {
         super(property, required, defaultValue);

@@ -2,6 +2,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ class ConfigLoaderTest {
 
     @Test
     void initConfig() {
-        String[] sut = new String[]{"-a", "ger:ger", "-l", TEST_FILE,
+        String[] sut = new String[]{"-a", "ger:ger", "eng:eng", "-l", TEST_FILE,
                 "-s", "-cf", "-n",
                 "-c", "2",
                 "-t", "4",
@@ -21,15 +22,16 @@ class ConfigLoaderTest {
                 "-ck", "testCommentary",
                 "-ps", "testPreferred"
         };
-        ConfigLoader.initConfig(sut);
+        CommandLine.populateCommand(Config.getInstance(), sut);
 
         assertTrue(Config.getInstance().getLibraryPath().exists());
-        assertEquals(List.of(new AttributeConfig("ger", "ger")), Config.getInstance().getAttributeConfig());
+        assertEquals(List.of(new AttributeConfig("ger", "ger"), new AttributeConfig("eng", "eng")),
+                Config.getInstance().getAttributeConfig());
 
         assertTrue(Config.getInstance().isSafeMode());
         assertTrue(Config.getInstance().isForceCoherent());
         assertTrue(Config.getInstance().isOnlyNewFiles());
-        assertNotNull(Config.getInstance().getFilterDate());
+        assertNull(Config.getInstance().getFilterDate());
 
         assertEquals(2, Config.getInstance().getCoherent());
         assertEquals(4, Config.getInstance().getThreads());

@@ -19,6 +19,7 @@ import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
 import net.harawata.appdirs.AppDirsFactory;
+import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;

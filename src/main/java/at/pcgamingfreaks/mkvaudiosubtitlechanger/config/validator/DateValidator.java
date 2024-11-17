@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.Date;
 
 @Slf4j
+@Deprecated
 public class DateValidator extends ConfigValidator<Date> {
     private static final Date INVALID_DATE = new Date(0);
     private static final Date DEFAULT_DATE = new Date(1000);

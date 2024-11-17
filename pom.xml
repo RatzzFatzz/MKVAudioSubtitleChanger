@@ -6,7 +6,7 @@
 
     <groupId>at.pcgamingfreaks</groupId>
     <artifactId>MKVAudioSubtitleChanger</artifactId>
-    <version>3.0.2</version>
+    <version>4.0.0</version>
 
     <build>
         <defaultGoal>clean package</defaultGoal>
@@ -126,6 +126,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.24</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.6</version>
         </dependency>
         <!-- region logging -->
         <dependency>

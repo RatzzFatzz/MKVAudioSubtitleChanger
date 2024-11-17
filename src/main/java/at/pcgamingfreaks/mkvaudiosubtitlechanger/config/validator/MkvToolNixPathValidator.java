@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix.MKV_MERGER;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix.MKV_PROP_EDIT;
 
+@Deprecated
 public class MkvToolNixPathValidator extends PathValidator {
     private static final String EXE = ".exe";
 
