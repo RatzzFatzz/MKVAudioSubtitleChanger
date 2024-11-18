@@ -7,9 +7,14 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.CoherentAttributeUp
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.DefaultAttributeUpdaterKernel;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
+
+import java.util.Set;
 
 @Slf4j
 @CommandLine.Command(mixinStandardHelpOptions = true, versionProvider = ProjectUtil.class)
@@ -17,15 +22,32 @@ public class Main implements Runnable {
 
     @Getter
     @CommandLine.ArgGroup(exclusive = false)
-    private Config config = Config.getInstance();
+    private Config config;
+
+    @CommandLine.Spec
+    CommandLine.Model.CommandSpec spec;
 
     @Override
     public void run() {
+        validate();
         Config.setInstance(config);
         AttributeUpdaterKernel kernel = Config.getInstance().getCoherent() != null
                 ? new CoherentAttributeUpdaterKernel(new MkvFileCollector(), new CachedMkvFileProcessor())
                 : new DefaultAttributeUpdaterKernel(new MkvFileCollector(), new CachedMkvFileProcessor());
         kernel.execute();
+    }
+
+    private void validate() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<Config>> violations = validator.validate(config);
+
+        if (!violations.isEmpty()) {
+            StringBuilder errorMsg = new StringBuilder();
+            for (ConstraintViolation<Config> violation : violations) {
+                errorMsg.append("ERROR: ").append(violation.getMessage()).append("\n");
+            }
+            throw new CommandLine.ParameterException(spec.commandLine(), errorMsg.toString());
+        }
     }
 
     public static void main(String[] args) {

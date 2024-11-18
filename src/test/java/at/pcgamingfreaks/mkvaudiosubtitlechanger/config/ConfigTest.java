@@ -9,7 +9,7 @@ import java.util.List;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_FILE;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConfigLoaderTest {
+class ConfigTest {
 
     @Test
     void initConfig() {
