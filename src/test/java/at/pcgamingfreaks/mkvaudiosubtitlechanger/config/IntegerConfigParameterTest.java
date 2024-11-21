@@ -23,16 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IntegerConfigParameterTest {
 
-    private static CommandLineParser parser;
-    private static Options options;
-
-    @BeforeAll
-    static void before() {
-        parser = new DefaultParser();
-        options = new Options();
-        options.addOption(optionOf(THREADS, "t", THREADS.args()));
-    }
-
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
                 Arguments.of(args(), 2, (Function<Config, Integer>) Config::getThreads),

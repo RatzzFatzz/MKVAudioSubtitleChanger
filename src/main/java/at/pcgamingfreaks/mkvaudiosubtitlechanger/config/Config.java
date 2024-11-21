@@ -58,13 +58,20 @@ public class Config {
     @CommandLine.Option(names = {"-d", "--filter-date"}, defaultValue = CommandLine.Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
 
-    @CommandLine.Option(names = {"-fk", "--force-keywords"}, description = "Additional keywords to identify forced tracks")
+    @CommandLine.Option(names = {"-fk", "--force-keywords"}, arity = "1..*",
+            description = "Additional keywords to identify forced tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
     private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
-    @CommandLine.Option(names = {"-ck", "--commentary-keywords"}, description = "Additional keywords to identify commentary tracks")
+
+    @CommandLine.Option(names = {"-ck", "--commentary-keywords"}, arity = "1..*",
+            description = "Additional keywords to identify commentary tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
     private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
-    @CommandLine.Option(names = {"-e", "--excluded-directory"}, description = "Directories to be excluded, combines with config file")
+
+    @CommandLine.Option(names = {"-e", "--excluded-directory"}, arity = "1..*",
+            description = "Directories to be excluded, combines with config file")
     private Set<String> excludedDirectories = new HashSet<>();
-    @CommandLine.Option(names = {"-ps", "--preferred-subtiltes"}, description = "Additional keywords to prefer specific subtitle tracks")
+
+    @CommandLine.Option(names = {"-ps", "--preferred-subtiltes"}, arity = "1..*",
+            description = "Additional keywords to prefer specific subtitle tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
     private Set<String> preferredSubtitles = new HashSet<>(Arrays.asList("unstyled"));
 
     @CommandLine.Option(names = {"-a"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class)

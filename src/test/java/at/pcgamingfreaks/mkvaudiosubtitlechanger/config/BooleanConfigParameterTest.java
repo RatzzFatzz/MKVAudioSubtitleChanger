@@ -20,15 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 class BooleanConfigParameterTest {
-    private static CommandLineParser parser;
-    private static Options options;
-
-    @BeforeAll
-    static void before() {
-        parser = new DefaultParser();
-        options = new Options();
-        options.addOption(optionOf(SAFE_MODE, SAFE_MODE.abrv(), SAFE_MODE.args()));
-    }
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(

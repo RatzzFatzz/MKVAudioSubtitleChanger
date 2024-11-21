@@ -24,20 +24,6 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsU
 import static org.junit.jupiter.api.Assertions.*;
 
 class AttributeConfigTest {
-    private static CommandLineParser parser;
-    private static Options options;
-
-    @BeforeAll
-    static void before() {
-        parser = new DefaultParser();
-        options = new Options();
-        options.addOption(optionOf(ATTRIBUTE_CONFIG, ATTRIBUTE_CONFIG.abrv(), ATTRIBUTE_CONFIG.args()));
-    }
-
-    @BeforeEach
-    void beforeEach() {
-        Config.getInstance(true);
-    }
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
