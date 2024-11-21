@@ -17,7 +17,16 @@ import picocli.CommandLine;
 import java.util.Set;
 
 @Slf4j
-@CommandLine.Command(mixinStandardHelpOptions = true, versionProvider = ProjectUtil.class)
+@CommandLine.Command(
+        name = "mkvasc",
+        usageHelpWidth = 120,
+        customSynopsis = {
+                "mkvasc -a <attributeConfig>... -l <libraryPath> [-s]",
+                "Example: mkvasc -a eng:eng eng:ger -l /mnt/media/ -s"
+        },
+        mixinStandardHelpOptions = true,
+        versionProvider = ProjectUtil.class
+)
 public class Main implements Runnable {
 
     @Getter

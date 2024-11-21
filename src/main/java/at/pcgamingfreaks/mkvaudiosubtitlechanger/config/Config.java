@@ -29,14 +29,17 @@ public class Config {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private static Config config = null;
-    @Getter(AccessLevel.NONE)
-    CommandLineParser parser = new DefaultParser();
-    @Getter(AccessLevel.NONE)
-    HelpFormatter formatter = new HelpFormatter();
 
     private File configPath;
+
+    @CommandLine.Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class)
+    private List<AttributeConfig> attributeConfig;
     @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
     private File libraryPath;
+
+    @CommandLine.Option(names = {"-s", "--safemode"}, description = "test run (no files will be changes)")
+    private boolean safeMode;
+
     @Getter(AccessLevel.NONE)
     @CommandLine.Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "C:\\Program Files\\MKVToolNix", description = "path to mkvtoolnix installation")
     private File mkvToolNix;
@@ -44,38 +47,32 @@ public class Config {
     @Min(value = 1)
     @CommandLine.Option(names = {"-t", "--threads"}, defaultValue = "2", description = "thread count (default: ${DEFAULT-VALUE})")
     private int threads;
-    @CommandLine.Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
-    private Pattern includePattern;
-    @CommandLine.Option(names = {"-s", "--safemode"}, description = "test run (no files will be changes)")
-    private boolean safeMode;
 
     @CommandLine.Option(names = {"-c", "--coherent"}, description = "try to match all files in dir of depth with the same attribute config")
     private Integer coherent;
     @CommandLine.Option(names = {"-cf", "--force-coherent"}, description = "changes are only applied if it's a coherent match")
     private boolean forceCoherent;
+
     @CommandLine.Option(names = {"-n"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
     private boolean onlyNewFiles;
     @CommandLine.Option(names = {"-d", "--filter-date"}, defaultValue = CommandLine.Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
-
-    @CommandLine.Option(names = {"-fk", "--force-keywords"}, arity = "1..*",
-            description = "Additional keywords to identify forced tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
-    private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
-
-    @CommandLine.Option(names = {"-ck", "--commentary-keywords"}, arity = "1..*",
-            description = "Additional keywords to identify commentary tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
-    private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
-
+    @CommandLine.Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
+    private Pattern includePattern;
     @CommandLine.Option(names = {"-e", "--excluded-directory"}, arity = "1..*",
             description = "Directories to be excluded, combines with config file")
     private Set<String> excludedDirectories = new HashSet<>();
 
+    @CommandLine.Option(names = {"-fk", "--force-keywords"}, arity = "1..*",
+            description = "Additional keywords to identify forced tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
+    private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
+    @CommandLine.Option(names = {"-ck", "--commentary-keywords"}, arity = "1..*",
+            description = "Additional keywords to identify commentary tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
+    private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
     @CommandLine.Option(names = {"-ps", "--preferred-subtiltes"}, arity = "1..*",
             description = "Additional keywords to prefer specific subtitle tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
     private Set<String> preferredSubtitles = new HashSet<>(Arrays.asList("unstyled"));
 
-    @CommandLine.Option(names = {"-a"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class)
-    private List<AttributeConfig> attributeConfig;
 
     public static Config getInstance() {
         return getInstance(false);
@@ -109,8 +106,6 @@ public class Config {
     @Override
     public String toString() {
         return new StringJoiner(", ", Config.class.getSimpleName() + "[", "]")
-                .add("parser=" + parser)
-                .add("formatter=" + formatter)
                 .add("configPath=" + configPath)
                 .add("libraryPath=" + libraryPath)
                 .add("mkvToolNix=" + mkvToolNix)
