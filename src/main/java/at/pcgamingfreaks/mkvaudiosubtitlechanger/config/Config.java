@@ -32,9 +32,13 @@ public class Config {
 
     private File configPath;
 
+    @CommandLine.Spec
+    CommandLine.Model.CommandSpec spec;
+
     @CommandLine.Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class)
     private List<AttributeConfig> attributeConfig;
-    @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
+
+    @Setter(AccessLevel.NONE)
     private File libraryPath;
 
     @CommandLine.Option(names = {"-s", "--safemode"}, description = "test run (no files will be changes)")
@@ -73,6 +77,12 @@ public class Config {
             description = "Additional keywords to prefer specific subtitle tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
     private Set<String> preferredSubtitles = new HashSet<>(Arrays.asList("unstyled"));
 
+
+    @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
+    public void setLibraryPath(File libraryPath) {
+        this.libraryPath = libraryPath;
+        if (!libraryPath.exists()) throw new CommandLine.ParameterException(spec.commandLine(), "Path does not exist: " + libraryPath.getAbsolutePath());
+    }
 
     public static Config getInstance() {
         return getInstance(false);
