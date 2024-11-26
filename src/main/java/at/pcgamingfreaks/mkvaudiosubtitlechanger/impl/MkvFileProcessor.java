@@ -39,7 +39,7 @@ public class MkvFileProcessor implements FileProcessor {
         Map<String, Object> jsonMap;
         List<FileAttribute> fileAttributes = new ArrayList<>();
         try {
-            String command = format("\"%s\"", Config.getInstance().getPathFor(MkvToolNix.MKV_MERGER));
+            String command = format("\"%s\"", Config.getInstance().getPathFor(MkvToolNix.MKV_MERGE));
             String[] arguments = new String[]{
                     command,
                     "--identify",

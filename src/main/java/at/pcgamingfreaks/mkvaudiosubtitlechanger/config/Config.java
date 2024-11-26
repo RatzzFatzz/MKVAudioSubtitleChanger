@@ -2,23 +2,16 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
-import com.sun.jna.platform.win32.Netapi32Util;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.lang3.SystemUtils;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -46,7 +39,6 @@ public class Config {
     @CommandLine.Option(names = {"-s", "--safemode"}, description = "test run (no files will be changes)")
     private boolean safeMode;
 
-    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private File mkvToolNix;
 
@@ -79,23 +71,26 @@ public class Config {
             description = "Additional keywords to prefer specific subtitle tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
     private Set<String> preferredSubtitles = new HashSet<>(Arrays.asList("unstyled"));
 
-
     @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
     public void setLibraryPath(File libraryPath) {
         if (!libraryPath.exists()) throw new CommandLine.ParameterException(spec.commandLine(), "Path does not exist: " + libraryPath.getAbsolutePath());
         this.libraryPath = libraryPath;
     }
 
-    @CommandLine.Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "C:\\Program Files\\MKVToolNix", description = "path to mkvtoolnix installation")
+    static {
+        // Set default value into system properties to picocli can read the conditional value
+        System.setProperty("DEFAULT_MKV_TOOL_NIX", SystemUtils.IS_OS_WINDOWS ? "C:\\Program Files\\MKVToolNix" : "/usr/bin/");
+    }
+
+    @CommandLine.Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "${DEFAULT_MKV_TOOL_NIX}", description = "path to mkvtoolnix installation")
     public void setMkvToolNix(File mkvToolNix) {
         this.mkvToolNix = mkvToolNix;
         if (!mkvToolNix.exists()
-                || !Path.of(getPathFor(MkvToolNix.MKV_MERGER)).toFile().exists()
-                || !Path.of(getPathFor(MkvToolNix.MKV_PROP_EDIT)).toFile().exists()) {
+                || !Path.of(getPathFor(MkvToolNix.MKV_MERGE, SystemUtils.IS_OS_WINDOWS)).toFile().exists()
+                || !Path.of(getPathFor(MkvToolNix.MKV_PROP_EDIT, SystemUtils.IS_OS_WINDOWS)).toFile().exists()) {
             throw new CommandLine.ParameterException(spec.commandLine(),
                     "Invalid path to mkvtoolnix installation: " + mkvToolNix.getAbsolutePath());
         }
-
     }
 
     public static Config getInstance() {
@@ -119,8 +114,13 @@ public class Config {
      * @return absolute path to desired application.
      */
     public String getPathFor(MkvToolNix application) {
-        return mkvToolNix.getAbsolutePath().endsWith("/") ? mkvToolNix.getAbsolutePath() + application :
-                mkvToolNix.getAbsolutePath() + "/" + application;
+        return mkvToolNix.getAbsolutePath().endsWith("/")
+                ? mkvToolNix.getAbsolutePath() + application
+                : mkvToolNix.getAbsolutePath() + "/" + application;
+    }
+
+    public String getPathFor(MkvToolNix application, boolean isWindows) {
+        return getPathFor(application) + (isWindows ? ".exe" : "");
     }
 
     public String getNormalizedLibraryPath() {
