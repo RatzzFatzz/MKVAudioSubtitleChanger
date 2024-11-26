@@ -22,15 +22,6 @@ import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TestUtil.argumentsO
 import static org.junit.jupiter.api.Assertions.*;
 
 class PatternConfigParameterTest {
-    private static CommandLineParser parser;
-    private static Options options;
-
-    @BeforeAll
-    static void before() {
-        parser = new DefaultParser();
-        options = new Options();
-        options.addOption(optionOf(INCLUDE_PATTERN, INCLUDE_PATTERN.abrv(), INCLUDE_PATTERN.args()));
-    }
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(

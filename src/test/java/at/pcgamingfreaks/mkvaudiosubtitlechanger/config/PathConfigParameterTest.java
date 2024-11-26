@@ -1,10 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,23 +12,12 @@ import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.LIBRARY;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.CommandLineOptionsUtil.optionOf;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_DIR;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_FILE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PathConfigParameterTest {
-    private static CommandLineParser parser;
-    private static Options options;
-
-    @BeforeAll
-    static void before() {
-        parser = new DefaultParser();
-        options = new Options();
-        options.addOption(optionOf(LIBRARY, LIBRARY.abrv(), LIBRARY.args()));
-    }
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(

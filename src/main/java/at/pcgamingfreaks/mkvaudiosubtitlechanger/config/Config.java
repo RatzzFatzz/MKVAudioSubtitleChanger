@@ -18,6 +18,8 @@ import org.apache.commons.cli.HelpFormatter;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -45,7 +47,7 @@ public class Config {
     private boolean safeMode;
 
     @Getter(AccessLevel.NONE)
-    @CommandLine.Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "C:\\Program Files\\MKVToolNix", description = "path to mkvtoolnix installation")
+    @Setter(AccessLevel.NONE)
     private File mkvToolNix;
 
     @Min(value = 1)
@@ -80,8 +82,20 @@ public class Config {
 
     @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
     public void setLibraryPath(File libraryPath) {
-        this.libraryPath = libraryPath;
         if (!libraryPath.exists()) throw new CommandLine.ParameterException(spec.commandLine(), "Path does not exist: " + libraryPath.getAbsolutePath());
+        this.libraryPath = libraryPath;
+    }
+
+    @CommandLine.Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "C:\\Program Files\\MKVToolNix", description = "path to mkvtoolnix installation")
+    public void setMkvToolNix(File mkvToolNix) {
+        this.mkvToolNix = mkvToolNix;
+        if (!mkvToolNix.exists()
+                || !Path.of(getPathFor(MkvToolNix.MKV_MERGER)).toFile().exists()
+                || !Path.of(getPathFor(MkvToolNix.MKV_PROP_EDIT)).toFile().exists()) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "Invalid path to mkvtoolnix installation: " + mkvToolNix.getAbsolutePath());
+        }
+
     }
 
     public static Config getInstance() {
