@@ -11,6 +11,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import picocli.CommandLine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -44,6 +48,13 @@ class IntegerConfigParameterTest {
         Main sut = new Main();
         assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("-t")));
         assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("--threads")));
-        assertThrows(CommandLine.ParameterException.class, () -> Main.main(args("--threads", "0")));
+
+        StringWriter writer = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(writer);
+        CommandLine underTest = new  CommandLine(sut);
+        underTest = underTest.setErr(printWriter);
+        underTest.execute(args("-t", "0"));
+        printWriter.flush();
+        assertTrue(writer.toString().contains("ERROR: threads must be greater than or equal to 1"));
     }
 }

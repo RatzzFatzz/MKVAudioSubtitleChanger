@@ -53,7 +53,7 @@ public class Main implements Runnable {
         if (!violations.isEmpty()) {
             StringBuilder errorMsg = new StringBuilder();
             for (ConstraintViolation<Config> violation : violations) {
-                errorMsg.append("ERROR: ").append(violation.getMessage()).append("\n");
+                errorMsg.append("ERROR: ").append(violation.getPropertyPath()).append(" ").append(violation.getMessage()).append("\n");
             }
             throw new CommandLine.ParameterException(spec.commandLine(), errorMsg.toString());
         }
