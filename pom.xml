@@ -16,33 +16,67 @@
 
     <profiles>
         <profile>
-            <id>native</id>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <version>0.10.1</version>
-                        <extensions>true</extensions>
+                        <groupId>org.panteleyev</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>1.4.0</version>
                         <executions>
                             <execution>
-                                <id>build-native</id>
-                                <goals>
-                                    <goal>compile-no-fork</goal>
-                                </goals>
+                                <id>windows</id>
+                                <configuration>
+                                    <resourceDir>${project.basedir}/src/main/resources/</resourceDir>
+                                    <type>EXE</type>
+                                    <winConsole>true</winConsole>
+                                    <winShortcut>false</winShortcut>
+                                    <winMenu>false</winMenu>
+                                </configuration>
                                 <phase>package</phase>
-                            </execution>
-                            <execution>
-                                <id>test-native</id>
                                 <goals>
-                                    <goal>test</goal>
+                                    <goal>jpackage</goal>
                                 </goals>
-                                <phase>test</phase>
                             </execution>
                         </executions>
-                        <configuration>
-                            <fallback>false</fallback>
-                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>linux</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.panteleyev</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <id>linux-deb</id>
+                                <configuration>
+                                    <type>DEB</type>
+                                    <installDir>/usr/local/bin</installDir>
+                                    <linuxShortcut>false</linuxShortcut>
+                                    <linuxPackageName>mkvasc</linuxPackageName>
+                                    <linuxDebMaintainer>your@email.com</linuxDebMaintainer>
+                                </configuration>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jpackage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -62,6 +96,7 @@
                 <includes>
                     <include>language-codes</include>
                     <include>project.properties</include>
+                    <include>LICENSE</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -144,11 +179,36 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-jpackage-input</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jpackage-input</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${project.artifactId}-${project.version}.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>
                 <executions>
                     <execution>
+                        <id>archive</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -158,18 +218,26 @@
                             <descriptors>
                                 <descriptor>maven/assembly.xml</descriptor>
                             </descriptors>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <archive>
-                                <manifest>
-                                    <addClasspath>true</addClasspath>
-                                    <mainClass>${mainClass}</mainClass>
-                                </manifest>
-                            </archive>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <name>${project.artifactId}</name>
+                    <vendor>RatzzFatzz</vendor>
+                    <appVersion>${project.version}</appVersion>
+
+                    <destination>target/installer</destination>
+
+                    <input>target/jpackage-input</input>
+                    <mainClass>at.pcgamingfreaks.mkvaudiosubtitlechanger.Main</mainClass>
+                    <mainJar>${project.artifactId}-${project.version}.jar</mainJar>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -196,7 +264,7 @@
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.7.6</version>
+            <version>4.7.5</version>
         </dependency>
 
         <!-- Hibernate Validator -->
@@ -210,14 +278,14 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.el</artifactId>
-            <version>4.0.2</version>
+            <version>5.0.0-M1</version>
         </dependency>
 
         <!-- Expression Language API -->
         <dependency>
             <groupId>jakarta.el</groupId>
             <artifactId>jakarta.el-api</artifactId>
-            <version>4.0.0</version>
+            <version>5.0.1</version>
         </dependency>
 
         <!-- Jakarta Bean Validation -->
@@ -231,69 +299,69 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.18.0</version>
+            <version>2.22.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.18.0</version>
+            <version>2.22.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j18-impl -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j18-impl</artifactId>
-            <version>2.18.0</version>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.22.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.13.4</version>
+            <version>2.16.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.4.2</version>
+            <version>2.16.0</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
-            <version>1.5.0</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <version>3.13.0</version>
         </dependency>
         <dependency>
             <groupId>me.tongfei</groupId>
             <artifactId>progressbar</artifactId>
-            <version>0.9.5</version>
+            <version>0.10.0</version>
         </dependency>
         <!-- endregion -->
         <!-- region unit-tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.0</version>
+            <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.0</version>
+            <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <version>2.0.2-beta</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>5.9.0</version>
+            <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
         <!-- endregion -->
@@ -306,7 +374,7 @@
         <dependency>
             <groupId>net.harawata</groupId>
             <artifactId>appdirs</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
         </dependency>
     </dependencies>
 
