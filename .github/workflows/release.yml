@@ -9,6 +9,9 @@ jobs:
   portable-build:
     runs-on: ubuntu-latest
     steps:
+      - name: Install mkvtoolnix
+        run: sudo apt-get install -y mkvtoolnix
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -36,6 +39,9 @@ jobs:
   windows-installer-build:
     runs-on: windows-latest
     steps:
+      - name: Install mkvtoolnix
+        run: winget install -y mkvtoolnix
+
       - name: Checkout
         uses: actions/checkout@v4
 
