@@ -7,13 +7,17 @@ Configuration:
         Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
       ThresholdFilter:
         level: debug
-    File:
+    RollingFile:
       name: FileAppender
-      fileName: default.log
+      fileName: logs/application.log
+      filePattern: logs/archive/application-%d{yyyy-MM-dd}-%i.log
       PatternLayout:
         Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
       ThresholdFilter:
         level: debug
+      Policies:
+        OnStartupTriggeringPolicy:
+          minSize: 0
   Loggers:
     Root:
       level: debug

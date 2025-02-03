@@ -1,10 +1,17 @@
 Configuration:
   name: DefaultLogger
   Appenders:
+    File:
+      name: FileAppender
+      fileName: ${sys:user.home}/AppData/Roaming/MyApplication/MyApplication.log
+      PatternLayout:
+        Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
+      ThresholdFilter:
+        level: info
     RollingFile:
       name: FileAppender
-      fileName: logs/application.log
-      filePattern: logs/archive/application-%d{yyyy-MM-dd}-%i.log
+      fileName: ${sys:user.home}/AppData/Roaming/MKVAudioSubtitleChanger/logs/application.log
+      filePattern: ${sys:user.home}/AppData/Roaming/MKVAudioSubtitleChanger/logs/archive/application-%d{yyyy-MM-dd}-%i.log
       PatternLayout:
         Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
       ThresholdFilter:
