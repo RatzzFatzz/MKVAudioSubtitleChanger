@@ -47,7 +47,7 @@ jobs:
       - name: Install mkvtoolnix
         uses: crazy-max/ghaction-chocolatey@v3
         with:
-          args: choco install mkvtoolnix -y
+          args: install mkvtoolnix -y
 
       - name: Checkout
         uses: actions/checkout@v4
