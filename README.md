@@ -1,49 +1,61 @@
 ## Introduction
 
-This program helps to change audio and subtitle tracks of mkv files without rewriting the file. Only track properties will be updated.
+A streamlined solution for managing MKV files, this program leverages MKVToolNix to modify audio and subtitle track properties without the need for time-consuming file reencoding. Users can easily set their track preferences, and the application intelligently applies the best matching configuration. The tool focuses on metadata modification rather than full file rewriting, ensuring quick operations while maintaining the original file integrity. This makes it an ideal choice for managing multilingual media collections or batch processing multiple MKV files.
 ![](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/blob/master/example.gif)
 
 ## Requirements
 
- - Java 11 or higher
+ - Java 21 or newer
  - mkvtoolnix installation
  
 ## Execution
-**Minimal usage:**
-`java -jar mkvaudiosubtitlechanger.jar --library "X:/Files" --attribute-config eng:ger eng:OFF`
+### Minimal usage
+Portable: `java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF`
 
-**Safe usage (best for testing before applying to whole library):**
-`java -jar mkvaudiosubtitlechanger.jar --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
+Windows (installed): `mkvaudiosubtitlechanger.jar --library "X:/Files" --attribute-config eng:ger eng:OFF`
 
-Attribute-config must be entered in pairs: `audio:subtitle`; Example: `jpn:eng`. More about this topic
-[here](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Attribute-Config).
+### Safe usage (best for testing before applying to whole library)
+Portable: `java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
+
+Windows (installed): `mkvaudiosubtitlechanger.jar --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
+
+**Attribute-config must be entered in pairs: `audio:subtitle`; Example: `jpn:eng`. More about this topic
+[here](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Attribute-Config).**
 
 ## Available parameters
 ```
- -l,--library-path <arg>           Path to library
- -a,--attribute-config <arg>       Attribute config to decide which tracks to choose when
- -p,--config-path <arg>            Path to config file
- -m,--mkvtoolnix <arg>             Path to mkv tool nix installation
- -s,--safe-mode                    Test run (no files will be changes)
- -c,--coherent <arg>               Try to match all files in dir of depth with the same config
- -cf,--force-coherent              Force coherent and don't update anything if config fits not whole config (default: false)
- -n,--only-new-files               Sets filter-date to last successful execution (Overwrites input of filter-date)
- -d,--filter-date <arg>            Only consider files created newer than entered date (format: "dd.MM.yyyy-HH:mm:ss")
- -t,--threads <arg>                Thread count (default: 2)
- -i,--include-pattern <arg>        Include files matching pattern (default: ".*")
- -e,--excluded-directories <arg>   Directories to be excluded, combines with config file
- -fk,--forced-keywords <arg>       Additional keywords to identify forced tracks
- -ck,--commentary-keywords <arg>   Additional keywords to identify commentary tracks
- -ps,--preferred-subtitles <arg>   Additional keywords to prefer specific subtitle tracks
- -v,--version                      Display version
- -h,--help                         "For help this is" - Yoda
+   -a, --attribute-config=<attributeConfig>...
+                            List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)
+  -c, --coherent=<coherent> try to match all files in dir of depth with the same attribute config
+      -cf, --force-coherent changes are only applied if it's a coherent match
+      --commentary-keywords=<commentaryKeywords>[, <commentaryKeywords>...]...
+                            Keywords to identify commentary tracks (Defaults will be overwritten; Default: commentary, director)
+  -d, --filter-date=<filterDate>
+                            only consider files created newer than entered date (format: "dd.MM.yyyy-HH:mm:ss")
+  -e, --excluded-directory=<excludedDirectories>...
+                            Directories to be excluded, combines with config file
+      --forced-keywords=<forcedKeywords>[, <forcedKeywords>...]...
+                            Keywords to identify forced tracks (Defaults will be overwritten; Default: forced, signs, songs)
+  -h, --help                Show this help message and exit.
+  -i, --include-pattern=<includePattern>
+                            include files matching pattern (default: ".*")
+  -l, --library=<libraryPath>
+                            path to library
+  -m, --mkvtoolnix=<mkvToolNix>
+                            path to mkvtoolnix installation
+  -n, --only-new-file       sets filter-date to last successful execution (overwrites input of filter-date)
+      --preferred-subtitles=<preferredSubtitles>[, <preferredSubtitles>...]...
+                            Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: unstyled)
+  -s, --safemode            test run (no files will be changes)
+  -t, --threads=<threads>   thread count (default: 2)
+  -V, --version             Print version information and exit.
 ```
-If you need more information about how each parameter works, check out [this wiki page](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Parameters).
+If you need more information how each parameter works, check out [this wiki page](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Parameters).
 
 All parameters can also be defined in a [config file](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/How-to-config-file).
 
 ## Build requirements
-- JDK 11 or higher
+- JDK 21 or newer
 - Maven 3
 - Git
 
@@ -51,5 +63,5 @@ All parameters can also be defined in a [config file](https://github.com/RatzzFa
 ```shell
 git clone https://github.com/RatzzFatzz/MKVAudioSubtitleChanger.git
 cd MKVAudioSubtitleChanger
-mvn package
+mvn clean package -Pportable
 ```
