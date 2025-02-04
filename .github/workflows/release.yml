@@ -70,8 +70,7 @@ jobs:
         run: mvn clean package --file pom.xml -P windows
 
       - name: Upload artifacts
-        uses: skx/github-action-publish-binaries@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: AButler/upload-release-assets@v3.0
         with:
-          args: 'target/installer/*'
+          files: 'target/installer/*'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
