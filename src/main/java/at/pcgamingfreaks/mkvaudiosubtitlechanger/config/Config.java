@@ -30,7 +30,8 @@ public class Config {
     @CommandLine.Spec
     CommandLine.Model.CommandSpec spec;
 
-    @CommandLine.Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class)
+    @CommandLine.Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class,
+            description = "List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)")
     private List<AttributeConfig> attributeConfig;
 
     @Setter(AccessLevel.NONE)
@@ -51,7 +52,7 @@ public class Config {
     @CommandLine.Option(names = {"-cf", "--force-coherent"}, description = "changes are only applied if it's a coherent match")
     private boolean forceCoherent;
 
-    @CommandLine.Option(names = {"-n"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
+    @CommandLine.Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
     private boolean onlyNewFiles;
     @CommandLine.Option(names = {"-d", "--filter-date"}, defaultValue = CommandLine.Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
@@ -61,15 +62,15 @@ public class Config {
             description = "Directories to be excluded, combines with config file")
     private Set<String> excludedDirectories = new HashSet<>();
 
-    @CommandLine.Option(names = {"-fk", "--force-keywords"}, arity = "1..*",
-            description = "Additional keywords to identify forced tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
-    private Set<String> forcedKeywords = new HashSet<>(Arrays.asList("forced", "signs", "songs"));
-    @CommandLine.Option(names = {"-ck", "--commentary-keywords"}, arity = "1..*",
-            description = "Additional keywords to identify commentary tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
-    private Set<String> commentaryKeywords = new HashSet<>(Arrays.asList("commentary", "director"));
-    @CommandLine.Option(names = {"-ps", "--preferred-subtiltes"}, arity = "1..*",
-            description = "Additional keywords to prefer specific subtitle tracks (Defaults are will be overwritten; Default: ${DEFAULT-VALUE}")
-    private Set<String> preferredSubtitles = new HashSet<>(Arrays.asList("unstyled"));
+    @CommandLine.Option(names = {"--forced-keywords"}, arity = "1..*", defaultValue = "forced, signs, songs", split = ", ",
+            description = "Keywords to identify forced tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
+    private Set<String> forcedKeywords;
+    @CommandLine.Option(names = {"--commentary-keywords"}, arity = "1..*", defaultValue = "commentary, director", split = ", ",
+            description = "Keywords to identify commentary tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
+    private Set<String> commentaryKeywords;
+    @CommandLine.Option(names = {"--preferred-subtitles"}, arity = "1..*", defaultValue = "unstyled", split = ", ",
+            description = "Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
+    private Set<String> preferredSubtitles;
 
     @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
     public void setLibraryPath(File libraryPath) {

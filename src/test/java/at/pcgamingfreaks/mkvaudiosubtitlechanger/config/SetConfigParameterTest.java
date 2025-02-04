@@ -19,14 +19,14 @@ class SetConfigParameterTest {
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of(args("-ck", "test"), 1, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
-                Arguments.of(args("-ck", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
+                Arguments.of(args("--commentary-keywords", "test"), 1, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
+                Arguments.of(args("--commentary-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
                 Arguments.of(args(), 2, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
-                Arguments.of(args("-fk", "test"), 1, (Function<Config, Set<String>>) Config::getForcedKeywords),
-                Arguments.of(args("-fk", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getForcedKeywords),
+                Arguments.of(args("--forced-keywords", "test"), 1, (Function<Config, Set<String>>) Config::getForcedKeywords),
+                Arguments.of(args("--forced-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getForcedKeywords),
                 Arguments.of(args(), 3, (Function<Config, Set<String>>) Config::getForcedKeywords),
-                Arguments.of(args("-ps", "test"), 1, (Function<Config, Set<String>>) Config::getPreferredSubtitles),
-                Arguments.of(args("-ps", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getPreferredSubtitles),
+                Arguments.of(args("--preferred-subtitles", "test"), 1, (Function<Config, Set<String>>) Config::getPreferredSubtitles),
+                Arguments.of(args("--preferred-subtitles", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getPreferredSubtitles),
                 Arguments.of(args(), 1, (Function<Config, Set<String>>) Config::getPreferredSubtitles)
         );
     }
@@ -42,9 +42,9 @@ class SetConfigParameterTest {
     @Test
     void validate() {
         Main sut = new Main();
-        assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("-ck")));
-        assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("-fk")));
+        assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("--commentary-keywords")));
+        assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("--forced-keywords")));
         assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("-e")));
-        assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("-ps")));
+        assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("--preferred-subtitles")));
     }
 }

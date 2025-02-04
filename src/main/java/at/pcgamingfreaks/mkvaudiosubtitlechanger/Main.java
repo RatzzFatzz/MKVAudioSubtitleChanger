@@ -18,11 +18,12 @@ import java.util.Set;
 
 @Slf4j
 @CommandLine.Command(
-        name = "mkvasc",
+        name = "mkvaudiosubtitlechanger",
         usageHelpWidth = 120,
         customSynopsis = {
-                "mkvasc -a <attributeConfig>... -l <libraryPath> [-s]",
-                "Example: mkvasc -a eng:eng eng:ger -l /mnt/media/ -s"
+                "mkvaudiosubtitlechanger -a <attributeConfig>... -l <libraryPath> [-s]",
+                "Example: mkvaudiosubtitlechanger -a eng:eng eng:ger -l /mnt/media/ -s",
+                ""
         },
         mixinStandardHelpOptions = true,
         versionProvider = ProjectUtil.class
