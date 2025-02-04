@@ -10,7 +10,7 @@ Configuration:
     RollingFile:
       name: FileAppender
       fileName: logs/application.log
-      filePattern: logs/archive/application-%d{yyyy-MM-dd}-%i.log
+      filePattern: logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
         Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
       ThresholdFilter:
@@ -18,6 +18,16 @@ Configuration:
       Policies:
         OnStartupTriggeringPolicy:
           minSize: 0
+      DefaultRolloverStrategy:
+        max: 30
+        Delete:
+          basePath: logs/archive
+          maxDepth: 1
+          IfLastModified:
+            age: 30d
+          IfAccumulatedFileSize:
+            exceeds: 1GB
+
   Loggers:
     Root:
       level: debug

@@ -53,7 +53,7 @@ Windows (installed): `mkvaudiosubtitlechanger.jar --library "X:/Files" --attribu
 ```
 If you need more information how each parameter works, check out [this wiki page](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Parameters-v4).
 
-All parameters can also be defined in a [config file](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/How-to-config-file).
+All parameters can also be defined in a [config file](https://picocli.info/#_argument_files_for_long_command_lines).
 
 ## Build requirements
 - JDK 21 or newer
