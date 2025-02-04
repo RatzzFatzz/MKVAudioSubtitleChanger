@@ -61,6 +61,9 @@ public class Main implements Runnable {
     }
 
     public static void main(String[] args) {
+        if (args.length == 0) {
+            args = new String[] { "--help" };
+        }
         new CommandLine(Main.class).execute(args);
     }
 }
