@@ -18,9 +18,9 @@ class ConfigTest {
                 "-c", "2",
                 "-t", "4",
                 "-i", ".*[abc].*",
-                "-fk", "testForced",
-                "-ck", "testCommentary",
-                "-ps", "testPreferred"
+                "--forced-keywords", "testForced",
+                "--commentary-keywords", "testCommentary",
+                "--preferred-subtitles", "testPreferred"
         };
         CommandLine.populateCommand(Config.getInstance(), sut);
 

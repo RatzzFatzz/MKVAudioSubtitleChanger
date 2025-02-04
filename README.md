@@ -1,6 +1,7 @@
 ## Introduction
 
 A streamlined solution for managing MKV files, this program leverages MKVToolNix to modify audio and subtitle track properties without the need for time-consuming file reencoding. Users can easily set their track preferences, and the application intelligently applies the best matching configuration. The tool focuses on metadata modification rather than full file rewriting, ensuring quick operations while maintaining the original file integrity. This makes it an ideal choice for managing multilingual media collections or batch processing multiple MKV files.
+
 ![](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/blob/master/example.gif)
 
 ## Requirements
@@ -24,7 +25,7 @@ Windows (installed): `mkvaudiosubtitlechanger.jar --library "X:/Files" --attribu
 
 ## Available parameters
 ```
-   -a, --attribute-config=<attributeConfig>...
+  -a, --attribute-config=<attributeConfig>...
                             List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)
   -c, --coherent=<coherent> try to match all files in dir of depth with the same attribute config
       -cf, --force-coherent changes are only applied if it's a coherent match
@@ -50,7 +51,7 @@ Windows (installed): `mkvaudiosubtitlechanger.jar --library "X:/Files" --attribu
   -t, --threads=<threads>   thread count (default: 2)
   -V, --version             Print version information and exit.
 ```
-If you need more information how each parameter works, check out [this wiki page](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Parameters).
+If you need more information how each parameter works, check out [this wiki page](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Parameters-v4).
 
 All parameters can also be defined in a [config file](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/How-to-config-file).
 
