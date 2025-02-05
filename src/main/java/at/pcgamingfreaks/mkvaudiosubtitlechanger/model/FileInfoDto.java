@@ -40,8 +40,9 @@ public class FileInfoDto {
     }
 
     private boolean isSubtitleOFF() {
-        return desiredDefaultSubtitleLane == null && "OFF".equals(matchedConfig.getSubtitleLanguage()) &&
-                (existingDefaultSubtitleLanes != null && !existingDefaultSubtitleLanes.isEmpty());
+        return desiredDefaultSubtitleLane == null
+                && (matchedConfig != null && "OFF".equals(matchedConfig.getSubtitleLanguage()))
+                && (existingDefaultSubtitleLanes != null && !existingDefaultSubtitleLanes.isEmpty());
     }
 
     public boolean areForcedTracksDifferent() {
@@ -50,7 +51,7 @@ public class FileInfoDto {
 
     public FileStatus getStatus() {
         if (isChangeNecessary()) return FileStatus.CHANGE_NECESSARY;
-        if (isUnableToApplyConfig()) return FileStatus.UNABLE_TO_APPLY;
+        if (isUnableToApplyConfig()) return FileStatus.NO_SUITABLE_CONFIG;
         if (isAlreadySuitable()) return FileStatus.ALREADY_SUITED;
         return FileStatus.UNKNOWN;
     }

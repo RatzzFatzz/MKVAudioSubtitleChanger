@@ -19,7 +19,6 @@ import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
 import net.harawata.appdirs.AppDirsFactory;
-import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,6 +99,12 @@ public abstract class AttributeUpdaterKernel {
         FileInfoDto fileInfo = new FileInfoDto(file);
         List<FileAttribute> attributes = processor.loadAttributes(file);
 
+        if (attributes == null || attributes.isEmpty()) {
+            statistic.total();
+            statistic.failure();
+            return;
+        }
+
         List<FileAttribute> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
         List<FileAttribute> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
 
@@ -122,7 +127,7 @@ public abstract class AttributeUpdaterKernel {
                 statistic.shouldChange();
                 commitChange(fileInfoDto);
                 break;
-            case UNABLE_TO_APPLY:
+            case NO_SUITABLE_CONFIG:
                 statistic.noSuitableConfigFound();
                 break;
             case ALREADY_SUITED:
