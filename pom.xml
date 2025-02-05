@@ -90,6 +90,22 @@
                                     </resources>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>filter-windows-installer-info</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/wix-resources</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/wix/resources</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
@@ -107,7 +123,7 @@
                             <mainClass>at.pcgamingfreaks.mkvaudiosubtitlechanger.Main</mainClass>
                             <mainJar>${project.artifactId}-${project.version}.jar</mainJar>
 
-                            <resourceDir>${project.basedir}/src/wix/resources/</resourceDir>
+                            <resourceDir>${project.build.directory}/wix-resources/</resourceDir>
                             <type>EXE</type>
                             <winConsole>true</winConsole>
                             <winShortcut>false</winShortcut>

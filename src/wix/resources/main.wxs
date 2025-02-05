@@ -24,12 +24,12 @@
   <?endif?>
 
   <?define JpProductCode="*"?>
-  <?define JpAppName="MKVAudioSubtitleChanger"?>
-  <?define JpAppVersion="4.0.0"?>
-  <?define JpAppVendor="RatzzFatzz"?>
+  <?define JpAppName="${project.artifactId}"?>
+  <?define JpAppVersion="${project.version}"?>
+  <?define JpAppVendor="${project.maintainer}"?>
   <?define JpProductUpgradeCode="a9527300-d364-4cc3-a392-94035065d8c9"?>
-  <?define JpAppDescription="Change audio and subtitle tracks for .mkv files"?>
-  <?define JpHelpURL="github.com/RatzzFatzz"?>
+  <?define JpAppDescription="${project.description}"?>
+  <?define JpHelpURL="github.com/${project.maintainer}/${project.artifactId}"?>
 
   <Product
     Id="$(var.JpProductCode)"
