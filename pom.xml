@@ -11,6 +11,11 @@
     <properties>
         <mainClass>at.pcgamingfreaks.mkvaudiosubtitlechanger.Main</mainClass>
 
+        <project.maintainer>RatzzFatzz</project.maintainer>
+        <project.maintainer.mail>github.contact@ratzloeffel.de</project.maintainer.mail>
+        <project.description>Command-line utility for batch-managing default audio and subtitle tracks in MKV files.</project.description>
+
+        <java-version>21</java-version>
         <lombok-version>1.18.36</lombok-version>
     </properties>
 
@@ -66,24 +71,54 @@
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
                         <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-jpackage-input</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/jpackage-input</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>${project.artifactId}-${project.version}.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.panteleyev</groupId>
                         <artifactId>jpackage-maven-plugin</artifactId>
                         <version>1.6.5</version>
+                        <configuration>
+                            <name>${project.artifactId}</name>
+                            <vendor>RatzzFatzz</vendor>
+                            <appVersion>${project.version}</appVersion>
+
+                            <destination>target/installer</destination>
+
+                            <input>target/jpackage-input</input>
+                            <mainClass>at.pcgamingfreaks.mkvaudiosubtitlechanger.Main</mainClass>
+                            <mainJar>${project.artifactId}-${project.version}.jar</mainJar>
+
+                            <resourceDir>${project.basedir}/src/wix/resources/</resourceDir>
+                            <type>EXE</type>
+                            <winConsole>true</winConsole>
+                            <winShortcut>false</winShortcut>
+                            <winMenu>false</winMenu>
+                            <javaOptions>
+                                <javaOption>-Dlog4j.configurationFile=log4j2-windows.yaml</javaOption>
+                            </javaOptions>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>windows</id>
-                                <configuration>
-                                    <resourceDir>${project.basedir}/src/main/resources/</resourceDir>
-                                    <type>EXE</type>
-                                    <winConsole>true</winConsole>
-                                    <winShortcut>false</winShortcut>
-                                    <winMenu>false</winMenu>
-                                    <javaOptions>
-                                        <javaOption>-Dlog4j.configurationFile=log4j2-installed.yaml</javaOption>
-                                    </javaOptions>
-                                </configuration>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>jpackage</goal>
@@ -97,25 +132,71 @@
         <profile>
             <id>linux</id>
             <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>log4j2-debian.yaml</include>
+                        </includes>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
-                        <groupId>org.panteleyev</groupId>
-                        <artifactId>jpackage-maven-plugin</artifactId>
-                        <version>1.4.0</version>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
                         <executions>
                             <execution>
-                                <id>linux-deb</id>
-                                <configuration>
-                                    <type>DEB</type>
-                                    <installDir>/usr/local/bin</installDir>
-                                    <linuxShortcut>false</linuxShortcut>
-                                    <linuxPackageName>mkvasc</linuxPackageName>
-                                    <linuxDebMaintainer>your@email.com</linuxDebMaintainer>
-                                </configuration>
+                                <id>filter-linux-package-info</id>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>jpackage</goal>
+                                    <goal>copy-resources</goal>
                                 </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/debian-package-info</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/deb</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>jdeb</artifactId>
+                        <groupId>org.vafer</groupId>
+                        <version>1.13</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jdeb</goal>
+                                </goals>
+                                <configuration>
+                                    <dataSet>
+                                        <!-- JAR file -->
+                                        <data>
+                                            <src>${project.build.directory}/${project.build.finalName}.jar</src>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>/usr/lib/${project.artifactId}</prefix>
+                                            </mapper>
+                                        </data>
+                                        <!-- Launcher script -->
+                                        <data>
+                                            <src>${project.build.directory}/debian-package-info/bin/mkvaudiosubtitlechanger</src>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>/usr/bin</prefix>
+                                                <filemode>755</filemode>
+                                            </mapper>
+                                        </data>
+                                    </dataSet>
+                                    <controlDir>${project.build.directory}/debian-package-info/control</controlDir>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -197,8 +278,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
                     <compilerArgs>
                         <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
                     </compilerArgs>
@@ -218,51 +299,6 @@
             </plugin>
 
         </plugins>
-
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
-                    <executions>
-                        <execution>
-                            <id>copy-jpackage-input</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>copy-resources</goal>
-                            </goals>
-                            <configuration>
-                                <outputDirectory>${project.build.directory}/jpackage-input</outputDirectory>
-                                <resources>
-                                    <resource>
-                                        <directory>${project.build.directory}</directory>
-                                        <includes>
-                                            <include>${project.artifactId}-${project.version}.jar</include>
-                                        </includes>
-                                    </resource>
-                                </resources>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.panteleyev</groupId>
-                    <artifactId>jpackage-maven-plugin</artifactId>
-                    <version>1.4.0</version>
-                    <configuration>
-                        <name>${project.artifactId}</name>
-                        <vendor>RatzzFatzz</vendor>
-                        <appVersion>${project.version}</appVersion>
-
-                        <destination>target/installer</destination>
-
-                        <input>target/jpackage-input</input>
-                        <mainClass>at.pcgamingfreaks.mkvaudiosubtitlechanger.Main</mainClass>
-                        <mainJar>${project.artifactId}-${project.version}.jar</mainJar>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 
     <repositories>

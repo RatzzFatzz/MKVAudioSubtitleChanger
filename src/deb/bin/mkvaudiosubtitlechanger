@@ -1,0 +1,1 @@
+java -Dlog4j.configurationFile=log4j2-debian.yaml -jar /usr/lib/${project.artifactId}/${project.artifactId}-${project.version}.jar "$@"

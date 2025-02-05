@@ -1,0 +1,8 @@
+Package: ${project.artifactId}
+Version: ${project.version}
+Section: misc
+Priority: optional
+Architecture: all
+Depends: java-runtime (>=21), mkvtoolnix
+Maintainer: ${project.maintainer} <${project.maintainer.mail}>
+Description: ${project.description}
