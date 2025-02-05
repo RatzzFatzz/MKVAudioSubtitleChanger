@@ -184,7 +184,7 @@ public class MkvFileProcessor implements FileProcessor {
             }
         }
 
-        log.info(sb.toString());
+        log.debug(sb.toString());
         InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
         String output = IOUtils.toString(new InputStreamReader(inputstream));
         log.debug(output);
