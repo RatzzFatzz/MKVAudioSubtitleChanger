@@ -3,8 +3,8 @@ Configuration:
   Appenders:
     RollingFile:
       name: FileAppender
-      fileName: logs/application.log
-      filePattern: logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
+      fileName: /var/log/MKVAudioSubtitleChanger/application.log
+      filePattern: /var/log/MKVAudioSubtitleChanger/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
         Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
       ThresholdFilter:
@@ -15,7 +15,7 @@ Configuration:
       DefaultRolloverStrategy:
         max: 30
         Delete:
-          basePath: logs/archive
+          basePath: archive
           maxDepth: 1
           IfLastModified:
             age: 30d

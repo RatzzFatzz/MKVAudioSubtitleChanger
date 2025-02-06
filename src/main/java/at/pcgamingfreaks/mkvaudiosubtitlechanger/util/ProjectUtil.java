@@ -1,10 +1,12 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.util;
 
+import picocli.CommandLine;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ProjectUtil {
+public class ProjectUtil implements CommandLine.IVersionProvider {
     private static final Properties PROJECT_PROPERTIES = new Properties();
 
     static {
@@ -15,8 +17,8 @@ public class ProjectUtil {
         }
     }
 
-    public static String getVersion() {
-        return PROJECT_PROPERTIES.getProperty("version");
+    public String[] getVersion() {
+        return new String[] {getProjectName() + " " + PROJECT_PROPERTIES.getProperty("version")};
     }
 
     public static String getProjectName() {

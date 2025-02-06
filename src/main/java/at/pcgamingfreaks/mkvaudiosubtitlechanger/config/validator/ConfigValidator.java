@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 
 @Slf4j
 @RequiredArgsConstructor
+@Deprecated
 public abstract class ConfigValidator<FieldType> {
     protected final ConfigProperty property;
     protected final boolean required;

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum MkvToolNix {
-    MKV_MERGER("mkvmerge"),
+    MKV_MERGE("mkvmerge"),
     MKV_PROP_EDIT("mkvpropedit");
 
     private final String file;

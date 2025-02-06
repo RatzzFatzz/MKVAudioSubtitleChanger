@@ -5,6 +5,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import java.io.File;
 import java.nio.file.Path;
 
+@Deprecated
 public class PathValidator extends ConfigValidator<File> {
 
     public PathValidator(ConfigProperty property, boolean required, File defaultValue) {

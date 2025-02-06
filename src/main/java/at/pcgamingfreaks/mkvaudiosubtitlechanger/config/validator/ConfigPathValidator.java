@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
+@Deprecated
 public class ConfigPathValidator extends PathValidator {
     public ConfigPathValidator(ConfigProperty property, boolean required) {
         super(property, required, null);

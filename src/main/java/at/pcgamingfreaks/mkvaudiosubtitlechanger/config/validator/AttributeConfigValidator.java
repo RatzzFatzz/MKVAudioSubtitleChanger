@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isAudioLanguageValid;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isLanguageValid;
 
+@Deprecated
 public class AttributeConfigValidator extends ConfigValidator<List<AttributeConfig>> {
     private static final String SEPARATOR = ":";
 

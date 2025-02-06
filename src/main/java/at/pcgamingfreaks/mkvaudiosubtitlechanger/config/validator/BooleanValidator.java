@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty.ARGUMENTS;
 
+@Deprecated
 public class BooleanValidator extends ConfigValidator<Boolean> {
 
     public BooleanValidator(ConfigProperty property, boolean required) {

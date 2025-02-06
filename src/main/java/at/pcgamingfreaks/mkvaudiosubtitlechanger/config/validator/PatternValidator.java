@@ -5,6 +5,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ConfigProperty;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+@Deprecated
 public class PatternValidator extends ConfigValidator<Pattern> {
     private static final Pattern EMPTY_PATTERN = Pattern.compile("");
 

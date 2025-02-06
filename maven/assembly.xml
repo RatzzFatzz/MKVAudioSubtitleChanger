@@ -15,10 +15,6 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>${project.basedir}/config-template.yaml</source>
-            <outputDirectory>/</outputDirectory>
-        </file>
-        <file>
             <source></source>
         </file>
     </files>

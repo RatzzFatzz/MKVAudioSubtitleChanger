@@ -3,27 +3,35 @@
 name: Build and release
 on:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
-  build:
+  portable-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Install mkvtoolnix
+        run: sudo apt-get install -y mkvtoolnix
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set timezone
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: "Europe/Berlin"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4.7.0
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup workspace
         run: mkdir artifacts
 
       - name: Build with Maven
         run: |
-          mvn clean package --file pom.xml
+          mvn clean package --file pom.xml -P portable
           cp target/M*.{zip,tar} artifacts/
 
       - name: Upload artifacts
@@ -32,4 +40,72 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: 'artifacts/M*'
-        
+
+  debian-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install mkvtoolnix
+        run: sudo apt-get install -y mkvtoolnix
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set timezone
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: "Europe/Berlin"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup workspace
+        run: mkdir artifacts
+
+      - name: Build with Maven
+        run: |
+          mvn clean package --file pom.xml -P linux
+          cp target/M*.deb artifacts/
+
+      - name: Upload artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: 'artifacts/M*'
+
+  windows-installer-build:
+    runs-on: windows-latest
+    steps:
+      - name: Install mkvtoolnix
+        uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args: install mkvtoolnix -y
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set timezone
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneWindows: "Berlin Standard Time"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup workspace
+        run: mkdir artifacts
+
+      - name: Build with Maven
+        run: mvn clean package --file pom.xml -P windows
+
+      - name: Upload artifacts
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          files: 'target/installer/*'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

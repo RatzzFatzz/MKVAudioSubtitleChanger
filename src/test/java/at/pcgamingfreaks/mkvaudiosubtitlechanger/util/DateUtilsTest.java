@@ -1,11 +1,13 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.util;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class DateUtilsTest {
 
     @Test

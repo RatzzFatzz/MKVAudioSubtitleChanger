@@ -2,7 +2,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 public enum FileStatus {
     CHANGE_NECESSARY,
-    UNABLE_TO_APPLY,
+    NO_SUITABLE_CONFIG,
     ALREADY_SUITED,
     UNKNOWN;
 }

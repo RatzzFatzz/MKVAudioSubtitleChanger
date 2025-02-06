@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class SetValidator extends ConfigValidator<Set<String>> {
     private final boolean append;
 
