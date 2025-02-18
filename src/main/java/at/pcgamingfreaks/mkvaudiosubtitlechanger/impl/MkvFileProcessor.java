@@ -39,16 +39,17 @@ public class MkvFileProcessor implements FileProcessor {
         Map<String, Object> jsonMap;
         List<FileAttribute> fileAttributes = new ArrayList<>();
         try {
-            String command = format("\"%s\"", Config.getInstance().getPathFor(MkvToolNix.MKV_MERGE));
-            String[] arguments = new String[]{
-                    command,
+            String[] command = new String[]{
+                    Config.getInstance().getPathFor(MkvToolNix.MKV_MERGE),
                     "--identify",
                     "--identification-format",
                     "json",
-                    file.getAbsoluteFile().toString()
+                    file.getAbsolutePath()
             };
 
-            InputStream inputStream = Runtime.getRuntime().exec(arguments).getInputStream();
+            log.debug("{}", String.join(" ", command));
+            InputStream inputStream = Runtime.getRuntime().exec(command)
+                    .getInputStream();
             jsonMap = mapper.readValue(inputStream, Map.class);
             List<Map<String, Object>> tracks = (List<Map<String, Object>>) jsonMap.get("tracks");
             if (tracks == null) {
@@ -154,7 +155,7 @@ public class MkvFileProcessor implements FileProcessor {
 
         if (fileInfo.isAudioDifferent()) {
             if (fileInfo.getExistingDefaultAudioLanes() != null && !fileInfo.getExistingDefaultAudioLanes().isEmpty()) {
-                for (FileAttribute track: fileInfo.getExistingDefaultAudioLanes()) {
+                for (FileAttribute track : fileInfo.getExistingDefaultAudioLanes()) {
                     sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
             }
@@ -162,14 +163,14 @@ public class MkvFileProcessor implements FileProcessor {
         }
 
         if (!fileInfo.getExistingForcedAudioLanes().isEmpty()) {
-            for (FileAttribute track: fileInfo.getExistingForcedAudioLanes()) {
+            for (FileAttribute track : fileInfo.getExistingForcedAudioLanes()) {
                 sb.append(format(DISABLE_FORCED_TRACK, track.getId()));
             }
         }
 
         if (fileInfo.isSubtitleDifferent()) {
             if (fileInfo.getExistingDefaultSubtitleLanes() != null && !fileInfo.getExistingDefaultSubtitleLanes().isEmpty()) {
-                for (FileAttribute track: fileInfo.getExistingDefaultSubtitleLanes()) {
+                for (FileAttribute track : fileInfo.getExistingDefaultSubtitleLanes()) {
                     sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
             }
