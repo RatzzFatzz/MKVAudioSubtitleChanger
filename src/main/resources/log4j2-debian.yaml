@@ -3,8 +3,8 @@ Configuration:
   Appenders:
     RollingFile:
       name: FileAppender
-      fileName: /var/log/MKVAudioSubtitleChanger/application.log
-      filePattern: /var/log/MKVAudioSubtitleChanger/archive/application-%d{yyyy-MM-dd}-%i.log.gz
+      fileName: ${sys:user.home}/.local/mkvaudiosubtitlechanger/logs/application.log
+      filePattern: ${sys:user.home}/.local/mkvaudiosubtitlechanger/logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
         Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
       ThresholdFilter:
