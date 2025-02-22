@@ -12,13 +12,11 @@ A streamlined solution for managing MKV files, this program leverages MKVToolNix
 ## Execution
 ### Minimal usage
 Portable: `java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF`
-
-Windows (installed): `mkvaudiosubtitlechanger.jar --library "X:/Files" --attribute-config eng:ger eng:OFF`
+Windows & Linux (installed): `mkvaudiosubtitlechanger --library "X:/Files" --attribute-config eng:ger eng:OFF`
 
 ### Safe usage (best for testing before applying to whole library)
 Portable: `java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
-
-Windows (installed): `mkvaudiosubtitlechanger.jar --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
+Windows & Linux (installed): `mkvaudiosubtitlechanger --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
 
 **Attribute-config must be entered in pairs: `audio:subtitle`; Example: `jpn:eng`. More about this topic
 [here](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Attribute-Config).**
