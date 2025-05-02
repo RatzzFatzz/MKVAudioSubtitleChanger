@@ -31,6 +31,7 @@ Windows & Linux (installed): `mkvaudiosubtitlechanger --library "X:/Files" --att
                             Keywords to identify commentary tracks (Defaults will be overwritten; Default: commentary, director)
   -d, --filter-date=<filterDate>
                             only consider files created newer than entered date (format: "dd.MM.yyyy-HH:mm:ss")
+      --debug               Enable debug logging
   -e, --excluded-directory=<excludedDirectories>...
                             Directories to be excluded, combines with config file
       --forced-keywords=<forcedKeywords>[, <forcedKeywords>...]...
