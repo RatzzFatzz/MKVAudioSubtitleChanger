@@ -6,9 +6,9 @@ Configuration:
       fileName: ${sys:user.home}/.local/mkvaudiosubtitlechanger/logs/application.log
       filePattern: ${sys:user.home}/.local/mkvaudiosubtitlechanger/logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
+        Pattern: "%d{DEFAULT} | %-5level | %thread | %C{1} | %msg %n %throwable"
       ThresholdFilter:
-        level: info
+        level: debug
       Policies:
         OnStartupTriggeringPolicy:
           minSize: 0

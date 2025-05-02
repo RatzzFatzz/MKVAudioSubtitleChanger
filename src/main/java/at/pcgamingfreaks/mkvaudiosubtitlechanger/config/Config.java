@@ -72,6 +72,9 @@ public class Config {
             description = "Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
     private Set<String> preferredSubtitles;
 
+    @CommandLine.Option(names = {"--debug"}, description = "Enable debug logging")
+    private boolean debug;
+
     @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
     public void setLibraryPath(File libraryPath) {
         if (!libraryPath.exists()) throw new CommandLine.ParameterException(spec.commandLine(), "Path does not exist: " + libraryPath.getAbsolutePath());

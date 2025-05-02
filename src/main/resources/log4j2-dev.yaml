@@ -4,7 +4,7 @@ Configuration:
     Console:
       name: Console_Out
       PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
+        Pattern: "%d{DEFAULT} | %-5level | %thread | %C{1} | %msg %n %throwable"
       ThresholdFilter:
         level: debug
     RollingFile:
@@ -12,7 +12,7 @@ Configuration:
       fileName: logs/application.log
       filePattern: logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %thread | %msg %n %throwable"
+        Pattern: "%d{DEFAULT} | %-5level | %thread | %C{1} | %msg %n %throwable"
       ThresholdFilter:
         level: debug
       Policies:

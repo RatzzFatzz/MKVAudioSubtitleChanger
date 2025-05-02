@@ -12,6 +12,8 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
 import java.util.Set;
@@ -39,6 +41,9 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
+        if (config.isDebug()) {
+            Configurator.setRootLevel(Level.DEBUG);
+        }
         validate();
         Config.setInstance(config);
         AttributeUpdaterKernel kernel = Config.getInstance().getCoherent() != null

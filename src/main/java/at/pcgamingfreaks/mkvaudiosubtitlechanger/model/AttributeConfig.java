@@ -26,6 +26,10 @@ public class AttributeConfig {
         return Objects.hash(audioLanguage, subtitleLanguage);
     }
 
+    public String toStringShort()  {
+        return audioLanguage + ":" + subtitleLanguage;
+    }
+
     @Override
     public String toString() {
         return "AttributeConfig{"

@@ -41,7 +41,7 @@ public class FileFilter {
             BasicFileAttributes attributes = Files.readAttributes(pathName.toPath(), BasicFileAttributes.class);
             return isNewer(DateUtils.convert(attributes.creationTime().toMillis()));
         } catch (IOException e) {
-            log.warn("File attributes could not be read.", e);
+            log.warn("File attributes could not be read", e);
         }
         return true;
     }

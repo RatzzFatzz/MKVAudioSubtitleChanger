@@ -28,10 +28,10 @@ public class MkvFileProcessor implements FileProcessor {
     private static final SubtitleTrackComparator subtitleTrackComparator =
             new SubtitleTrackComparator(Config.getInstance().getPreferredSubtitles().toArray(new String[0]));
 
-    private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0 ";
-    private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1 ";
-    private static final String DISABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=0 ";
-    private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1 ";
+    private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0";
+    private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1";
+    private static final String DISABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=0";
+    private static final String ENABLE_FORCED_TRACK = "--edit track:%s --set flag-forced=1";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -47,7 +47,7 @@ public class MkvFileProcessor implements FileProcessor {
                     file.getAbsolutePath()
             };
 
-            log.debug("{}", String.join(" ", command));
+            log.debug("Executing '{}': {}", file.getAbsolutePath(), String.join(" ", command));
             InputStream inputStream = Runtime.getRuntime().exec(command)
                     .getInputStream();
             jsonMap = mapper.readValue(inputStream, Map.class);
@@ -69,7 +69,7 @@ public class MkvFileProcessor implements FileProcessor {
                 }
             }
 
-            log.debug(fileAttributes.toString());
+            log.debug("File attributes of '{}': {}", file.getAbsolutePath(), fileAttributes.toString());
         } catch (IOException e) {
             log.error("File could not be found or loaded: ", e);
             System.out.println("File could not be found or loaded: " + file.getAbsolutePath());
@@ -149,46 +149,50 @@ public class MkvFileProcessor implements FileProcessor {
      */
     @Override
     public void update(File file, FileInfoDto fileInfo) throws IOException, MkvToolNixException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(format("\"%s\" ", Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT)));
-        sb.append(format("\"%s\" ", file.getAbsolutePath()));
+        List<String> command = new ArrayList<>();
+        command.add(Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT));
+        command.add(String.format(file.getAbsolutePath()));
 
         if (fileInfo.isAudioDifferent()) {
             if (fileInfo.getExistingDefaultAudioLanes() != null && !fileInfo.getExistingDefaultAudioLanes().isEmpty()) {
                 for (FileAttribute track : fileInfo.getExistingDefaultAudioLanes()) {
-                    sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
+                    command.addAll(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
             }
-            sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredDefaultAudioLane().getId()));
+            command.addAll(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredDefaultAudioLane().getId()));
         }
 
         if (!fileInfo.getExistingForcedAudioLanes().isEmpty()) {
             for (FileAttribute track : fileInfo.getExistingForcedAudioLanes()) {
-                sb.append(format(DISABLE_FORCED_TRACK, track.getId()));
+                command.addAll(format(DISABLE_FORCED_TRACK, track.getId()));
             }
         }
 
         if (fileInfo.isSubtitleDifferent()) {
             if (fileInfo.getExistingDefaultSubtitleLanes() != null && !fileInfo.getExistingDefaultSubtitleLanes().isEmpty()) {
                 for (FileAttribute track : fileInfo.getExistingDefaultSubtitleLanes()) {
-                    sb.append(format(DISABLE_DEFAULT_TRACK, track.getId()));
+                    command.addAll(format(DISABLE_DEFAULT_TRACK, track.getId()));
                 }
             }
             if (fileInfo.getDesiredDefaultSubtitleLane() != null) {
-                sb.append(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredDefaultSubtitleLane().getId()));
+                command.addAll(format(ENABLE_DEFAULT_TRACK, fileInfo.getDesiredDefaultSubtitleLane().getId()));
             }
         }
 
         if (fileInfo.areForcedTracksDifferent()) {
-            for (FileAttribute attribute : fileInfo.getDesiredForcedSubtitleLanes()) {
-                sb.append(format(ENABLE_FORCED_TRACK, attribute.getId()));
+            for (FileAttribute track : fileInfo.getDesiredForcedSubtitleLanes()) {
+                command.addAll(format(ENABLE_FORCED_TRACK, track.getId()));
             }
         }
 
-        log.debug(sb.toString());
-        InputStream inputstream = Runtime.getRuntime().exec(sb.toString()).getInputStream();
+        log.debug("Executing '{}'", String.join(" ", command));
+        InputStream inputstream = Runtime.getRuntime().exec(command.toArray(new String[0])).getInputStream();
         String output = IOUtils.toString(new InputStreamReader(inputstream));
-        log.debug(output);
+        log.debug("Result: {}", output);
         if (output.contains("Error")) throw new MkvToolNixException(output);
+    }
+
+    private List<String> format(String format, Object... args) {
+        return Arrays.asList(String.format(format, args).split(" "));
     }
 }

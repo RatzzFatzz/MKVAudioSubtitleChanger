@@ -148,10 +148,10 @@ public abstract class AttributeUpdaterKernel {
         try {
             processor.update(fileInfo.getFile(), fileInfo);
             statistic.success();
-            log.info("Updated {}", fileInfo.getFile().getAbsolutePath());
+            log.info("Commited {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getAbsolutePath());
         } catch (IOException | MkvToolNixException e) {
             statistic.failedChanging();
-            log.warn("File couldn't be updated: '{}', Error: {}", fileInfo.getFile().getAbsoluteFile(), e.getMessage());
+            log.warn("Couldn't commit {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getAbsoluteFile(), e);
         }
     }
 
