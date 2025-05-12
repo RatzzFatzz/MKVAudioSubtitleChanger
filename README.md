@@ -10,18 +10,21 @@ A streamlined solution for managing MKV files, this program leverages MKVToolNix
  - mkvtoolnix installation
  
 ## Execution
-### Minimal usage
-Portable: `java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF`
-Windows & Linux (installed): `mkvaudiosubtitlechanger --library "X:/Files" --attribute-config eng:ger eng:OFF`
+Portable: 
+```
+java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF
+```
+Windows & Linux (installed): 
+```
+mkvaudiosubtitlechanger --library "X:/Files" --attribute-config eng:ger eng:OFF
+```
 
-### Safe usage (best for testing before applying to whole library)
-Portable: `java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
-Windows & Linux (installed): `mkvaudiosubtitlechanger --library "X:/Files" --attribute-config eng:ger eng:OFF --safe-mode`
+Add `--safe-mode` oder `-s` to not change any files. This is recommended for the first executions.
 
-**Attribute-config must be entered in pairs: `audio:subtitle`; Example: `jpn:eng`. More about this topic
-[here](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Attribute-Config).**
+Attribute-config must be entered in pairs: `audio:subtitle`; Example: `jpn:eng`. More about this topic
+[here](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Attribute-Config).
 
-## Available parameters
+### Available parameters
 ```
   -a, --attribute-config=<attributeConfig>...
                             List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)
