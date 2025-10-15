@@ -100,6 +100,7 @@ public abstract class AttributeUpdaterKernel {
         List<FileAttribute> attributes = processor.loadAttributes(file);
 
         if (attributes == null || attributes.isEmpty()) {
+            log.warn("No attributes found for file {}", file);
             statistic.total();
             statistic.failure();
             return;

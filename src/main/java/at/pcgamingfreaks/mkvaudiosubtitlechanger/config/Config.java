@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Config {
+public class Config implements CommandLine.IVersionProvider {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private static Config config = null;
@@ -150,6 +150,11 @@ public class Config {
                 .add("preferredSubtitles=" + preferredSubtitles)
                 .add("attributeConfig=" + attributeConfig)
                 .toString();
+    }
+
+    @Override
+    public String[] getVersion() throws Exception {
+        return new String[0];
     }
 }
 

@@ -52,7 +52,7 @@ public class FileInfoDto {
     public FileStatus getStatus() {
         if (isChangeNecessary()) return FileStatus.CHANGE_NECESSARY;
         if (isUnableToApplyConfig()) return FileStatus.NO_SUITABLE_CONFIG;
-        if (isAlreadySuitable()) return FileStatus.ALREADY_SUITED;
+        if (isAlreadySuited()) return FileStatus.ALREADY_SUITED;
         return FileStatus.UNKNOWN;
     }
 
@@ -60,8 +60,9 @@ public class FileInfoDto {
         return desiredDefaultAudioLane == null && desiredDefaultSubtitleLane == null;
     }
 
-    private boolean isAlreadySuitable() {
-        return existingDefaultAudioLanes.contains(desiredDefaultAudioLane) && existingDefaultSubtitleLanes.contains(desiredDefaultSubtitleLane);
+    private boolean isAlreadySuited() {
+        return existingDefaultAudioLanes.contains(desiredDefaultAudioLane)
+                && (desiredDefaultSubtitleLane == null || existingDefaultSubtitleLanes.contains(desiredDefaultSubtitleLane));
     }
 
     private boolean isChangeNecessary() {
