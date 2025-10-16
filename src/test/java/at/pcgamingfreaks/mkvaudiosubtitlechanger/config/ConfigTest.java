@@ -22,7 +22,7 @@ class ConfigTest {
                 "--commentary-keywords", "testCommentary",
                 "--preferred-subtitles", "testPreferred"
         };
-        CommandLine.populateCommand(Config.getInstance(), sut);
+        CommandLine.populateCommand(Config.getInstance(true), sut);
 
         assertTrue(Config.getInstance().getLibraryPath().exists());
         assertEquals(List.of(new AttributeConfig("ger", "ger"), new AttributeConfig("eng", "eng")),
@@ -41,6 +41,5 @@ class ConfigTest {
         assertTrue(Config.getInstance().getPreferredSubtitles().contains("testPreferred"));
 
         assertNull(Config.getInstance().getConfigPath());
-
     }
 }

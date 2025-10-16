@@ -5,7 +5,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -67,13 +67,13 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
     void process(File file, int depth) {
         // TODO: Implement level crawl if coherence is not possible on user entered depth
         // IMPL idea: recursive method call, cache needs to be implemented
-        List<FileInfoDto> fileInfos = collector.loadFiles(file.getAbsolutePath()).stream()
-                .map(FileInfoDto::new)
+        List<FileInfo> fileInfos = collector.loadFiles(file.getAbsolutePath()).stream()
+                .map(FileInfo::new)
                 .collect(Collectors.toList());
 
         for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
 
-            for (FileInfoDto fileInfo : fileInfos) {
+            for (FileInfo fileInfo : fileInfos) {
                 List<FileAttribute> attributes = processor.loadAttributes(fileInfo.getFile());
 
                 List<FileAttribute> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
@@ -98,7 +98,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
 
         log.info("No coherent match found for {}", file.getAbsoluteFile());
 
-        for (FileInfoDto fileInfo : fileInfos) {
+        for (FileInfo fileInfo : fileInfos) {
             if (!Config.getInstance().isForceCoherent()) {
                 super.process(fileInfo.getFile());
             } else {

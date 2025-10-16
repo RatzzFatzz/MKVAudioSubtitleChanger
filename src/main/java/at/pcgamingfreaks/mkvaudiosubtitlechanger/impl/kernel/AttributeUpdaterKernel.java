@@ -6,7 +6,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
@@ -96,7 +96,7 @@ public abstract class AttributeUpdaterKernel {
      * @param file file or directory to update
      */
     void process(File file) {
-        FileInfoDto fileInfo = new FileInfoDto(file);
+        FileInfo fileInfo = new FileInfo(file);
         List<FileAttribute> attributes = processor.loadAttributes(file);
 
         if (attributes == null || attributes.isEmpty()) {
@@ -119,14 +119,14 @@ public abstract class AttributeUpdaterKernel {
     /**
      * Persist file changes.
      *
-     * @param fileInfoDto contains information about file and desired configuration.
+     * @param fileInfo contains information about file and desired configuration.
      */
-    protected void updateFile(FileInfoDto fileInfoDto) {
+    protected void updateFile(FileInfo fileInfo) {
         statistic.total();
-        switch (fileInfoDto.getStatus()) {
+        switch (fileInfo.getStatus()) {
             case CHANGE_NECESSARY:
                 statistic.shouldChange();
-                commitChange(fileInfoDto);
+                commitChange(fileInfo);
                 break;
             case NO_SUITABLE_CONFIG:
                 statistic.noSuitableConfigFound();
@@ -141,7 +141,7 @@ public abstract class AttributeUpdaterKernel {
         }
     }
 
-    private void commitChange(FileInfoDto fileInfo) {
+    private void commitChange(FileInfo fileInfo) {
         if (Config.getInstance().isSafeMode()) {
             return;
         }

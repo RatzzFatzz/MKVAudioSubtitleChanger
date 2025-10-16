@@ -5,7 +5,6 @@ import picocli.CommandLine;
 
 import java.util.regex.Pattern;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isAudioLanguageValid;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isLanguageValid;
 
 public class AttributeConfigConverter implements CommandLine.ITypeConverter<AttributeConfig> {
@@ -50,7 +49,7 @@ public class AttributeConfigConverter implements CommandLine.ITypeConverter<Attr
      * @throws CommandLine.TypeConversionException if either language code is invalid
      */
     private static void validateResult(AttributeConfig attr) {
-        if (!isAudioLanguageValid(attr.getAudioLanguage()))
+        if (!isLanguageValid(attr.getAudioLanguage()))
             throw new CommandLine.TypeConversionException("Audio language invalid: " + attr.getAudioLanguage());
         if (!isLanguageValid(attr.getSubtitleLanguage()))
             throw new CommandLine.TypeConversionException("Subtitle language invalid: " + attr.getSubtitleLanguage());

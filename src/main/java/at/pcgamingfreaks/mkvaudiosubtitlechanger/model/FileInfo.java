@@ -7,11 +7,12 @@ import lombok.Setter;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class FileInfoDto {
+public class FileInfo {
     private final File file;
 
     private Set<FileAttribute> existingDefaultAudioLanes = new HashSet<>();
@@ -26,27 +27,28 @@ public class FileInfoDto {
     private AttributeConfig matchedConfig;
 
     public boolean isAudioDifferent() {
-        return desiredDefaultAudioLane != null &&
-                (existingDefaultAudioLanes == null || !existingDefaultAudioLanes.contains(desiredDefaultAudioLane) || existingDefaultAudioLanes.size() > 1);
+        return isMatchDifferent(existingDefaultAudioLanes, desiredDefaultAudioLane)
+                || isLaneOff(existingDefaultAudioLanes, desiredDefaultAudioLane, AttributeConfig::getAudioLanguage);
     }
 
     public boolean isSubtitleDifferent() {
-        return isSubtitleMatchDifferent() || isSubtitleOFF();
+        return isMatchDifferent(existingDefaultSubtitleLanes, desiredDefaultSubtitleLane)
+                || isLaneOff(existingDefaultSubtitleLanes, desiredDefaultSubtitleLane, AttributeConfig::getSubtitleLanguage);
     }
 
-    private boolean isSubtitleMatchDifferent() {
-        return desiredDefaultSubtitleLane != null
-                && (existingDefaultSubtitleLanes == null || !existingDefaultSubtitleLanes.contains(desiredDefaultSubtitleLane) || existingDefaultSubtitleLanes.size() > 1);
+    private boolean isMatchDifferent(Set<FileAttribute> existingDefault, FileAttribute desiredDefault) {
+        return desiredDefault != null &&
+                (existingDefault == null || !existingDefault.contains(desiredDefault) || existingDefault.size() > 1);
     }
 
-    private boolean isSubtitleOFF() {
-        return desiredDefaultSubtitleLane == null
-                && (matchedConfig != null && "OFF".equals(matchedConfig.getSubtitleLanguage()))
-                && (existingDefaultSubtitleLanes != null && !existingDefaultSubtitleLanes.isEmpty());
+    private boolean isLaneOff(Set<FileAttribute> existingDefault, FileAttribute desiredDefault, Function<AttributeConfig, String> inputLane) {
+        return desiredDefault == null
+                && (matchedConfig != null && "OFF".equals(inputLane.apply(matchedConfig)))
+                && (existingDefault != null && !existingDefault.isEmpty());
     }
 
     public boolean areForcedTracksDifferent() {
-        return !desiredForcedSubtitleLanes.isEmpty();
+        return !desiredForcedSubtitleLanes.isEmpty() && !existingForcedSubtitleLanes.containsAll(desiredForcedSubtitleLanes);
     }
 
     public FileStatus getStatus() {
@@ -57,11 +59,12 @@ public class FileInfoDto {
     }
 
     private boolean isUnableToApplyConfig() {
-        return desiredDefaultAudioLane == null && desiredDefaultSubtitleLane == null;
+        return desiredDefaultAudioLane == null && !"OFF".equals(matchedConfig.getAudioLanguage())
+                && desiredDefaultSubtitleLane == null && !"OFF".equals(matchedConfig.getSubtitleLanguage());
     }
 
     private boolean isAlreadySuited() {
-        return existingDefaultAudioLanes.contains(desiredDefaultAudioLane)
+        return (desiredDefaultAudioLane == null || existingDefaultAudioLanes.contains(desiredDefaultAudioLane))
                 && (desiredDefaultSubtitleLane == null || existingDefaultSubtitleLanes.contains(desiredDefaultSubtitleLane));
     }
 

@@ -1,22 +1,12 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
 @Slf4j
-@Getter
-@AllArgsConstructor
-public class FileAttribute {
-    private final int id;
-    private final String language;
-    private final String trackName;
-    private final boolean defaultTrack;
-    private final boolean forcedTrack;
-    private final LaneType type;
-
+public record FileAttribute(int id, String language, String trackName, boolean defaultTrack, boolean forcedTrack,
+                            LaneType type) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,11 +18,6 @@ public class FileAttribute {
                 && Objects.equals(language, attribute.language)
                 && Objects.equals(trackName, attribute.trackName)
                 && type == attribute.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, language, trackName, defaultTrack, forcedTrack, type);
     }
 
     @Override

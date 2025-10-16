@@ -3,7 +3,7 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfoDto;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public interface FileProcessor {
      * @param attributes Track information of FileInfoDto
      * @param nonForcedTracks List of all not forced tracks
      */
-    void detectDefaultTracks(FileInfoDto info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks);
+    void detectDefaultTracks(FileInfo info, List<FileAttribute> attributes, List<FileAttribute> nonForcedTracks);
 
     /**
      * Populate FileInfoDto with the desired tracks, based on AttributeConfig.
@@ -33,7 +33,7 @@ public interface FileProcessor {
      * @param nonForcedTracks List of all non-forced tracks
      * @param nonCommentaryTracks  List of all non-commentary tracks
      */
-    void detectDesiredTracks(FileInfoDto info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks,
+    void detectDesiredTracks(FileInfo info, List<FileAttribute> nonForcedTracks, List<FileAttribute> nonCommentaryTracks,
                              AttributeConfig... configs);
 
     List<FileAttribute> retrieveNonForcedTracks(List<FileAttribute> attributes);
@@ -43,9 +43,9 @@ public interface FileProcessor {
     /**
      * Update the file.
      * @param file to be updated
-     * @param fileInfo information to update file
+     * @param fileInfo information used to update file
      * @throws IOException when error occurs accessing file retrieving information
      * @throws MkvToolNixException when error occurs while sending query to mkvpropedit
      */
-    void update(File file, FileInfoDto fileInfo) throws IOException, MkvToolNixException;
+    void update(File file, FileInfo fileInfo) throws IOException, MkvToolNixException;
 }

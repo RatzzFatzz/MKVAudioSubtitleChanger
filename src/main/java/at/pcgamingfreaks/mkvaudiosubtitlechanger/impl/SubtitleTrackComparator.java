@@ -17,16 +17,16 @@ public class SubtitleTrackComparator implements Comparator<FileAttribute> {
     public int compare(FileAttribute track1, FileAttribute track2) {
         int result = 0;
 
-        if (StringUtils.containsAnyIgnoreCase(track1.getTrackName(), preferredSubtitles)) {
+        if (StringUtils.containsAnyIgnoreCase(track1.trackName(), preferredSubtitles)) {
             result++;
         }
-        if (StringUtils.containsAnyIgnoreCase(track2.getTrackName(), preferredSubtitles)) {
+        if (StringUtils.containsAnyIgnoreCase(track2.trackName(), preferredSubtitles)) {
             result--;
         }
 
         if (result == 0) {
-            if (track1.isDefaultTrack()) result++;
-            if (track2.isDefaultTrack()) result--;
+            if (track1.defaultTrack()) result++;
+            if (track2.defaultTrack()) result--;
         }
 
         return result;
