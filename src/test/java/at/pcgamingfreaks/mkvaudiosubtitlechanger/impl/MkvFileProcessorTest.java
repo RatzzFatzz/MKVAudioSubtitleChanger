@@ -4,7 +4,6 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.*;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TestUtil.createFileInfo;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MkvFileProcessorTest {
@@ -38,5 +36,55 @@ class MkvFileProcessorTest {
         processor.detectDesiredTracks(info, tracks, tracks, configs);
         assertEquals(expectedMatch.getAudioLanguage(), info.getMatchedConfig().getAudioLanguage());
         assertEquals(expectedMatch.getSubtitleLanguage(), info.getMatchedConfig().getSubtitleLanguage());
+    }
+
+    private static Stream<Arguments> retrieveNonForcedTracks() {
+        return Stream.of(
+                Arguments.of(List.of(SUB_GER, SUB_ENG, SUB_GER_FORCED), List.of(SUB_GER, SUB_ENG)),
+                Arguments.of(List.of(SUB_GER, SUB_ENG), List.of(SUB_GER, SUB_ENG)),
+                Arguments.of(List.of(AUDIO_GER, SUB_GER, SUB_ENG), List.of(AUDIO_GER, SUB_GER, SUB_ENG)),
+                Arguments.of(List.of(AUDIO_GER), List.of(AUDIO_GER)),
+                Arguments.of(List.of(AUDIO_GER_FORCED), List.of()),
+                Arguments.of(List.of(), List.of())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void retrieveNonForcedTracks(List<FileAttribute> attributes, List<FileAttribute> expected) {
+        Config.getInstance().setPreferredSubtitles(Set.of());
+        Config.getInstance().setForcedKeywords(Set.of("forced"));
+        MkvFileProcessor processor = new MkvFileProcessor();
+        List<FileAttribute> actual = processor.retrieveNonForcedTracks(attributes);
+
+        assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), actual.get(i));
+        }
+    }
+
+    private static Stream<Arguments> retrieveNonCommentaryTracks() {
+        return Stream.of(
+                Arguments.of(List.of(SUB_GER, SUB_ENG, AUDIO_GER_COMMENTARY), List.of(SUB_GER, SUB_ENG)),
+                Arguments.of(List.of(SUB_GER, SUB_ENG), List.of(SUB_GER, SUB_ENG)),
+                Arguments.of(List.of(AUDIO_GER, SUB_GER, SUB_ENG), List.of(AUDIO_GER, SUB_GER, SUB_ENG)),
+                Arguments.of(List.of(AUDIO_GER), List.of(AUDIO_GER)),
+                Arguments.of(List.of(AUDIO_GER_COMMENTARY), List.of()),
+                Arguments.of(List.of(), List.of())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void retrieveNonCommentaryTracks(List<FileAttribute> attributes, List<FileAttribute> expected) {
+        Config.getInstance().setPreferredSubtitles(Set.of());
+        Config.getInstance().setCommentaryKeywords(Set.of("commentary"));
+        MkvFileProcessor processor = new MkvFileProcessor();
+        List<FileAttribute> actual = processor.retrieveNonCommentaryTracks(attributes);
+
+        assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), actual.get(i));
+        }
     }
 }

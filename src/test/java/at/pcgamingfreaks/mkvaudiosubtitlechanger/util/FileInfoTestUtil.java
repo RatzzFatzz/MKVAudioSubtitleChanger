@@ -10,6 +10,8 @@ public class FileInfoTestUtil {
     public static final FileAttribute AUDIO_ENG = new FileAttribute(1, "eng", "", false, false, LaneType.AUDIO);
     public static final FileAttribute AUDIO_GER_FORCED = new FileAttribute(0, "ger", "", false, true, LaneType.AUDIO);
     public static final FileAttribute AUDIO_ENG_FORCED = new FileAttribute(1, "eng", "", false, true, LaneType.AUDIO);
+    public static final FileAttribute AUDIO_GER_COMMENTARY = new FileAttribute(1, "ger", "commentary", false, false, LaneType.AUDIO);
+    public static final FileAttribute AUDIO_ENG_COMMENTARY = new FileAttribute(1, "eng", "commentary", false, false, LaneType.AUDIO);
 
     public static final FileAttribute SUB_GER_DEFAULT = new FileAttribute(0, "ger", "", true, false, LaneType.SUBTITLES);
     public static final FileAttribute SUB_ENG_DEFAULT = new FileAttribute(1, "eng", "", true, false, LaneType.SUBTITLES);
