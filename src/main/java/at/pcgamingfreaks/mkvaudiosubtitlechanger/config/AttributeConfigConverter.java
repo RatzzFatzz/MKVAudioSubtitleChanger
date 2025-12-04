@@ -19,7 +19,7 @@ public class AttributeConfigConverter implements CommandLine.ITypeConverter<Attr
      * @throws CommandLine.TypeConversionException if the input string is invalid or contains invalid language codes
      */
     @Override
-    public AttributeConfig convert(String s) throws Exception {
+    public AttributeConfig convert(String s) {
         validateInput(s);
 
         String[] split = s.split(SEPARATOR);
