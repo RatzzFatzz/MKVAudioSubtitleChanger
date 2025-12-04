@@ -4,6 +4,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidFile;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidMkvToolNix;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileUtils;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ValidationUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -108,20 +109,6 @@ public class InputConfig {
 
     public static void setInstance(InputConfig c) {
         config = c;
-        validate();
-    }
-
-    private static void validate() {
-        Validator validator = ValidationUtil.getValidator();
-        Set<ConstraintViolation<InputConfig>> violations = validator.validate(config);
-
-        if (!violations.isEmpty()) {
-            StringBuilder errors = new StringBuilder();
-            for (ConstraintViolation<InputConfig> violation : violations) {
-                errors.append(violation.getPropertyPath()).append(" ").append(violation.getMessage()).append("\n");
-            }
-            throw new CommandLine.ParameterException(config.getSpec().commandLine(), errors.toString());
-        }
     }
 
     /**
@@ -129,13 +116,7 @@ public class InputConfig {
      * @return absolute path to desired application.
      */
     public String getPathFor(MkvToolNix application) {
-        return mkvToolNix.getAbsolutePath().endsWith("/")
-                ? mkvToolNix.getAbsolutePath() + application
-                : mkvToolNix.getAbsolutePath() + "/" + application;
-    }
-
-    public String getPathFor(MkvToolNix application, boolean isWindows) {
-        return getPathFor(application) + (isWindows ? ".exe" : "");
+        return FileUtils.getPathFor(mkvToolNix, application).getAbsolutePath();
     }
 
     public String getNormalizedLibraryPath() {

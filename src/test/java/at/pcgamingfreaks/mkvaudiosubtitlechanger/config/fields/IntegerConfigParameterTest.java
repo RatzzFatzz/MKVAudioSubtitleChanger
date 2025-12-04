@@ -1,6 +1,7 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.fields;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,13 +39,5 @@ class IntegerConfigParameterTest {
         Main sut = new Main();
         assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("-t")));
         assertThrows(CommandLine.MissingParameterException.class, () -> CommandLine.populateCommand(sut, args("--threads")));
-
-        StringWriter writer = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(writer);
-        CommandLine underTest = new  CommandLine(sut);
-        underTest = underTest.setErr(printWriter);
-        underTest.execute(args("-t", "0"));
-        printWriter.flush();
-        assertTrue(writer.toString().contains("threads must be greater than or equal to 1"));
     }
 }

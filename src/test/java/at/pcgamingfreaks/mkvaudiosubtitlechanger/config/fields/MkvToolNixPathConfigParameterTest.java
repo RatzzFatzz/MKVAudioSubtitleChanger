@@ -1,6 +1,7 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.fields;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MkvToolNixPathConfigParameterTest {
 
-    private static final String TEST_INVALID_DIR = "src/test/resources/test-dir";
     private static final String TEST_MKVTOOLNIX_DIR = SystemUtils.IS_OS_WINDOWS ? "src/test/resources/mkvtoolnix_exe" : "src/test/resources/mkvtoolnix";
 
     private static Stream<Arguments> provideTestCases() {
@@ -39,7 +39,6 @@ class MkvToolNixPathConfigParameterTest {
     @Test
     void validate() {
         Main sut = new Main();
-//        assertThrows(CommandLine.ParameterException.class, () -> new CommandLine(sut).execute(args("-m", TEST_INVALID_DIR)));
         assertThrows(CommandLine.ParameterException.class, () -> CommandLine.populateCommand(sut, args("-m")));
         assertThrows(CommandLine.ParameterException.class, () -> CommandLine.populateCommand(sut, args("")));
     }

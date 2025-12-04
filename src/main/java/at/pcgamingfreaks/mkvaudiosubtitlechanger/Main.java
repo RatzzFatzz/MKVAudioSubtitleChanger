@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidationExecutionStrategy;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.CachedMkvFileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.AttributeUpdaterKernel;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.CoherentAttributeUpdaterKernel;
@@ -35,7 +36,10 @@ public class Main implements Runnable {
         if (args.length == 0) {
             args = new String[] { "--help" };
         }
-        new CommandLine(Main.class).execute(args);
+
+        new CommandLine(Main.class)
+                .setExecutionStrategy(new ValidationExecutionStrategy())
+                .execute(args);
     }
 
     @Override
