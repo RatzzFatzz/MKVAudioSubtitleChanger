@@ -1,7 +1,12 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidFile;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidMkvToolNix;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ValidationUtil;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,109 +17,115 @@ import org.apache.commons.lang3.SystemUtils;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
+import picocli.CommandLine.Option;
 
 @Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
-public class Config implements CommandLine.IVersionProvider {
+@CommandLine.Command
+public class InputConfig {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private static Config config = null;
+    private static InputConfig config = null;
 
     private File configPath;
 
     @CommandLine.Spec
     CommandLine.Model.CommandSpec spec;
 
-    @CommandLine.Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class,
+    @Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class,
             description = "List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)")
     private List<AttributeConfig> attributeConfig;
 
-    @Setter(AccessLevel.NONE)
+    @ValidFile(message = "does not exist")
+    @Option(names = {"-l", "--library"}, required = true, description = "path to library")
     private File libraryPath;
 
-    @CommandLine.Option(names = {"-s", "--safemode"}, description = "test run (no files will be changes)")
+    @Option(names = {"-s", "--safemode"}, description = "test run (no files will be changes)")
     private boolean safeMode;
 
-    @Setter(AccessLevel.NONE)
+    @ValidMkvToolNix(message = "does not exist")
+    @Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "${DEFAULT_MKV_TOOL_NIX}", description = "path to mkvtoolnix installation")
     private File mkvToolNix;
 
-    @Min(value = 1)
-    @CommandLine.Option(names = {"-t", "--threads"}, defaultValue = "2", description = "thread count (default: ${DEFAULT-VALUE})")
+    @Min(1)
+    @Option(names = {"-t", "--threads"}, defaultValue = "2", description = "thread count (default: ${DEFAULT-VALUE})")
     private int threads;
 
-    @CommandLine.Option(names = {"-c", "--coherent"}, description = "try to match all files in dir of depth with the same attribute config")
+    @Min(0)
+    @Option(names = {"-c", "--coherent"}, description = "try to match all files in dir of depth with the same attribute config")
     private Integer coherent;
-    @CommandLine.Option(names = {"-cf", "--force-coherent"}, description = "changes are only applied if it's a coherent match")
+
+    @Option(names = {"-cf", "--force-coherent"}, description = "changes are only applied if it's a coherent match")
     private boolean forceCoherent;
 
-    @CommandLine.Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
+    @Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
     private boolean onlyNewFiles;
-    @CommandLine.Option(names = {"-d", "--filter-date"}, defaultValue = CommandLine.Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
+
+    @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
-    @CommandLine.Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
+
+    @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
     private Pattern includePattern;
-    @CommandLine.Option(names = {"-e", "--excluded-directory"}, arity = "1..*",
+
+    @Option(names = {"-e", "--excluded-directory"}, arity = "1..*",
             description = "Directories to be excluded, combines with config file")
     private Set<String> excludedDirectories = new HashSet<>();
 
-    @CommandLine.Option(names = {"--forced-keywords"}, arity = "1..*", defaultValue = "forced, signs, songs", split = ", ",
+    @Option(names = {"--forced-keywords"}, arity = "1..*", defaultValue = "forced, signs, songs", split = ", ",
             description = "Keywords to identify forced tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
     private Set<String> forcedKeywords;
-    @CommandLine.Option(names = {"--commentary-keywords"}, arity = "1..*", defaultValue = "commentary, director", split = ", ",
+
+    @Option(names = {"--commentary-keywords"}, arity = "1..*", defaultValue = "commentary, director", split = ", ",
             description = "Keywords to identify commentary tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
     private Set<String> commentaryKeywords;
-    @CommandLine.Option(names = {"--preferred-subtitles"}, arity = "1..*", defaultValue = "unstyled", split = ", ",
+
+    @Option(names = {"--preferred-subtitles"}, arity = "1..*", defaultValue = "unstyled", split = ", ",
             description = "Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
     private Set<String> preferredSubtitles;
 
-    @CommandLine.Option(names = {"--debug"}, description = "Enable debug logging")
+    @Option(names = {"--debug"}, description = "Enable debug logging")
     private boolean debug;
-
-    @CommandLine.Option(names = {"-l", "--library"}, required = true, description = "path to library")
-    public void setLibraryPath(File libraryPath) {
-        if (!libraryPath.exists()) throw new CommandLine.ParameterException(spec.commandLine(), "Path does not exist: " + libraryPath.getAbsolutePath());
-        this.libraryPath = libraryPath;
-    }
 
     static {
         // Set default value into system properties to picocli can read the conditional value
         System.setProperty("DEFAULT_MKV_TOOL_NIX", SystemUtils.IS_OS_WINDOWS ? "C:\\Program Files\\MKVToolNix" : "/usr/bin/");
     }
 
-    @CommandLine.Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "${DEFAULT_MKV_TOOL_NIX}", description = "path to mkvtoolnix installation")
-    public void setMkvToolNix(File mkvToolNix) {
-        this.mkvToolNix = mkvToolNix;
-        if (!mkvToolNix.exists()
-                || !Path.of(getPathFor(MkvToolNix.MKV_MERGE, SystemUtils.IS_OS_WINDOWS)).toFile().exists()
-                || !Path.of(getPathFor(MkvToolNix.MKV_PROP_EDIT, SystemUtils.IS_OS_WINDOWS)).toFile().exists()) {
-            throw new CommandLine.ParameterException(spec.commandLine(),
-                    "Invalid path to mkvtoolnix installation: " + mkvToolNix.getAbsolutePath());
-        }
-    }
-
-    public static Config getInstance() {
+    public static InputConfig getInstance() {
         return getInstance(false);
     }
 
-    public static Config getInstance(boolean reset) {
+    public static InputConfig getInstance(boolean reset) {
         if (config == null || reset) {
-            config = new Config();
+            config = new InputConfig();
         }
         return config;
     }
 
-    public static void setInstance(Config c) {
+    public static void setInstance(InputConfig c) {
         config = c;
+        validate();
+    }
+
+    private static void validate() {
+        Validator validator = ValidationUtil.getValidator();
+        Set<ConstraintViolation<InputConfig>> violations = validator.validate(config);
+
+        if (!violations.isEmpty()) {
+            StringBuilder errors = new StringBuilder();
+            for (ConstraintViolation<InputConfig> violation : violations) {
+                errors.append(violation.getPropertyPath()).append(" ").append(violation.getMessage()).append("\n");
+            }
+            throw new CommandLine.ParameterException(config.getSpec().commandLine(), errors.toString());
+        }
     }
 
     /**
      * Get path to specific mkvtoolnix application.
-     *
      * @return absolute path to desired application.
      */
     public String getPathFor(MkvToolNix application) {
@@ -133,7 +144,7 @@ public class Config implements CommandLine.IVersionProvider {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Config.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", InputConfig.class.getSimpleName() + "[", "]")
                 .add("configPath=" + configPath)
                 .add("libraryPath=" + libraryPath)
                 .add("mkvToolNix=" + mkvToolNix)
@@ -150,11 +161,6 @@ public class Config implements CommandLine.IVersionProvider {
                 .add("preferredSubtitles=" + preferredSubtitles)
                 .add("attributeConfig=" + attributeConfig)
                 .toString();
-    }
-
-    @Override
-    public String[] getVersion() throws Exception {
-        return new String[0];
     }
 }
 

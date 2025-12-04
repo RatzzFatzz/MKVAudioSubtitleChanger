@@ -19,15 +19,15 @@ class IntegerConfigParameterTest {
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of(args(), 2, (Function<Config, Integer>) Config::getThreads),
-                Arguments.of(args("-t", "5"), 5, (Function<Config, Integer>) Config::getThreads),
-                Arguments.of(args("--threads", "5"), 5, (Function<Config, Integer>) Config::getThreads)
+                Arguments.of(args(), 2, (Function<InputConfig, Integer>) InputConfig::getThreads),
+                Arguments.of(args("-t", "5"), 5, (Function<InputConfig, Integer>) InputConfig::getThreads),
+                Arguments.of(args("--threads", "5"), 5, (Function<InputConfig, Integer>) InputConfig::getThreads)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void validate(String[] cmdArgs, int expected, Function<Config, Integer> fieldUnderTest) {
+    void validate(String[] cmdArgs, int expected, Function<InputConfig, Integer> fieldUnderTest) {
         Main sut = new Main();
         CommandLine.populateCommand(sut, cmdArgs);
         assertEquals(expected, fieldUnderTest.apply(sut.getConfig()));
@@ -45,6 +45,6 @@ class IntegerConfigParameterTest {
         underTest = underTest.setErr(printWriter);
         underTest.execute(args("-t", "0"));
         printWriter.flush();
-        assertTrue(writer.toString().contains("ERROR: threads must be greater than or equal to 1"));
+        assertTrue(writer.toString().contains("threads must be greater than or equal to 1"));
     }
 }

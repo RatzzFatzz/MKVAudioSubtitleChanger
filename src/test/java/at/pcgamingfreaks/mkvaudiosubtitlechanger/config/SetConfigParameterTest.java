@@ -19,21 +19,21 @@ class SetConfigParameterTest {
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of(args("--commentary-keywords", "test"), 1, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
-                Arguments.of(args("--commentary-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
-                Arguments.of(args(), 2, (Function<Config, Set<String>>) Config::getCommentaryKeywords),
-                Arguments.of(args("--forced-keywords", "test"), 1, (Function<Config, Set<String>>) Config::getForcedKeywords),
-                Arguments.of(args("--forced-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getForcedKeywords),
-                Arguments.of(args(), 3, (Function<Config, Set<String>>) Config::getForcedKeywords),
-                Arguments.of(args("--preferred-subtitles", "test"), 1, (Function<Config, Set<String>>) Config::getPreferredSubtitles),
-                Arguments.of(args("--preferred-subtitles", "test", "test1", "test2", "test3", "test4"), 5, (Function<Config, Set<String>>) Config::getPreferredSubtitles),
-                Arguments.of(args(), 1, (Function<Config, Set<String>>) Config::getPreferredSubtitles)
+                Arguments.of(args("--commentary-keywords", "test"), 1, (Function<InputConfig, Set<String>>) InputConfig::getCommentaryKeywords),
+                Arguments.of(args("--commentary-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<InputConfig, Set<String>>) InputConfig::getCommentaryKeywords),
+                Arguments.of(args(), 2, (Function<InputConfig, Set<String>>) InputConfig::getCommentaryKeywords),
+                Arguments.of(args("--forced-keywords", "test"), 1, (Function<InputConfig, Set<String>>) InputConfig::getForcedKeywords),
+                Arguments.of(args("--forced-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<InputConfig, Set<String>>) InputConfig::getForcedKeywords),
+                Arguments.of(args(), 3, (Function<InputConfig, Set<String>>) InputConfig::getForcedKeywords),
+                Arguments.of(args("--preferred-subtitles", "test"), 1, (Function<InputConfig, Set<String>>) InputConfig::getPreferredSubtitles),
+                Arguments.of(args("--preferred-subtitles", "test", "test1", "test2", "test3", "test4"), 5, (Function<InputConfig, Set<String>>) InputConfig::getPreferredSubtitles),
+                Arguments.of(args(), 1, (Function<InputConfig, Set<String>>) InputConfig::getPreferredSubtitles)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void validate(String[] cmdArgs, int expectedSize, Function<Config, Set<String>> fieldUnderTest) {
+    void validate(String[] cmdArgs, int expectedSize, Function<InputConfig, Set<String>> fieldUnderTest) {
         Main sut = new Main();
         CommandLine.populateCommand(sut, cmdArgs);
         assertEquals(expectedSize, fieldUnderTest.apply(sut.getConfig()).size());

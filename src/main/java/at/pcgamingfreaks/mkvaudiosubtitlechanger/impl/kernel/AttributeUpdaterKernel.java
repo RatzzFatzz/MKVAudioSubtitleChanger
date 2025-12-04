@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
@@ -38,7 +38,7 @@ public abstract class AttributeUpdaterKernel {
     protected final FileCollector collector;
     protected final FileProcessor processor;
     protected final ResultStatistic statistic = ResultStatistic.getInstance();
-    private final ExecutorService executor = Executors.newFixedThreadPool(Config.getInstance().getThreads());
+    private final ExecutorService executor = Executors.newFixedThreadPool(InputConfig.getInstance().getThreads());
 
     protected ProgressBarBuilder pbBuilder() {
         return new ProgressBarBuilder()
@@ -52,7 +52,7 @@ public abstract class AttributeUpdaterKernel {
         statistic.startTimer();
 
         try (ProgressBar progressBar = pbBuilder().build()) {
-            List<File> files = loadFiles(Config.getInstance().getLibraryPath().getAbsolutePath());
+            List<File> files = loadFiles(InputConfig.getInstance().getLibraryPath().getAbsolutePath());
             progressBar.maxHint(files.size());
 
             files.forEach(file -> executor.submit(() -> {
@@ -71,7 +71,7 @@ public abstract class AttributeUpdaterKernel {
     }
 
     protected List<File> loadExcludedFiles() {
-        List<File> excludedFiles = Config.getInstance().getExcludedDirectories().stream()
+        List<File> excludedFiles = InputConfig.getInstance().getExcludedDirectories().stream()
                 .map(collector::loadFiles)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -111,7 +111,7 @@ public abstract class AttributeUpdaterKernel {
 
         processor.detectDefaultTracks(fileInfo, attributes, nonForcedTracks);
         processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks,
-                Config.getInstance().getAttributeConfig().toArray(new AttributeConfig[]{}));
+                InputConfig.getInstance().getAttributeConfig().toArray(new AttributeConfig[]{}));
 
         updateFile(fileInfo);
     }
@@ -142,7 +142,7 @@ public abstract class AttributeUpdaterKernel {
     }
 
     private void commitChange(FileInfo fileInfo) {
-        if (Config.getInstance().isSafeMode()) {
+        if (InputConfig.getInstance().isSafeMode()) {
             return;
         }
 
@@ -157,7 +157,7 @@ public abstract class AttributeUpdaterKernel {
     }
 
     protected void endProcess() {
-        if (Config.getInstance().isSafeMode()) {
+        if (InputConfig.getInstance().isSafeMode()) {
             return;
         }
 
@@ -171,7 +171,7 @@ public abstract class AttributeUpdaterKernel {
             if (!lastExecutionFile.exists()) lastExecutionFile.createNewFile();
 
             YAML yaml = new YAML(lastExecutionFile);
-            yaml.set(Config.getInstance().getNormalizedLibraryPath(), DateUtils.convert(new Date()));
+            yaml.set(InputConfig.getInstance().getNormalizedLibraryPath(), DateUtils.convert(new Date()));
             yaml.save(lastExecutionFile);
         } catch (IOException | YamlInvalidContentException e) {
             log.error("last-execution.yml could not be created or read.", e);

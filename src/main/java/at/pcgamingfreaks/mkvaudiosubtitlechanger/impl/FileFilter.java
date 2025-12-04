@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +31,11 @@ public class FileFilter {
     }
 
     private static boolean hasMatchingPattern(File pathName) {
-        return Config.getInstance().getIncludePattern().matcher(pathName.getName()).matches();
+        return InputConfig.getInstance().getIncludePattern().matcher(pathName.getName()).matches();
     }
 
     private static boolean isNewer(File pathName) {
-        Config config = Config.getInstance();
+        InputConfig config = InputConfig.getInstance();
         if (config.getFilterDate() == null) return true;
         try {
             BasicFileAttributes attributes = Files.readAttributes(pathName.toPath(), BasicFileAttributes.class);
@@ -47,6 +47,6 @@ public class FileFilter {
     }
 
     private static boolean isNewer(Date creationDate) {
-        return creationDate.toInstant().isAfter(Config.getInstance().getFilterDate().toInstant());
+        return creationDate.toInstant().isAfter(InputConfig.getInstance().getFilterDate().toInstant());
     }
 }

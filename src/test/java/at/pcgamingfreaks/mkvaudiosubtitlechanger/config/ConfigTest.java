@@ -22,24 +22,24 @@ class ConfigTest {
                 "--commentary-keywords", "testCommentary",
                 "--preferred-subtitles", "testPreferred"
         };
-        CommandLine.populateCommand(Config.getInstance(true), sut);
+        CommandLine.populateCommand(InputConfig.getInstance(true), sut);
 
-        assertTrue(Config.getInstance().getLibraryPath().exists());
+        assertTrue(InputConfig.getInstance().getLibraryPath().exists());
         assertEquals(List.of(new AttributeConfig("ger", "ger"), new AttributeConfig("eng", "eng")),
-                Config.getInstance().getAttributeConfig());
+                InputConfig.getInstance().getAttributeConfig());
 
-        assertTrue(Config.getInstance().isSafeMode());
-        assertTrue(Config.getInstance().isForceCoherent());
-        assertTrue(Config.getInstance().isOnlyNewFiles());
-        assertNull(Config.getInstance().getFilterDate());
+        assertTrue(InputConfig.getInstance().isSafeMode());
+        assertTrue(InputConfig.getInstance().isForceCoherent());
+        assertTrue(InputConfig.getInstance().isOnlyNewFiles());
+        assertNull(InputConfig.getInstance().getFilterDate());
 
-        assertEquals(2, Config.getInstance().getCoherent());
-        assertEquals(4, Config.getInstance().getThreads());
-        assertEquals(".*[abc].*", Config.getInstance().getIncludePattern().pattern());
-        assertTrue(Config.getInstance().getForcedKeywords().contains("testForced"));
-        assertTrue(Config.getInstance().getCommentaryKeywords().contains("testCommentary"));
-        assertTrue(Config.getInstance().getPreferredSubtitles().contains("testPreferred"));
+        assertEquals(2, InputConfig.getInstance().getCoherent());
+        assertEquals(4, InputConfig.getInstance().getThreads());
+        assertEquals(".*[abc].*", InputConfig.getInstance().getIncludePattern().pattern());
+        assertTrue(InputConfig.getInstance().getForcedKeywords().contains("testForced"));
+        assertTrue(InputConfig.getInstance().getCommentaryKeywords().contains("testCommentary"));
+        assertTrue(InputConfig.getInstance().getPreferredSubtitles().contains("testPreferred"));
 
-        assertNull(Config.getInstance().getConfigPath());
+        assertNull(InputConfig.getInstance().getConfigPath());
     }
 }

@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
@@ -32,7 +32,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
      */
     @Override
     List<File> loadFiles(String path) {
-        return loadFiles(path, Config.getInstance().getCoherent());
+        return loadFiles(path, InputConfig.getInstance().getCoherent());
     }
 
     List<File> loadFiles(String path, int depth) {
@@ -53,7 +53,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
 
     /**
      * Update files in directory, if possible, with the same {@link AttributeConfig}.
-     * If {@link Config#isForceCoherent()} then there will be no changes to the file if they don't match the same config.
+     * If {@link InputConfig#isForceCoherent()} then there will be no changes to the file if they don't match the same config.
      * Otherwise, the default behaviour is executed.
      * This method is called by the executor and is run in parallel.
      *
@@ -61,7 +61,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
      */
     @Override
     void process(File file) {
-        process(file, Config.getInstance().getCoherent());
+        process(file, InputConfig.getInstance().getCoherent());
     }
 
     void process(File file, int depth) {
@@ -71,7 +71,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
                 .map(FileInfo::new)
                 .collect(Collectors.toList());
 
-        for (AttributeConfig config : Config.getInstance().getAttributeConfig()) {
+        for (AttributeConfig config : InputConfig.getInstance().getAttributeConfig()) {
 
             for (FileInfo fileInfo : fileInfos) {
                 List<FileAttribute> attributes = processor.loadAttributes(fileInfo.getFile());
@@ -99,7 +99,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
         log.info("No coherent match found for {}", file.getAbsoluteFile());
 
         for (FileInfo fileInfo : fileInfos) {
-            if (!Config.getInstance().isForceCoherent()) {
+            if (!InputConfig.getInstance().isForceCoherent()) {
                 super.process(fileInfo.getFile());
             } else {
                 statistic.excluded();

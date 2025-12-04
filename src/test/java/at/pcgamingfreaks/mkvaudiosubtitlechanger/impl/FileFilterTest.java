@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,8 +57,8 @@ class FileFilterTest {
         when(file.getName()).thenReturn(List.of(path.split("/")).get(1));
         when(file.toPath()).thenReturn(Path.of(TEST_FILE));
 
-        Config.getInstance(true).setIncludePattern(Pattern.compile(pattern));
-        if (filterDate != null) Config.getInstance().setFilterDate(filterDate);
+        InputConfig.getInstance(true).setIncludePattern(Pattern.compile(pattern));
+        if (filterDate != null) InputConfig.getInstance().setFilterDate(filterDate);
 
         try (MockedStatic<DateUtils> mockedFiles = Mockito.mockStatic(DateUtils.class)) {
             mockedFiles

@@ -16,20 +16,20 @@ class BooleanConfigParameterTest {
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of(args("-s"), true, (Function<Config, Boolean>) Config::isSafeMode),
-                Arguments.of(args("--safemode"), true, (Function<Config, Boolean>) Config::isSafeMode),
-                Arguments.of(args(), false, (Function<Config, Boolean>) Config::isSafeMode),
-                Arguments.of(args("-cf"), true, (Function<Config, Boolean>) Config::isForceCoherent),
-                Arguments.of(args("--force-coherent"), true, (Function<Config, Boolean>) Config::isForceCoherent),
-                Arguments.of(args(), false, (Function<Config, Boolean>) Config::isForceCoherent),
-                Arguments.of(args("-n"), true, (Function<Config, Boolean>) Config::isOnlyNewFiles),
-                Arguments.of(args(), false, (Function<Config, Boolean>) Config::isOnlyNewFiles)
+                Arguments.of(args("-s"), true, (Function<InputConfig, Boolean>) InputConfig::isSafeMode),
+                Arguments.of(args("--safemode"), true, (Function<InputConfig, Boolean>) InputConfig::isSafeMode),
+                Arguments.of(args(), false, (Function<InputConfig, Boolean>) InputConfig::isSafeMode),
+                Arguments.of(args("-cf"), true, (Function<InputConfig, Boolean>) InputConfig::isForceCoherent),
+                Arguments.of(args("--force-coherent"), true, (Function<InputConfig, Boolean>) InputConfig::isForceCoherent),
+                Arguments.of(args(), false, (Function<InputConfig, Boolean>) InputConfig::isForceCoherent),
+                Arguments.of(args("-n"), true, (Function<InputConfig, Boolean>) InputConfig::isOnlyNewFiles),
+                Arguments.of(args(), false, (Function<InputConfig, Boolean>) InputConfig::isOnlyNewFiles)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void validate(String[] cmdArgs, boolean expected, Function<Config, Boolean> fieldUnderTest) {
+    void validate(String[] cmdArgs, boolean expected, Function<InputConfig, Boolean> fieldUnderTest) {
         Main sut = new Main();
         CommandLine.populateCommand(sut, cmdArgs);
         assertEquals(expected, fieldUnderTest.apply(sut.getConfig()));

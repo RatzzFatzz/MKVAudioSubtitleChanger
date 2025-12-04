@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.SetUtils;
@@ -26,7 +26,7 @@ public class MkvFileProcessor implements FileProcessor {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private static final SubtitleTrackComparator subtitleTrackComparator =
-            new SubtitleTrackComparator(Config.getInstance().getPreferredSubtitles().toArray(new String[0]));
+            new SubtitleTrackComparator(InputConfig.getInstance().getPreferredSubtitles().toArray(new String[0]));
 
     private static final String DISABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=0";
     private static final String ENABLE_DEFAULT_TRACK = "--edit track:%s --set flag-default=1";
@@ -40,7 +40,7 @@ public class MkvFileProcessor implements FileProcessor {
         List<FileAttribute> fileAttributes = new ArrayList<>();
         try {
             String[] command = new String[]{
-                    Config.getInstance().getPathFor(MkvToolNix.MKV_MERGE),
+                    InputConfig.getInstance().getPathFor(MkvToolNix.MKV_MERGE),
                     "--identify",
                     "--identification-format",
                     "json",
@@ -132,7 +132,7 @@ public class MkvFileProcessor implements FileProcessor {
     public List<FileAttribute> retrieveNonForcedTracks(List<FileAttribute> attributes) {
         return attributes.stream()
                 .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.trackName(),
-                        Config.getInstance().getForcedKeywords().toArray(new CharSequence[0])))
+                        InputConfig.getInstance().getForcedKeywords().toArray(new CharSequence[0])))
                 .filter(elem -> !elem.forcedTrack())
                 .collect(Collectors.toList());
     }
@@ -141,7 +141,7 @@ public class MkvFileProcessor implements FileProcessor {
     public List<FileAttribute> retrieveNonCommentaryTracks(List<FileAttribute> attributes) {
         return attributes.stream()
                 .filter(elem -> !StringUtils.containsAnyIgnoreCase(elem.trackName(),
-                        Config.getInstance().getCommentaryKeywords().toArray(new CharSequence[0])))
+                        InputConfig.getInstance().getCommentaryKeywords().toArray(new CharSequence[0])))
                 .collect(Collectors.toList());
     }
 
@@ -151,7 +151,7 @@ public class MkvFileProcessor implements FileProcessor {
     @Override
     public void update(File file, FileInfo fileInfo) throws IOException, MkvToolNixException {
         List<String> command = new ArrayList<>();
-        command.add(Config.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT));
+        command.add(InputConfig.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT));
         command.add(String.format(file.getAbsolutePath()));
 
         if (fileInfo.isAudioDifferent()) {

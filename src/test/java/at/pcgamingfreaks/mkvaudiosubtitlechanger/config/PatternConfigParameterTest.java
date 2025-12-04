@@ -19,15 +19,15 @@ class PatternConfigParameterTest {
 
     private static Stream<Arguments> provideTestCases() {
         return Stream.of(
-                Arguments.of(args("-i", "[abd]?.*"), Pattern.compile("[abd]?.*"), (Function<Config, Pattern>) Config::getIncludePattern),
-                Arguments.of(args("-i", ".*"), Pattern.compile(".*"), (Function<Config, Pattern>) Config::getIncludePattern),
-                Arguments.of(args(), Pattern.compile(".*"), (Function<Config, Pattern>) Config::getIncludePattern)
+                Arguments.of(args("-i", "[abd]?.*"), Pattern.compile("[abd]?.*"), (Function<InputConfig, Pattern>) InputConfig::getIncludePattern),
+                Arguments.of(args("-i", ".*"), Pattern.compile(".*"), (Function<InputConfig, Pattern>) InputConfig::getIncludePattern),
+                Arguments.of(args(), Pattern.compile(".*"), (Function<InputConfig, Pattern>) InputConfig::getIncludePattern)
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void validate(String[] cmdArgs, Pattern expected, Function<Config, Pattern> fieldUnderTest) {
+    void validate(String[] cmdArgs, Pattern expected, Function<InputConfig, Pattern> fieldUnderTest) {
         Main sut = new Main();
         CommandLine.populateCommand(sut, cmdArgs);
         assertEquals(expected.pattern(), fieldUnderTest.apply(sut.getConfig()).pattern());

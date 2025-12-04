@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.Config;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
@@ -30,7 +30,7 @@ class MkvFileProcessorTest {
     @ParameterizedTest
     @MethodSource
     void detectDesiredTracks(AttributeConfig expectedMatch, List<FileAttribute> tracks, AttributeConfig... configs) {
-        Config.getInstance().setPreferredSubtitles(Set.of());
+        InputConfig.getInstance().setPreferredSubtitles(Set.of());
         FileInfo info = new FileInfo(null);
         MkvFileProcessor processor = new MkvFileProcessor();
         processor.detectDesiredTracks(info, tracks, tracks, configs);
@@ -52,8 +52,8 @@ class MkvFileProcessorTest {
     @ParameterizedTest
     @MethodSource
     void retrieveNonForcedTracks(List<FileAttribute> attributes, List<FileAttribute> expected) {
-        Config.getInstance().setPreferredSubtitles(Set.of());
-        Config.getInstance().setForcedKeywords(Set.of("forced"));
+        InputConfig.getInstance().setPreferredSubtitles(Set.of());
+        InputConfig.getInstance().setForcedKeywords(Set.of("forced"));
         MkvFileProcessor processor = new MkvFileProcessor();
         List<FileAttribute> actual = processor.retrieveNonForcedTracks(attributes);
 
@@ -77,8 +77,8 @@ class MkvFileProcessorTest {
     @ParameterizedTest
     @MethodSource
     void retrieveNonCommentaryTracks(List<FileAttribute> attributes, List<FileAttribute> expected) {
-        Config.getInstance().setPreferredSubtitles(Set.of());
-        Config.getInstance().setCommentaryKeywords(Set.of("commentary"));
+        InputConfig.getInstance().setPreferredSubtitles(Set.of());
+        InputConfig.getInstance().setCommentaryKeywords(Set.of("commentary"));
         MkvFileProcessor processor = new MkvFileProcessor();
         List<FileAttribute> actual = processor.retrieveNonCommentaryTracks(attributes);
 
