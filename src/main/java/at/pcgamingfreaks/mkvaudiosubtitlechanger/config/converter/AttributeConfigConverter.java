@@ -1,15 +1,17 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.converter;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import picocli.CommandLine;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.LanguageValidatorUtil.isLanguageValid;
 
 public class AttributeConfigConverter implements CommandLine.ITypeConverter<AttributeConfig> {
-    private static final String SEPARATOR = ":";
-    private static final Pattern PATTERN = Pattern.compile("^.{3}:.{3}$");
+    private static final String AUDIO_GROUP = "audio";
+    private static final String SUB_GROUP = "sub";
+    private static final Pattern PATTERN = Pattern.compile(String.format("^(?<%s>.{3}):(?<%s>.{3})$", AUDIO_GROUP, SUB_GROUP));
 
     /**
      * Converts the input string into an AttributeConfig object.
@@ -20,38 +22,26 @@ public class AttributeConfigConverter implements CommandLine.ITypeConverter<Attr
      */
     @Override
     public AttributeConfig convert(String s) {
-        validateInput(s);
+        Matcher matcher =  PATTERN.matcher(s);
 
-        String[] split = s.split(SEPARATOR);
-        AttributeConfig attr = new AttributeConfig(split[0], split[1]);
+        if (!matcher.find()) throw new CommandLine.TypeConversionException("Invalid Attribute config: " + s);
 
-        validateResult(attr);
-
-        return attr;
+        return validateResult(new AttributeConfig(matcher.group("audio"), matcher.group("sub")));
     }
 
     /**
-     * Validates that the input string matches the expected pattern.
+     * Validates that both language codes in the {@link AttributeConfig} object are valid.
      *
-     * @param s String to validate
-     * @throws CommandLine.TypeConversionException if the value doesn't match the expected pattern
-     */
-    private static void validateInput(String s) {
-        if (!PATTERN.matcher(s).matches()) {
-            throw new CommandLine.TypeConversionException("Invalid Attribute config: " + s);
-        }
-    }
-
-    /**
-     * Validates that both language codes in the AttributeConfig object are valid.
-     *
-     * @param attr AttributeConfig object to validate
+     * @param attr {@link AttributeConfig} object to validate
      * @throws CommandLine.TypeConversionException if either language code is invalid
+     * @return valid {@link AttributeConfig}
      */
-    private static void validateResult(AttributeConfig attr) {
+    private static AttributeConfig validateResult(AttributeConfig attr) {
         if (!isLanguageValid(attr.getAudioLanguage()))
             throw new CommandLine.TypeConversionException("Audio language invalid: " + attr.getAudioLanguage());
         if (!isLanguageValid(attr.getSubtitleLanguage()))
             throw new CommandLine.TypeConversionException("Subtitle language invalid: " + attr.getSubtitleLanguage());
+
+        return attr;
     }
 }

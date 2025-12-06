@@ -1,13 +1,11 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.converter.AttributeConfigConverter;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidFile;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidMkvToolNix;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.MkvToolNix;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileUtils;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ValidationUtil;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
