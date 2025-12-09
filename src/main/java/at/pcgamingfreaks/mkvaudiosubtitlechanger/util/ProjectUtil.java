@@ -17,8 +17,13 @@ public class ProjectUtil implements CommandLine.IVersionProvider {
         }
     }
 
+    // TODO: add mkvmerge and mkvpropedit version
     public String[] getVersion() {
-        return new String[] {getProjectName() + " " + PROJECT_PROPERTIES.getProperty("version")};
+        return new String[] {
+                getProjectName() + " " + PROJECT_PROPERTIES.getProperty("version"),
+                "Java ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
+                "${os.name} ${os.version} ${os.arch}"
+        };
     }
 
     public static String getProjectName() {
