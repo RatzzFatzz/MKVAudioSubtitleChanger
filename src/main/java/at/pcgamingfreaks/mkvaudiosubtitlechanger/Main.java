@@ -19,7 +19,7 @@ import picocli.CommandLine;
         name = "mkvaudiosubtitlechanger",
         usageHelpWidth = 120,
         customSynopsis = {
-                "mkvaudiosubtitlechanger -a <attributeConfig>... -l <libraryPath> [-s]",
+                "mkvaudiosubtitlechanger -a <attributeConfig> [...<attributeConfig>] -l <libraryPath> [-s]",
                 "Example: mkvaudiosubtitlechanger -a eng:eng eng:ger -l /mnt/media/ -s",
                 ""
         },
