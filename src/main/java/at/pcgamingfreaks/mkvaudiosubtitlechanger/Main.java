@@ -17,12 +17,14 @@ import picocli.CommandLine;
 @Slf4j
 @CommandLine.Command(
         name = "mkvaudiosubtitlechanger",
-        usageHelpWidth = 120,
+        usageHelpAutoWidth = true,
         customSynopsis = {
                 "mkvaudiosubtitlechanger -a <attributeConfig> [...<attributeConfig>] -l <libraryPath> [-s]",
                 "Example: mkvaudiosubtitlechanger -a eng:eng eng:ger -l /mnt/media/ -s",
                 ""
         },
+        requiredOptionMarker = '*',
+        sortOptions = false,
         mixinStandardHelpOptions = true,
         versionProvider = ProjectUtil.class
 )
