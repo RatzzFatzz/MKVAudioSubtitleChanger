@@ -36,7 +36,8 @@ public class Main implements Runnable {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            args = new String[] { "--help" };
+            CommandLine.usage(Main.class, System.out);
+            return;
         }
 
         new CommandLine(Main.class)
