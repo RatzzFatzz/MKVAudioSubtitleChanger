@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +17,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -34,38 +37,44 @@ class FileFilterTest {
 
     @BeforeEach
     void beforeEach() {
-
+        ResultStatistic.getInstance(true);
     }
 
     private static Stream<Arguments> accept() {
         return Stream.of(
-                Arguments.of("~/video.mkv", new String[]{".mkv"}, null, null, ".*", true),
-                Arguments.of("~/video.mp4", new String[]{".mkv"}, null, null, ".*", false),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), -1, ".*", true, 1, 0),
+                Arguments.of("~/video.mp4", Set.of(".mkv"), -1, ".*", false, 0, 0),
 
-                Arguments.of("~/video.mkv", new String[]{".mkv"}, null, null, "v.*", true),
-                Arguments.of("~/video.mkv", new String[]{".mkv"}, null, null, "a.*", false),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), -1, "v.*", true,  1, 0),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), -1, "a.*", false, 1, 1),
 
-                Arguments.of("~/video.mkv", new String[]{".mkv"}, new Date(System.currentTimeMillis() - 1000), new Date(), ".*", false),
-                Arguments.of("~/video.mkv", new String[]{".mkv"}, new Date(), new Date(System.currentTimeMillis() - 1000), ".*", true)
+                Arguments.of("~/video.mkv", Set.of(".mkv"), -1000, ".*", true, 1, 0),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), 1000, ".*", false, 1, 1)
         );
     }
 
+    /**
+     * @param filterDateOffset move filter data into the future or past by positive and negative values
+     */
     @ParameterizedTest
     @MethodSource
-    void accept(String path, String[] args, Date fileCreationDate, Date filterDate, String pattern, boolean expected) {
+    void accept(String path, Set<String> args, int filterDateOffset, String pattern, boolean expectedHit, int total, int excluded) {
         when(file.getAbsolutePath()).thenReturn(path);
         when(file.getName()).thenReturn(List.of(path.split("/")).get(1));
         when(file.toPath()).thenReturn(Path.of(TEST_FILE));
 
         InputConfig.getInstance(true).setIncludePattern(Pattern.compile(pattern));
-        if (filterDate != null) InputConfig.getInstance().setFilterDate(filterDate);
+        long currentTime = System.currentTimeMillis();
+        InputConfig.getInstance().setFilterDate(new Date(currentTime + filterDateOffset));
 
         try (MockedStatic<DateUtils> mockedFiles = Mockito.mockStatic(DateUtils.class)) {
             mockedFiles
                     .when(() -> DateUtils.convert(anyLong()))
-                    .thenReturn(fileCreationDate);
+                    .thenReturn(new Date(currentTime));
 
-            assertEquals(expected, FileFilter.accept(file, args));
+            assertEquals(expectedHit, FileFilter.accept(file, new HashSet<>(args)), "File is accepted");
+            assertEquals(total, ResultStatistic.getInstance().getTotal(), "Total files");
+            assertEquals(excluded, ResultStatistic.getInstance().getExcluded(), "Excluded files");
         }
     }
 }

@@ -1,11 +1,8 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +14,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
 
-    public CoherentAttributeUpdaterKernel(FileCollector collector, FileProcessor processor) {
-        super(collector, processor);
+    public CoherentAttributeUpdaterKernel(FileProcessor processor) {
+        super(processor);
     }
 
     @Override
@@ -27,18 +24,10 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
                 .setUnit(" directories", 1);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    List<File> loadFiles(String path) {
-        return loadFiles(path, InputConfig.getInstance().getCoherent());
-    }
-
     List<File> loadFiles(String path, int depth) {
-        List<File> excludedFiles = loadExcludedFiles();
-        List<File> directories = collector.loadDirectories(path, depth)
-                .stream().filter(file -> !excludedFiles.contains(file))
+        List<File> directories = processor.loadDirectories(path, depth)
+                .stream()
+//                .filter(file -> !excludedFiles.contains(file))
                 .collect(Collectors.toList());
         return directories.stream()
                 .filter(dir -> isParentDirectory(dir, directories))
@@ -67,43 +56,43 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
     void process(File file, int depth) {
         // TODO: Implement level crawl if coherence is not possible on user entered depth
         // IMPL idea: recursive method call, cache needs to be implemented
-        List<FileInfo> fileInfos = collector.loadFiles(file.getAbsolutePath()).stream()
-                .map(FileInfo::new)
-                .collect(Collectors.toList());
+//        List<FileInfoOld> fileInfoOlds = collector.loadFiles(file.getAbsolutePath()).stream()
+//                .map(FileInfoOld::new)
+//                .collect(Collectors.toList());
 
         for (AttributeConfig config : InputConfig.getInstance().getAttributeConfig()) {
 
-            for (FileInfo fileInfo : fileInfos) {
-                List<FileAttribute> attributes = processor.loadAttributes(fileInfo.getFile());
+//            for (FileInfoOld fileInfoOld : fileInfoOlds) {
+//                List<TrackAttributes> attributes = processor.readAttributes(fileInfoOld.getFile());
+//
+//                List<TrackAttributes> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
+//                List<TrackAttributes> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
+//
+//                processor.detectDefaultTracks(fileInfoOld, attributes, nonForcedTracks);
+//                processor.detectDesiredTracks(fileInfoOld, nonForcedTracks, nonCommentaryTracks, config);
+//            }
+//
+//            if (fileInfoOlds.stream().allMatch(elem -> ("OFF".equals(config.getSubtitleLanguage()) || elem.getDesiredDefaultSubtitleLane() != null)
+//                    && elem.getDesiredDefaultAudioLane() != null)) {
+//                log.info("Found {} match for {}", config.toStringShort(), file.getAbsolutePath());
+//                fileInfoOlds.forEach(this::updateFile);
+//                return; // match found, end process here
+//            }
 
-                List<FileAttribute> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
-                List<FileAttribute> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
-
-                processor.detectDefaultTracks(fileInfo, attributes, nonForcedTracks);
-                processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks, config);
-            }
-
-            if (fileInfos.stream().allMatch(elem -> ("OFF".equals(config.getSubtitleLanguage()) || elem.getDesiredDefaultSubtitleLane() != null)
-                    && elem.getDesiredDefaultAudioLane() != null)) {
-                log.info("Found {} match for {}", config.toStringShort(), file.getAbsolutePath());
-                fileInfos.forEach(this::updateFile);
-                return; // match found, end process here
-            }
-
-            fileInfos.forEach(f -> {
-                f.setDesiredDefaultAudioLane(null);
-                f.setDesiredDefaultSubtitleLane(null);
-            });
+//            fileInfoOlds.forEach(f -> {
+//                f.setDesiredDefaultAudioLane(null);
+//                f.setDesiredDefaultSubtitleLane(null);
+//            });
         }
 
         log.info("No coherent match found for {}", file.getAbsoluteFile());
 
-        for (FileInfo fileInfo : fileInfos) {
-            if (!InputConfig.getInstance().isForceCoherent()) {
-                super.process(fileInfo.getFile());
-            } else {
-                statistic.excluded();
-            }
-        }
+//        for (FileInfoOld fileInfoOld : fileInfoOlds) {
+//            if (!InputConfig.getInstance().isForceCoherent()) {
+//                super.process(fileInfoOld.getFile());
+//            } else {
+//                statistic.excluded();
+//            }
+//        }
     }
 }

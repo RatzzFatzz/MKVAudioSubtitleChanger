@@ -1,15 +1,13 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.fields;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import picocli.CommandLine;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.function.Function;
 import java.util.stream.Stream;
 

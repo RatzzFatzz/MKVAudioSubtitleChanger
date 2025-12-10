@@ -1,7 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.fields;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

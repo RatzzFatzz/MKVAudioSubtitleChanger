@@ -5,16 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 @Slf4j
-public record FileAttribute(int id, String language, String trackName, boolean defaultTrack, boolean forcedTrack,
-                            LaneType type) {
+public record TrackAttributes(int id, String language, String trackName,
+                              boolean defaultt, boolean forced, boolean commentary, boolean hearingImpaired,
+                              TrackType type) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FileAttribute attribute = (FileAttribute) o;
+        TrackAttributes attribute = (TrackAttributes) o;
         return id == attribute.id
-                && defaultTrack == attribute.defaultTrack
-                && forcedTrack == attribute.forcedTrack
+                && defaultt == attribute.defaultt
+                && forced == attribute.forced
                 && Objects.equals(language, attribute.language)
                 && Objects.equals(trackName, attribute.trackName)
                 && type == attribute.type;
@@ -25,8 +26,8 @@ public record FileAttribute(int id, String language, String trackName, boolean d
         return "[" + "id=" + id +
                 ", language='" + language + '\'' +
                 ", trackName='" + trackName + '\'' +
-                ", defaultTrack=" + defaultTrack +
-                ", forcedTrack=" + forcedTrack +
+                ", defaultt=" + defaultt +
+                ", forced=" + forced +
                 ", type=" + type +
                 ']';
     }

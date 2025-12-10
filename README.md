@@ -26,31 +26,44 @@ Attribute-config must be entered in pairs: `audio:subtitle`; Example: `jpn:eng`.
 
 ### Available parameters
 ```
-  -a, --attribute-config=<attributeConfig>...
-                            List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)
-  -c, --coherent=<coherent> try to match all files in dir of depth with the same attribute config
-      -cf, --force-coherent changes are only applied if it's a coherent match
-      --commentary-keywords=<commentaryKeywords>[, <commentaryKeywords>...]...
-                            Keywords to identify commentary tracks (Defaults will be overwritten; Default: commentary, director)
-  -d, --filter-date=<filterDate>
-                            only consider files created newer than entered date (format: "dd.MM.yyyy-HH:mm:ss")
-      --debug               Enable debug logging
-  -e, --excluded-directory=<excludedDirectories>...
-                            Directories to be excluded, combines with config file
-      --forced-keywords=<forcedKeywords>[, <forcedKeywords>...]...
-                            Keywords to identify forced tracks (Defaults will be overwritten; Default: forced, signs, songs)
-  -h, --help                Show this help message and exit.
-  -i, --include-pattern=<includePattern>
-                            include files matching pattern (default: ".*")
-  -l, --library=<libraryPath>
+* -a, --attribute-config=<attributeConfig>...
+                            List of audio:subtitle pairs used to match in order
+                              and update files accordingly (e.g. jpn:eng jpn:
+                              ger)
+* -l, --library=<libraryPath>
                             path to library
   -m, --mkvtoolnix=<mkvToolNix>
                             path to mkvtoolnix installation
-  -n, --only-new-file       sets filter-date to last successful execution (overwrites input of filter-date)
-      --preferred-subtitles=<preferredSubtitles>[, <preferredSubtitles>...]...
-                            Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: unstyled)
   -s, --safemode            test run (no files will be changes)
   -t, --threads=<threads>   thread count (default: 2)
+  -c, --coherent=<coherent> try to match all files in dir of depth with the
+                              same attribute config
+      -cf, --force-coherent changes are only applied if it's a coherent match
+  -n, --only-new-file       sets filter-date to last successful execution
+                              (overwrites input of filter-date)
+  -d, --filter-date=<filterDate>
+                            only consider files created newer than entered date
+                              (format: "dd.MM.yyyy-HH:mm:ss")
+  -i, --include-pattern=<includePattern>
+                            include files matching pattern (default: ".*")
+  -e, --excluded=<excluded>...
+                            Directories and files to be excluded (no wildcard)
+  -o, -overwrite-forced     remove all forced flags
+      --forced-keywords=<forcedKeywords>[, <forcedKeywords>...]...
+                            Keywords to identify forced tracks (Defaults will
+                              be overwritten; Default: forced, signs, songs)
+      --commentary-keywords=<commentaryKeywords>[, <commentaryKeywords>...]...
+                            Keywords to identify commentary tracks (Defaults
+                              will be overwritten; Default: comment,
+                              commentary, director)
+      --hearing-impaired=<hearingImpaired>[, <hearingImpaired>...]...
+                            Keywords to identify hearing impaired tracks
+                              (Defaults will be overwritten; Default: SDH
+      --preferred-subtitles=<preferredSubtitles>[, <preferredSubtitles>...]...
+                            Keywords to prefer specific subtitle tracks
+                              (Defaults will be overwritten; Default: unstyled)
+      --debug               Enable debug logging
+  -h, --help                Show this help message and exit.
   -V, --version             Print version information and exit.
 ```
 If you need more information how each parameter works, check out [this wiki page](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Parameters-v4).

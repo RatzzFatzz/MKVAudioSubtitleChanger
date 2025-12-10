@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
-public enum LaneType {
+public enum TrackType {
     AUDIO,
     SUBTITLES;
 }

@@ -1,12 +1,11 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidationExecutionStrategy;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.CachedMkvFileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation.ValidationExecutionStrategy;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.CachedMkvFileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.AttributeUpdaterKernel;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.CoherentAttributeUpdaterKernel;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.DefaultAttributeUpdaterKernel;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.MkvFileCollector;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -53,8 +52,8 @@ public class Main implements Runnable {
 
         InputConfig.setInstance(config);
         AttributeUpdaterKernel kernel = InputConfig.getInstance().getCoherent() != null
-                ? new CoherentAttributeUpdaterKernel(new MkvFileCollector(), new CachedMkvFileProcessor())
-                : new DefaultAttributeUpdaterKernel(new MkvFileCollector(), new CachedMkvFileProcessor());
+                ? new CoherentAttributeUpdaterKernel(new CachedMkvFileProcessor())
+                : new DefaultAttributeUpdaterKernel(new CachedMkvFileProcessor());
         kernel.execute();
     }
 }

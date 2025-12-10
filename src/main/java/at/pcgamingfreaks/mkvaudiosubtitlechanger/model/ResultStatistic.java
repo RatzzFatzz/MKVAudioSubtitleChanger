@@ -17,7 +17,7 @@ public class ResultStatistic {
             "└─ Failed: %s%n" +
             "Runtime: %s";
     private static ResultStatistic instance;
-    private int filesTotal = 0;
+    private int total = 0;
     private int excluded = 0;
 
     private int shouldChange = 0;
@@ -33,18 +33,22 @@ public class ResultStatistic {
     private long runtime = 0;
 
     public static ResultStatistic getInstance() {
-        if (instance == null) {
+        return getInstance(false);
+    }
+
+    public static ResultStatistic getInstance(boolean reset) {
+        if (instance == null || reset) {
             instance = new ResultStatistic();
         }
         return instance;
     }
 
     public void increaseTotalBy(int amount) {
-        filesTotal += amount;
+        total += amount;
     }
 
     public synchronized void total() {
-        filesTotal++;
+        total++;
     }
 
     public void increaseExcludedBy(int amount) {
@@ -110,13 +114,13 @@ public class ResultStatistic {
     }
 
     public String prettyPrint() {
-        return String.format(result, filesTotal, excluded, shouldChange, failedChanging, successfullyChanged,
+        return String.format(result, total, excluded, shouldChange, failedChanging, successfullyChanged,
                 noSuitableConfigFound, alreadyFits, failed, formatTimer());
     }
 
     @Override
     public String toString() {
-        return "ResultStatistic: " + "filesTotal=" + filesTotal +
+        return "ResultStatistic: " + "total=" + total +
                 ", excluded=" + excluded +
                 ", shouldChange=" + shouldChange +
                 " (failedChanging=" + failedChanging +

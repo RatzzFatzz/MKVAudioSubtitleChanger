@@ -1,4 +1,4 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

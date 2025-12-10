@@ -5,80 +5,38 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Getter
-@Setter
 @RequiredArgsConstructor
 public class FileInfo {
     private final File file;
 
-    private Set<FileAttribute> existingDefaultAudioLanes = new HashSet<>();
-    private Set<FileAttribute> existingForcedAudioLanes = new HashSet<>();
+    private final List<TrackAttributes> tracks = new ArrayList<>();
 
-    private Set<FileAttribute> existingDefaultSubtitleLanes = new HashSet<>();
-    private Set<FileAttribute> existingForcedSubtitleLanes = new HashSet<>();
+    private final List<TrackAttributes> audioTracks = new ArrayList<>();
+    private final List<TrackAttributes> subtitleTracks = new ArrayList<>();
 
-    private Set<FileAttribute> desiredForcedSubtitleLanes = new HashSet<>();
-    private FileAttribute desiredDefaultAudioLane;
-    private FileAttribute desiredDefaultSubtitleLane;
+    private final PlannedChange changes = new PlannedChange();
+    @Setter
     private AttributeConfig matchedConfig;
 
-    public boolean isAudioDifferent() {
-        return isMatchDifferent(existingDefaultAudioLanes, desiredDefaultAudioLane)
-                || isLaneOff(existingDefaultAudioLanes, desiredDefaultAudioLane, AttributeConfig::getAudioLanguage);
+    public void addTrack(TrackAttributes track) {
+        tracks.add(track);
+        if (TrackType.AUDIO.equals(track.type())) audioTracks.add(track);
+        else if (TrackType.SUBTITLES.equals(track.type())) subtitleTracks.add(track);
     }
 
-    public boolean isSubtitleDifferent() {
-        return isMatchDifferent(existingDefaultSubtitleLanes, desiredDefaultSubtitleLane)
-                || isLaneOff(existingDefaultSubtitleLanes, desiredDefaultSubtitleLane, AttributeConfig::getSubtitleLanguage);
-    }
-
-    private boolean isMatchDifferent(Set<FileAttribute> existingDefault, FileAttribute desiredDefault) {
-        return desiredDefault != null &&
-                (existingDefault == null || !existingDefault.contains(desiredDefault) || existingDefault.size() > 1);
-    }
-
-    private boolean isLaneOff(Set<FileAttribute> existingDefault, FileAttribute desiredDefault, Function<AttributeConfig, String> inputLane) {
-        return desiredDefault == null
-                && (matchedConfig != null && "OFF".equals(inputLane.apply(matchedConfig)))
-                && (existingDefault != null && !existingDefault.isEmpty());
-    }
-
-    public boolean areForcedTracksDifferent() {
-        return !desiredForcedSubtitleLanes.isEmpty() && !existingForcedSubtitleLanes.containsAll(desiredForcedSubtitleLanes);
+    public void addTracks(Collection<TrackAttributes> tracks) {
+        for (TrackAttributes track : tracks) addTrack(track);
     }
 
     public FileStatus getStatus() {
-        if (isChangeNecessary()) return FileStatus.CHANGE_NECESSARY;
-        if (isUnableToApplyConfig()) return FileStatus.NO_SUITABLE_CONFIG;
-        if (isAlreadySuited()) return FileStatus.ALREADY_SUITED;
+        if (!changes.isEmpty()) return FileStatus.CHANGE_NECESSARY;
+        if (matchedConfig == null) return FileStatus.NO_SUITABLE_CONFIG;
+        if (changes.isEmpty()) return FileStatus.ALREADY_SUITED;
         return FileStatus.UNKNOWN;
-    }
-
-    private boolean isUnableToApplyConfig() {
-        return desiredDefaultAudioLane == null && !"OFF".equals(matchedConfig.getAudioLanguage())
-                && desiredDefaultSubtitleLane == null && !"OFF".equals(matchedConfig.getSubtitleLanguage());
-    }
-
-    private boolean isAlreadySuited() {
-        return (desiredDefaultAudioLane == null || existingDefaultAudioLanes.contains(desiredDefaultAudioLane))
-                && (desiredDefaultSubtitleLane == null || existingDefaultSubtitleLanes.contains(desiredDefaultSubtitleLane));
-    }
-
-    private boolean isChangeNecessary() {
-        return isAudioDifferent() || isSubtitleDifferent() || areForcedTracksDifferent() || !existingForcedAudioLanes.isEmpty();
-    }
-
-    @Override
-    public String toString() {
-        return "[" + "defaultAudioLanes=" + existingDefaultAudioLanes +
-                ", defaultSubtitleLanes=" + existingDefaultSubtitleLanes +
-                ", desiredForcedSubtitleLanes=" + desiredForcedSubtitleLanes +
-                ", desiredAudioLane=" + desiredDefaultAudioLane +
-                ", desiredSubtitleLane=" + desiredDefaultSubtitleLane +
-                ']';
     }
 }

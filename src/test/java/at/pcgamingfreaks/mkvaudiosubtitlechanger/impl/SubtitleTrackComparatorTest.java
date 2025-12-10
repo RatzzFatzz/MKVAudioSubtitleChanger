@@ -1,7 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,13 +34,13 @@ class SubtitleTrackComparatorTest {
 
     @ParameterizedTest
     @MethodSource("compareArguments")
-    void compare(List<FileAttribute> input, List<FileAttribute> expected) {
-        List<FileAttribute> result = input.stream().sorted(comparator.reversed()).collect(Collectors.toList());
+    void compare(List<TrackAttributes> input, List<TrackAttributes> expected) {
+        List<TrackAttributes> result = input.stream().sorted(comparator.reversed()).collect(Collectors.toList());
 
-        assertArrayEquals(expected.toArray(new FileAttribute[0]), result.toArray(new FileAttribute[0]));
+        assertArrayEquals(expected.toArray(new TrackAttributes[0]), result.toArray(new TrackAttributes[0]));
     }
 
-    private static FileAttribute attr(String trackName, boolean defaultTrack) {
-        return new FileAttribute(0, "", trackName, defaultTrack, false, LaneType.SUBTITLES);
+    private static TrackAttributes attr(String trackName, boolean defaultTrack) {
+        return new TrackAttributes(0, "", trackName, defaultTrack, false, false, false, TrackType.SUBTITLES);
     }
 }

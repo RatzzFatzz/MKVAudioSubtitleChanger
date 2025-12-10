@@ -1,5 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.converter;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.converter.AttributeConfigConverter;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

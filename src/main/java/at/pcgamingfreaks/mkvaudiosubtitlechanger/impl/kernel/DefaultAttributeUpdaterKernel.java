@@ -1,8 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.FileProcessor;
 import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBarBuilder;
 
@@ -13,24 +12,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DefaultAttributeUpdaterKernel extends AttributeUpdaterKernel {
 
-    public DefaultAttributeUpdaterKernel(FileCollector collector, FileProcessor processor) {
-        super(collector, processor);
+    public DefaultAttributeUpdaterKernel(FileProcessor processor) {
+        super(processor);
     }
 
     @Override
     protected ProgressBarBuilder pbBuilder() {
         return super.pbBuilder()
                 .setUnit(" files", 1);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    List<File> loadFiles(String path) {
-        List<File> excludedFiles = loadExcludedFiles();
-        return collector.loadFiles(InputConfig.getInstance().getLibraryPath().getAbsolutePath()).stream()
-                .filter(file -> !excludedFiles.contains(file))
-                .collect(Collectors.toList());
     }
 }

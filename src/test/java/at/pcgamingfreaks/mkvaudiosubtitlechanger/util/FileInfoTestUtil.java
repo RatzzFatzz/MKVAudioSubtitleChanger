@@ -1,22 +1,28 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.util;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.LaneType;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackType;
 
 public class FileInfoTestUtil {
-    public static final FileAttribute AUDIO_GER_DEFAULT = new FileAttribute(0, "ger", "", true, false, LaneType.AUDIO);
-    public static final FileAttribute AUDIO_ENG_DEFAULT = new FileAttribute(1, "eng", "", true, false, LaneType.AUDIO);
-    public static final FileAttribute AUDIO_GER = new FileAttribute(0, "ger", "", false, false, LaneType.AUDIO);
-    public static final FileAttribute AUDIO_ENG = new FileAttribute(1, "eng", "", false, false, LaneType.AUDIO);
-    public static final FileAttribute AUDIO_GER_FORCED = new FileAttribute(0, "ger", "", false, true, LaneType.AUDIO);
-    public static final FileAttribute AUDIO_ENG_FORCED = new FileAttribute(1, "eng", "", false, true, LaneType.AUDIO);
-    public static final FileAttribute AUDIO_GER_COMMENTARY = new FileAttribute(1, "ger", "commentary", false, false, LaneType.AUDIO);
-    public static final FileAttribute AUDIO_ENG_COMMENTARY = new FileAttribute(1, "eng", "commentary", false, false, LaneType.AUDIO);
+    public static final TrackAttributes AUDIO_GER_DEFAULT = new TrackAttributes(0, "ger", "", true, false, false, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_ENG_DEFAULT = new TrackAttributes(1, "eng", "", true, false, false, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_GER = new TrackAttributes(0, "ger", "", false, false, false, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_ENG = new TrackAttributes(1, "eng", "", false, false, false, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_GER_FORCED = new TrackAttributes(0, "ger", "", false, true, false, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_ENG_FORCED = new TrackAttributes(1, "eng", "", false, true, false, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_GER_COMMENTARY = new TrackAttributes(0, "ger", "", false, false, true, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_ENG_COMMENTARY = new TrackAttributes(1, "eng", "", false, false, true, false, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_GER_HEARING = new TrackAttributes(0, "ger", "", false, false, false, true, TrackType.AUDIO);
+    public static final TrackAttributes AUDIO_ENG_HEARING = new TrackAttributes(1, "ger", "", false, false, false, true, TrackType.AUDIO);
 
-    public static final FileAttribute SUB_GER_DEFAULT = new FileAttribute(0, "ger", "", true, false, LaneType.SUBTITLES);
-    public static final FileAttribute SUB_ENG_DEFAULT = new FileAttribute(1, "eng", "", true, false, LaneType.SUBTITLES);
-    public static final FileAttribute SUB_GER = new FileAttribute(0, "ger", "", false, false, LaneType.SUBTITLES);
-    public static final FileAttribute SUB_ENG = new FileAttribute(1, "eng", "", false, false, LaneType.SUBTITLES);
-    public static final FileAttribute SUB_GER_FORCED = new FileAttribute(0, "ger", "", false, true, LaneType.SUBTITLES);
-    public static final FileAttribute SUB_ENG_FORCED = new FileAttribute(1, "eng", "", false, true, LaneType.SUBTITLES);
+    public static final TrackAttributes SUB_GER_DEFAULT = new TrackAttributes(0, "ger", "", true, false, false, false, TrackType.SUBTITLES);
+    public static final TrackAttributes SUB_ENG_DEFAULT = new TrackAttributes(1, "eng", "", true, false, false, false, TrackType.SUBTITLES);
+    public static final TrackAttributes SUB_GER = new TrackAttributes(0, "ger", "", false, false, false, false, TrackType.SUBTITLES);
+    public static final TrackAttributes SUB_ENG = new TrackAttributes(1, "eng", "", false, false, false, false, TrackType.SUBTITLES);
+    public static final TrackAttributes SUB_GER_FORCED = new TrackAttributes(0, "ger", "", false, true, false, false, TrackType.SUBTITLES);
+    public static final TrackAttributes SUB_ENG_FORCED = new TrackAttributes(1, "eng", "", false, true, false, false, TrackType.SUBTITLES);
+
+    public static TrackAttributes withName(TrackAttributes track, String trackName) {
+        return new TrackAttributes(track.id(), track.language(), trackName, track.defaultt(), track.forced(), track.commentary(), track.hearingImpaired(), track.type());
+    }
 }

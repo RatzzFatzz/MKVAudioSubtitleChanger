@@ -1,7 +1,7 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ValidationUtil;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -12,8 +12,8 @@ import java.util.Set;
 public class ValidationExecutionStrategy implements CommandLine.IExecutionStrategy {
 
     public int execute(CommandLine.ParseResult parseResult) {
-        validate(parseResult.commandSpec());
-        return new CommandLine.RunLast().execute(parseResult); // default execution strategy
+        if (!parseResult.isVersionHelpRequested() && !parseResult.isUsageHelpRequested()) validate(parseResult.commandSpec());
+        return new CommandLine.RunLast().execute(parseResult);
     }
 
     private static void validate(CommandLine.Model.CommandSpec spec) {

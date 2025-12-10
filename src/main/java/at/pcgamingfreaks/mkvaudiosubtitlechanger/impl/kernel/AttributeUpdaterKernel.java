@@ -1,13 +1,9 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileCollector;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileProcessor;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileAttribute;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.AttributeProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.FileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
 import at.pcgamingfreaks.yaml.YAML;
@@ -23,19 +19,16 @@ import net.harawata.appdirs.AppDirsFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AttributeUpdaterKernel {
 
-    protected final FileCollector collector;
     protected final FileProcessor processor;
     protected final ResultStatistic statistic = ResultStatistic.getInstance();
     private final ExecutorService executor = Executors.newFixedThreadPool(InputConfig.getInstance().getThreads());
@@ -52,8 +45,10 @@ public abstract class AttributeUpdaterKernel {
         statistic.startTimer();
 
         try (ProgressBar progressBar = pbBuilder().build()) {
-            List<File> files = loadFiles(InputConfig.getInstance().getLibraryPath().getAbsolutePath());
+            List<File> files = processor.loadFiles(InputConfig.getInstance().getLibraryPath().getAbsolutePath());
+
             progressBar.maxHint(files.size());
+            progressBar.refresh();
 
             files.forEach(file -> executor.submit(() -> {
                 process(file);
@@ -64,30 +59,11 @@ public abstract class AttributeUpdaterKernel {
             executor.awaitTermination(1, TimeUnit.DAYS);
         }
 
-        endProcess();
+        writeLastExecutionDate();
 
         statistic.stopTimer();
         statistic.printResult();
     }
-
-    protected List<File> loadExcludedFiles() {
-        List<File> excludedFiles = InputConfig.getInstance().getExcludedDirectories().stream()
-                .map(collector::loadFiles)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        statistic.increaseTotalBy(excludedFiles.size());
-        statistic.increaseExcludedBy(excludedFiles.size());
-        return excludedFiles;
-    }
-
-    /**
-     * Load files or directories to update.
-     * Remove excluded directories.
-     *
-     * @param path Path to library
-     * @return List of files to update.
-     */
-    abstract List<File> loadFiles(String path);
 
     /**
      * Start of the file updating process.
@@ -96,24 +72,20 @@ public abstract class AttributeUpdaterKernel {
      * @param file file or directory to update
      */
     void process(File file) {
-        FileInfo fileInfo = new FileInfo(file);
-        List<FileAttribute> attributes = processor.loadAttributes(file);
+        FileInfo fileInfo = processor.readAttributes(file);
 
-        if (attributes == null || attributes.isEmpty()) {
+        if (fileInfo.getTracks().isEmpty()) {
             log.warn("No attributes found for file {}", file);
-            statistic.total();
             statistic.failure();
             return;
         }
 
-        List<FileAttribute> nonForcedTracks = processor.retrieveNonForcedTracks(attributes);
-        List<FileAttribute> nonCommentaryTracks = processor.retrieveNonCommentaryTracks(attributes);
+        AttributeProcessor.findDefaultMatchAndApplyChanges(fileInfo);
+        AttributeProcessor.findForcedTracksAndApplyChanges(fileInfo);
+        AttributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
+        AttributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
 
-        processor.detectDefaultTracks(fileInfo, attributes, nonForcedTracks);
-        processor.detectDesiredTracks(fileInfo, nonForcedTracks, nonCommentaryTracks,
-                InputConfig.getInstance().getAttributeConfig().toArray(new AttributeConfig[]{}));
-
-        updateFile(fileInfo);
+        checkStatusAndUpdate(fileInfo);
     }
 
     /**
@@ -121,8 +93,7 @@ public abstract class AttributeUpdaterKernel {
      *
      * @param fileInfo contains information about file and desired configuration.
      */
-    protected void updateFile(FileInfo fileInfo) {
-        statistic.total();
+    protected void checkStatusAndUpdate(FileInfo fileInfo) {
         switch (fileInfo.getStatus()) {
             case CHANGE_NECESSARY:
                 statistic.shouldChange();
@@ -142,12 +113,10 @@ public abstract class AttributeUpdaterKernel {
     }
 
     private void commitChange(FileInfo fileInfo) {
-        if (InputConfig.getInstance().isSafeMode()) {
-            return;
-        }
+        if (InputConfig.getInstance().isSafeMode()) return;
 
         try {
-            processor.update(fileInfo.getFile(), fileInfo);
+            processor.update(fileInfo);
             statistic.success();
             log.info("Commited {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getAbsolutePath());
         } catch (IOException | MkvToolNixException e) {
@@ -156,7 +125,8 @@ public abstract class AttributeUpdaterKernel {
         }
     }
 
-    protected void endProcess() {
+    // should this be here?
+    protected void writeLastExecutionDate() {
         if (InputConfig.getInstance().isSafeMode()) {
             return;
         }

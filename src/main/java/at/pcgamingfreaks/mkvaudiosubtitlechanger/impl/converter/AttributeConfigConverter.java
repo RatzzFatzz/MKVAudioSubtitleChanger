@@ -1,4 +1,4 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config.converter;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.converter;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import picocli.CommandLine;
@@ -26,7 +26,7 @@ public class AttributeConfigConverter implements CommandLine.ITypeConverter<Attr
 
         if (!matcher.find()) throw new CommandLine.TypeConversionException("Invalid Attribute config: " + s);
 
-        return validateResult(new AttributeConfig(matcher.group("audio"), matcher.group("sub")));
+        return validateResult(new AttributeConfig(matcher.group(AUDIO_GROUP), matcher.group(SUB_GROUP)));
     }
 
     /**

@@ -1,8 +1,7 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.config;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.config.validation.ValidationExecutionStrategy;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation.ValidationExecutionStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
