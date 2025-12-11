@@ -63,16 +63,15 @@ class FileFilterTest {
         when(file.getName()).thenReturn(List.of(path.split("/")).get(1));
         when(file.toPath()).thenReturn(Path.of(TEST_FILE));
 
-        InputConfig.getInstance(true).setIncludePattern(Pattern.compile(pattern));
         long currentTime = System.currentTimeMillis();
-        InputConfig.getInstance().setFilterDate(new Date(currentTime + filterDateOffset));
+        FileFilter fileFilter = new FileFilter(Set.of(), Pattern.compile(pattern), new Date(currentTime + filterDateOffset));
 
         try (MockedStatic<DateUtils> mockedFiles = Mockito.mockStatic(DateUtils.class)) {
             mockedFiles
                     .when(() -> DateUtils.convert(anyLong()))
                     .thenReturn(new Date(currentTime));
 
-            assertEquals(expectedHit, FileFilter.accept(file, new HashSet<>(args)), "File is accepted");
+            assertEquals(expectedHit, fileFilter.accept(file, new HashSet<>(args)), "File is accepted");
             assertEquals(total, ResultStatistic.getInstance().getTotal(), "Total files");
             assertEquals(excluded, ResultStatistic.getInstance().getExcluded(), "Excluded files");
         }

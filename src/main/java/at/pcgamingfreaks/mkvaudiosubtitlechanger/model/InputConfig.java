@@ -5,7 +5,6 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation.ValidFile;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation.ValidMkvToolNix;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileUtils;
 import jakarta.validation.constraints.Min;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,9 +23,6 @@ import picocli.CommandLine.Option;
 @NoArgsConstructor
 @CommandLine.Command
 public class InputConfig {
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private static InputConfig config = null;
 
     private File configPath;
 
@@ -87,21 +83,6 @@ public class InputConfig {
     static {
         // Set default value into system properties to picocli can read the conditional value
         System.setProperty("DEFAULT_MKV_TOOL_NIX", SystemUtils.IS_OS_WINDOWS ? "C:\\Program Files\\MKVToolNix" : "/usr/bin/");
-    }
-
-    public static InputConfig getInstance() {
-        return getInstance(false);
-    }
-
-    public static InputConfig getInstance(boolean reset) {
-        if (config == null || reset) {
-            config = new InputConfig();
-        }
-        return config;
-    }
-
-    public static void setInstance(InputConfig c) {
-        config = c;
     }
 
     /**

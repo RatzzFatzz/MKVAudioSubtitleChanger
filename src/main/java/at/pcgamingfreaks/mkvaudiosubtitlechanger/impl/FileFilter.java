@@ -1,8 +1,8 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -16,11 +16,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
+@RequiredArgsConstructor
 public class FileFilter {
-    private static final String EXTENSION_GROUP = "extension";
-    private static final Pattern extensionPattern = Pattern.compile(String.format(".*(?<%s>\\..*)", EXTENSION_GROUP));
+    private final Set<String> excluded;
+    private final Pattern includePattern;
+    private final Date filterDate;
 
-    public static boolean accept(File pathName, Set<String> fileExtensions) {
+    private final String EXTENSION_GROUP = "extension";
+    private final Pattern extensionPattern = Pattern.compile(String.format(".*(?<%s>\\..*)", EXTENSION_GROUP));
+
+    public boolean accept(File pathName, Set<String> fileExtensions) {
         // Ignore files irrelevant for statistics
         if (!hasProperFileExtension(pathName, new HashSet<>(fileExtensions))) {
             return false;
@@ -29,7 +34,7 @@ public class FileFilter {
         ResultStatistic.getInstance().total();
         if (!hasMatchingPattern(pathName)
                 || !isNewer(pathName)
-                || isExcluded(pathName, new HashSet<>(InputConfig.getInstance().getExcluded()))) {
+                || isExcluded(pathName, new HashSet<>(excluded))) {
             ResultStatistic.getInstance().excluded();
             return false;
         }
@@ -37,18 +42,17 @@ public class FileFilter {
         return true;
     }
 
-    private static boolean hasProperFileExtension(File pathName, Set<String> fileExtensions) {
+    private boolean hasProperFileExtension(File pathName, Set<String> fileExtensions) {
         Matcher matcher = extensionPattern.matcher(pathName.getName());
         return matcher.find() && fileExtensions.contains(matcher.group(EXTENSION_GROUP));
     }
 
-    private static boolean hasMatchingPattern(File pathName) {
-        return InputConfig.getInstance().getIncludePattern().matcher(pathName.getName()).matches();
+    private boolean hasMatchingPattern(File pathName) {
+        return includePattern.matcher(pathName.getName()).matches();
     }
 
-    private static boolean isNewer(File pathName) {
-        InputConfig config = InputConfig.getInstance();
-        if (config.getFilterDate() == null) return true;
+    private boolean isNewer(File pathName) {
+        if (filterDate == null) return true;
         try {
             BasicFileAttributes attributes = Files.readAttributes(pathName.toPath(), BasicFileAttributes.class);
             return isNewer(DateUtils.convert(attributes.creationTime().toMillis()));
@@ -58,11 +62,11 @@ public class FileFilter {
         return true;
     }
 
-    private static boolean isNewer(Date creationDate) {
-        return creationDate.toInstant().isAfter(InputConfig.getInstance().getFilterDate().toInstant());
+    private boolean isNewer(Date creationDate) {
+        return creationDate.toInstant().isAfter(filterDate.toInstant());
     }
 
-    private static boolean isExcluded(File pathName, Set<String> excludedDirs) {
+    private boolean isExcluded(File pathName, Set<String> excludedDirs) {
         if (excludedDirs.contains(pathName.getPath())) return true;
 
         // TODO improve partial matches and wildcard?

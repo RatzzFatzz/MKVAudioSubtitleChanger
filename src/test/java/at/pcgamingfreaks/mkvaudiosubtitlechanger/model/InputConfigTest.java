@@ -31,25 +31,25 @@ class InputConfigTest {
                 "--commentary-keywords", "testCommentary",
                 "--preferred-subtitles", "testPreferred"
         };
-        CommandLine.populateCommand(InputConfig.getInstance(true), sut);
+        InputConfig config = CommandLine.populateCommand(new InputConfig(), sut);
 
-        assertTrue(InputConfig.getInstance().getLibraryPath().exists());
+        assertTrue(config.getLibraryPath().exists());
         assertEquals(List.of(new AttributeConfig("ger", "ger"), new AttributeConfig("eng", "eng")),
-                InputConfig.getInstance().getAttributeConfig());
+                config.getAttributeConfig());
 
-        assertTrue(InputConfig.getInstance().isSafeMode());
-        assertTrue(InputConfig.getInstance().isForceCoherent());
-        assertTrue(InputConfig.getInstance().isOnlyNewFiles());
-        assertNull(InputConfig.getInstance().getFilterDate());
+        assertTrue(config.isSafeMode());
+        assertTrue(config.isForceCoherent());
+        assertTrue(config.isOnlyNewFiles());
+        assertNull(config.getFilterDate());
 
-        assertEquals(2, InputConfig.getInstance().getCoherent());
-        assertEquals(4, InputConfig.getInstance().getThreads());
-        assertEquals(".*[abc].*", InputConfig.getInstance().getIncludePattern().pattern());
-        assertTrue(InputConfig.getInstance().getForcedKeywords().contains("testForced"));
-        assertTrue(InputConfig.getInstance().getCommentaryKeywords().contains("testCommentary"));
-        assertTrue(InputConfig.getInstance().getPreferredSubtitles().contains("testPreferred"));
+        assertEquals(2, config.getCoherent());
+        assertEquals(4, config.getThreads());
+        assertEquals(".*[abc].*", config.getIncludePattern().pattern());
+        assertTrue(config.getForcedKeywords().contains("testForced"));
+        assertTrue(config.getCommentaryKeywords().contains("testCommentary"));
+        assertTrue(config.getPreferredSubtitles().contains("testPreferred"));
 
-        assertNull(InputConfig.getInstance().getConfigPath());
+        assertNull(config.getConfigPath());
     }
 
 
@@ -66,7 +66,6 @@ class InputConfigTest {
     @ParameterizedTest
     @MethodSource("jakartaValidationData")
     void testJakartaValidation(String[] args, String expectedMessage) {
-        InputConfig.getInstance(true);
         StringWriter writer = new StringWriter();
         PrintWriter printWriter = new PrintWriter(writer);
 

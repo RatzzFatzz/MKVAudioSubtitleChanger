@@ -8,7 +8,6 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
 import at.pcgamingfreaks.yaml.YAML;
 import at.pcgamingfreaks.yaml.YamlInvalidContentException;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBar;
@@ -54,7 +53,7 @@ public abstract class AttributeUpdaterKernel {
         statistic.startTimer();
 
         try (ProgressBar progressBar = pbBuilder().build()) {
-            List<File> files = processor.loadFiles(InputConfig.getInstance().getLibraryPath().getAbsolutePath());
+            List<File> files = processor.loadFiles(config.getLibraryPath().getAbsolutePath());
 
             progressBar.maxHint(files.size());
             progressBar.refresh();
@@ -122,7 +121,7 @@ public abstract class AttributeUpdaterKernel {
     }
 
     private void commitChange(FileInfo fileInfo) {
-        if (InputConfig.getInstance().isSafeMode()) return;
+        if (config.isSafeMode()) return;
 
         try {
             processor.update(fileInfo);
@@ -136,7 +135,7 @@ public abstract class AttributeUpdaterKernel {
 
     // should this be here?
     protected void writeLastExecutionDate() {
-        if (InputConfig.getInstance().isSafeMode()) {
+        if (config.isSafeMode()) {
             return;
         }
 
@@ -150,7 +149,7 @@ public abstract class AttributeUpdaterKernel {
             if (!lastExecutionFile.exists()) lastExecutionFile.createNewFile();
 
             YAML yaml = new YAML(lastExecutionFile);
-            yaml.set(InputConfig.getInstance().getNormalizedLibraryPath(), DateUtils.convert(new Date()));
+            yaml.set(config.getNormalizedLibraryPath(), DateUtils.convert(new Date()));
             yaml.save(lastExecutionFile);
         } catch (IOException | YamlInvalidContentException e) {
             log.error("last-execution.yml could not be created or read.", e);

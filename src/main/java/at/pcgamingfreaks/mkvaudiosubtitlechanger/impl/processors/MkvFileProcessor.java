@@ -1,14 +1,11 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileFilter;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.SubtitleTrackComparator;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.SetUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.IOUtils;
 
 import java.io.File;
@@ -22,12 +19,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackType.AUDIO;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackType.SUBTITLES;
-import static java.lang.String.format;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileUtils.getPathFor;
 
 @Slf4j
+@RequiredArgsConstructor
 public class MkvFileProcessor implements FileProcessor {
+    protected final File mkvToolNixInstallation;
+    protected final FileFilter fileFilter;
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     private static final Set<String> fileExtensions = new HashSet<>(Set.of(".mkv", ".mka", ".mks", ".mk3d"));
@@ -46,7 +45,7 @@ public class MkvFileProcessor implements FileProcessor {
             return paths
                     .filter(Files::isRegularFile)
                     .map(Path::toFile)
-                    .filter(file -> FileFilter.accept(file, fileExtensions))
+                    .filter(file -> fileFilter.accept(file, fileExtensions))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             log.error("Couldn't find file or directory!", e);
@@ -76,7 +75,7 @@ public class MkvFileProcessor implements FileProcessor {
         FileInfo fileInfo = new FileInfo(file);
         try {
             String[] command = new String[]{
-                    InputConfig.getInstance().getPathFor(MkvToolNix.MKV_MERGE),
+                    getPathFor(mkvToolNixInstallation, MkvToolNix.MKV_MERGE).getAbsolutePath(),
                     "--identify",
                     "--identification-format",
                     "json",
@@ -121,7 +120,7 @@ public class MkvFileProcessor implements FileProcessor {
     @Override
     public void update(FileInfo fileInfo) throws IOException, MkvToolNixException {
         List<String> command = new ArrayList<>();
-        command.add(InputConfig.getInstance().getPathFor(MkvToolNix.MKV_PROP_EDIT));
+        command.add(getPathFor(mkvToolNixInstallation, MkvToolNix.MKV_PROP_EDIT).getAbsolutePath());
         command.add(String.format(fileInfo.getFile().getAbsolutePath()));
 
         PlannedChange changes = fileInfo.getChanges();

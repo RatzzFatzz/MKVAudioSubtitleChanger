@@ -50,7 +50,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
      */
     @Override
     void process(File file) {
-        process(file, InputConfig.getInstance().getCoherent());
+        process(file, config.getCoherent());
     }
 
     void process(File file, int depth) {
@@ -60,7 +60,7 @@ public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
 //                .map(FileInfoOld::new)
 //                .collect(Collectors.toList());
 
-        for (AttributeConfig config : InputConfig.getInstance().getAttributeConfig()) {
+        for (AttributeConfig config : config.getAttributeConfig()) {
 
 //            for (FileInfoOld fileInfoOld : fileInfoOlds) {
 //                List<TrackAttributes> attributes = processor.readAttributes(fileInfoOld.getFile());

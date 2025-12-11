@@ -1,8 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.MkvFileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
 import org.junit.jupiter.api.Disabled;
@@ -11,7 +9,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.*;
@@ -33,9 +30,8 @@ class MkvFileProcessorTest {
     @MethodSource
     @Disabled
     void detectDesiredTracks(AttributeConfig expectedMatch, List<TrackAttributes> tracks, AttributeConfig... configs) {
-        InputConfig.getInstance().setPreferredSubtitles(Set.of());
         FileInfo info = new FileInfo(null);
-        MkvFileProcessor processor = new MkvFileProcessor();
+//        MkvFileProcessor processor = new MkvFileProcessor(null, new FileFilter());
 //        processor.detectDesiredTracks(info, tracks, tracks, configs);
         assertEquals(expectedMatch.getAudioLanguage(), info.getMatchedConfig().getAudioLanguage());
         assertEquals(expectedMatch.getSubtitleLanguage(), info.getMatchedConfig().getSubtitleLanguage());
