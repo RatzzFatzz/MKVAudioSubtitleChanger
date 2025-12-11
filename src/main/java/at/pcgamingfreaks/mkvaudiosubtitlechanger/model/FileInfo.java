@@ -1,5 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -14,9 +16,12 @@ import java.util.List;
 public class FileInfo {
     private final File file;
 
+    @Getter(AccessLevel.NONE)
     private final List<TrackAttributes> tracks = new ArrayList<>();
 
+    @Getter(AccessLevel.NONE)
     private final List<TrackAttributes> audioTracks = new ArrayList<>();
+    @Getter(AccessLevel.NONE)
     private final List<TrackAttributes> subtitleTracks = new ArrayList<>();
 
     private final PlannedChange changes = new PlannedChange();
@@ -31,6 +36,18 @@ public class FileInfo {
 
     public void addTracks(Collection<TrackAttributes> tracks) {
         for (TrackAttributes track : tracks) addTrack(track);
+    }
+
+    public List<TrackAttributes> getTracks() {
+        return Collections.unmodifiableList(tracks);
+    }
+
+    public List<TrackAttributes> getAudioTracks() {
+        return Collections.unmodifiableList(audioTracks);
+    }
+
+    public List<TrackAttributes> getSubtitleTracks() {
+        return Collections.unmodifiableList(subtitleTracks);
     }
 
     public FileStatus getStatus() {

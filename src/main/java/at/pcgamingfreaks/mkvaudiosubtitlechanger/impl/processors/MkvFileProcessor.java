@@ -91,7 +91,7 @@ public class MkvFileProcessor implements FileProcessor {
                 for (Map<String, Object> attribute : tracks) {
                     if (!"video".equals(attribute.get("type"))) {
                         Map<String, Object> properties = (Map<String, Object>) attribute.get("properties");
-                        fileInfo.getTracks().add(new TrackAttributes(
+                        fileInfo.addTrack(new TrackAttributes(
                                 (int) properties.get("number"),
                                 (String) properties.get("language"),
                                 (String) properties.get("track_name"),

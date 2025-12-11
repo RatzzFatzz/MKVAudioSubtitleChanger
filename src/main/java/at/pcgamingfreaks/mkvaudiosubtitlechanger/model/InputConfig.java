@@ -3,7 +3,6 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.converter.AttributeConfigConverter;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation.ValidFile;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation.ValidMkvToolNix;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileUtils;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +30,7 @@ public class InputConfig {
 
     @Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class,
             description = "List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)")
-    private List<AttributeConfig> attributeConfig;
+    private AttributeConfig[] attributeConfig;
     @ValidFile(message = "does not exist")
     @Option(names = {"-l", "--library"}, required = true, description = "path to library")
     private File libraryPath;
@@ -53,7 +52,7 @@ public class InputConfig {
     private boolean forceCoherent;
 
     @Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
-    private boolean onlyNewFiles;
+    private boolean onlyNewFiles; // TODO: implement usage
     @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
     @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
@@ -71,7 +70,7 @@ public class InputConfig {
     @Option(names = {"--commentary-keywords"}, arity = "1..*", defaultValue = "comment, commentary, director", split = ", ",
             description = "Keywords to identify commentary tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
     private Set<String> commentaryKeywords;
-    @Option(names = {"--hearing-impaired"}, arity = "1..*", defaultValue = "SDH", split = ", ",
+    @Option(names = {"--hearing-impaired"}, arity = "1..*", defaultValue = "SDH, CC", split = ", ",
             description = "Keywords to identify hearing impaired tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE}")
     private Set<String> hearingImpaired;
     @Option(names = {"--preferred-subtitles"}, arity = "1..*", defaultValue = "unstyled", split = ", ",
@@ -83,14 +82,6 @@ public class InputConfig {
     static {
         // Set default value into system properties to picocli can read the conditional value
         System.setProperty("DEFAULT_MKV_TOOL_NIX", SystemUtils.IS_OS_WINDOWS ? "C:\\Program Files\\MKVToolNix" : "/usr/bin/");
-    }
-
-    /**
-     * Get path to specific mkvtoolnix application.
-     * @return absolute path to desired application.
-     */
-    public String getPathFor(MkvToolNix application) {
-        return FileUtils.getPathFor(mkvToolNix, application).getAbsolutePath();
     }
 
     public String getNormalizedLibraryPath() {

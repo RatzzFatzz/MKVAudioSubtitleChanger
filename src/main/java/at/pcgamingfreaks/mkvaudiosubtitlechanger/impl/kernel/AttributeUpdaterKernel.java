@@ -67,7 +67,7 @@ public abstract class AttributeUpdaterKernel {
             executor.awaitTermination(1, TimeUnit.DAYS);
         }
 
-        writeLastExecutionDate();
+//        writeLastExecutionDate();
 
         statistic.stopTimer();
         statistic.printResult();
@@ -88,7 +88,7 @@ public abstract class AttributeUpdaterKernel {
             return;
         }
 
-        attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo);
+        attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config.getAttributeConfig());
         attributeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
         attributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
         attributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
@@ -134,25 +134,25 @@ public abstract class AttributeUpdaterKernel {
     }
 
     // should this be here?
-    protected void writeLastExecutionDate() {
-        if (config.isSafeMode()) {
-            return;
-        }
-
-        try {
-            String filePath = AppDirsFactory.getInstance().getUserConfigDir(ProjectUtil.getProjectName(), null, null);
-
-            File configDir = Path.of(filePath).toFile();
-            if (!configDir.exists()) configDir.mkdirs();
-
-            File lastExecutionFile = Path.of(filePath + "/last-execution.yml").toFile();
-            if (!lastExecutionFile.exists()) lastExecutionFile.createNewFile();
-
-            YAML yaml = new YAML(lastExecutionFile);
-            yaml.set(config.getNormalizedLibraryPath(), DateUtils.convert(new Date()));
-            yaml.save(lastExecutionFile);
-        } catch (IOException | YamlInvalidContentException e) {
-            log.error("last-execution.yml could not be created or read.", e);
-        }
-    }
+//    protected void writeLastExecutionDate() {
+//        if (config.isSafeMode()) {
+//            return;
+//        }
+//
+//        try {
+//            String filePath = AppDirsFactory.getInstance().getUserConfigDir(ProjectUtil.getProjectName(), null, null);
+//
+//            File configDir = Path.of(filePath).toFile();
+//            if (!configDir.exists()) configDir.mkdirs();
+//
+//            File lastExecutionFile = Path.of(filePath + "/last-execution.yml").toFile();
+//            if (!lastExecutionFile.exists()) lastExecutionFile.createNewFile();
+//
+//            YAML yaml = new YAML(lastExecutionFile);
+//            yaml.set(config.getNormalizedLibraryPath(), DateUtils.convert(new Date()));
+//            yaml.save(lastExecutionFile);
+//        } catch (IOException | YamlInvalidContentException e) {
+//            log.error("last-execution.yml could not be created or read.", e);
+//        }
+//    }
 }

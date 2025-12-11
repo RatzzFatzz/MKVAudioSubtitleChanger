@@ -3,7 +3,6 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -60,6 +59,31 @@ class AttributeProcessorTest {
                         List.of(AUDIO_ENG_DEFAULT, AUDIO_GER, SUB_GER),
                         arr(a("eng:eng"), a("eng:ger")), "eng:ger",
                         Map.ofEntries(on(SUB_GER))
+                ),
+                Arguments.of(
+                        List.of(AUDIO_ENG_DEFAULT, AUDIO_GER_COMMENTARY, SUB_GER_FORCED),
+                        arr(a("ger:ger")), null,
+                        Map.ofEntries()
+                ),
+                Arguments.of(
+                        List.of(AUDIO_ENG_DEFAULT, AUDIO_GER_COMMENTARY, withName(SUB_GER, "forced")),
+                        arr(a("ger:ger")), null,
+                        Map.ofEntries()
+                ),
+                Arguments.of(
+                        List.of(AUDIO_ENG_DEFAULT, AUDIO_GER_HEARING, SUB_GER),
+                        arr(a("ger:ger")), null,
+                        Map.ofEntries()
+                ),
+                Arguments.of(
+                        List.of(AUDIO_ENG_DEFAULT, withName(AUDIO_GER, "SDH"), SUB_GER),
+                        arr(a("ger:ger")), null,
+                        Map.ofEntries()
+                ),
+                Arguments.of(
+                        List.of(AUDIO_ENG_DEFAULT, AUDIO_GER_COMMENTARY, AUDIO_GER_HEARING, AUDIO_GER, SUB_GER_FORCED, SUB_GER),
+                        arr(a("ger:ger")), "ger:ger",
+                        Map.ofEntries(off(AUDIO_ENG_DEFAULT), on(AUDIO_GER), on(SUB_GER))
                 )
         );
     }
@@ -67,13 +91,12 @@ class AttributeProcessorTest {
     @ParameterizedTest
     @MethodSource("attributeConfigMatching")
     void findDefaultMatchAndApplyChanges(List<TrackAttributes> tracks, AttributeConfig[] config, String expectedConfig, Map<TrackAttributes, Boolean> changes) {
-        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, Set.of(), Set.of(), Set.of());
+        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, Set.of("forced"), Set.of("commentary"), Set.of("SDH"));
 
         FileInfo fileInfo = new FileInfo(null);
         fileInfo.addTracks(tracks);
         attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config);
-        assertEquals(Strings.isBlank(expectedConfig), fileInfo.getMatchedConfig() == null);
-        assertEquals(expectedConfig, fileInfo.getMatchedConfig().toStringShort());
+        assertEquals(expectedConfig, fileInfo.getMatchedConfig() != null  ? fileInfo.getMatchedConfig().toStringShort() : fileInfo.getMatchedConfig());
         assertEquals(changes.size(), fileInfo.getChanges().getDefaultTrack().size());
         changes.forEach((key, value) -> {
             assertTrue(fileInfo.getChanges().getDefaultTrack().containsKey(key));
@@ -102,8 +125,11 @@ class AttributeProcessorTest {
         return Stream.of(
             Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
             Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "forced"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "Forced"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
             Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "commentary"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
-            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "SHD"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "Commentary"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "SDH"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "sdh"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
             Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, SUB_GER, SUB_GER_FORCED, AUDIO_GER_COMMENTARY, AUDIO_GER_HEARING), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER))
         );
     }
@@ -111,7 +137,7 @@ class AttributeProcessorTest {
     @ParameterizedTest
     @MethodSource("filterForPossibleDefaults")
     void filterForPossibleDefaults(List<TrackAttributes> tracks, Set<TrackAttributes> expected) throws InvocationTargetException, IllegalAccessException {
-        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, Set.of("forced"), Set.of("commentary"), Set.of("SHD"));
+        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, Set.of("forced"), Set.of("commentary"), Set.of("SDH"));
         Optional<Method> method = Arrays.stream(AttributeProcessor.class.getDeclaredMethods())
                 .filter(m -> m.getName().equals("filterForPossibleDefaults"))
                 .findFirst();
