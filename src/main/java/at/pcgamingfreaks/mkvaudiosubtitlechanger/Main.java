@@ -52,8 +52,8 @@ public class Main implements Runnable {
 
         InputConfig.setInstance(config);
         AttributeUpdaterKernel kernel = InputConfig.getInstance().getCoherent() != null
-                ? new CoherentAttributeUpdaterKernel(new CachedMkvFileProcessor())
-                : new DefaultAttributeUpdaterKernel(new CachedMkvFileProcessor());
+                ? new CoherentAttributeUpdaterKernel(config, new CachedMkvFileProcessor())
+                : new DefaultAttributeUpdaterKernel(config, new CachedMkvFileProcessor());
         kernel.execute();
     }
 }

@@ -2,18 +2,15 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
 import org.apache.logging.log4j.util.Strings;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.*;
@@ -70,13 +67,11 @@ class AttributeProcessorTest {
     @ParameterizedTest
     @MethodSource("attributeConfigMatching")
     void findDefaultMatchAndApplyChanges(List<TrackAttributes> tracks, AttributeConfig[] config, String expectedConfig, Map<TrackAttributes, Boolean> changes) {
-        InputConfig.getInstance().setPreferredSubtitles(new HashSet<>());
-        InputConfig.getInstance().setCommentaryKeywords(new HashSet<>());
-        InputConfig.getInstance().setForcedKeywords(new HashSet<>());
+        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, Set.of(), Set.of(), Set.of());
 
         FileInfo fileInfo = new FileInfo(null);
         fileInfo.addTracks(tracks);
-        AttributeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config);
+        attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config);
         assertEquals(Strings.isBlank(expectedConfig), fileInfo.getMatchedConfig() == null);
         assertEquals(expectedConfig, fileInfo.getMatchedConfig().toStringShort());
         assertEquals(changes.size(), fileInfo.getChanges().getDefaultTrack().size());
@@ -105,14 +100,30 @@ class AttributeProcessorTest {
 
     private static Stream<Arguments> filterForPossibleDefaults() {
         return Stream.of(
-
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "forced"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "commentary"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "SHD"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, SUB_GER, SUB_GER_FORCED, AUDIO_GER_COMMENTARY, AUDIO_GER_HEARING), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER))
         );
     }
 
     @ParameterizedTest
     @MethodSource("filterForPossibleDefaults")
-    void filterForPossibleDefaults(List<TrackAttributes> tracks, Set<TrackAttributes> expected) {
+    void filterForPossibleDefaults(List<TrackAttributes> tracks, Set<TrackAttributes> expected) throws InvocationTargetException, IllegalAccessException {
+        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, Set.of("forced"), Set.of("commentary"), Set.of("SHD"));
+        Optional<Method> method = Arrays.stream(AttributeProcessor.class.getDeclaredMethods())
+                .filter(m -> m.getName().equals("filterForPossibleDefaults"))
+                .findFirst();
 
+        assertTrue(method.isPresent());
+        Method underTest = method.get();
+        underTest.setAccessible(true);
+        List<TrackAttributes> result = (List<TrackAttributes>) underTest.invoke(attributeProcessor, tracks);
+        assertEquals(expected.size(), result.size());
+        for (TrackAttributes track : result) {
+            assertTrue(expected.contains(track));
+        }
     }
 
     private static Stream<Arguments> findForcedTracksAndApplyChanges() {
@@ -139,15 +150,11 @@ class AttributeProcessorTest {
     @ParameterizedTest
     @MethodSource("findForcedTracksAndApplyChanges")
     void findForcedTracksAndApplyChanges(List<TrackAttributes> tracks, Set<String> keywords, boolean overwrite, Map<TrackAttributes, Boolean> changes) {
-        InputConfig.getInstance().setPreferredSubtitles(new HashSet<>());
-        InputConfig.getInstance().setCommentaryKeywords(new HashSet<>());
-        InputConfig.getInstance().setHearingImpaired(new HashSet<>());
-        InputConfig.getInstance().setForcedKeywords(keywords);
-        InputConfig.getInstance().setOverwriteForced(overwrite);
+        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, keywords, Set.of(), Set.of());
 
         FileInfo fileInfo = new FileInfo(null);
         fileInfo.addTracks(tracks);
-        AttributeProcessor.findForcedTracksAndApplyChanges(fileInfo);
+        attributeProcessor.findForcedTracksAndApplyChanges(fileInfo, overwrite);
 
         assertEquals(changes.size(), fileInfo.getChanges().getForcedTrack().size());
         changes.forEach((key, value) -> {
@@ -180,14 +187,11 @@ class AttributeProcessorTest {
     @ParameterizedTest
     @MethodSource("findCommentaryTracksAndApplyChanges")
     void findCommentaryTracksAndApplyChanges(List<TrackAttributes> tracks, Set<String> keywords, Map<TrackAttributes, Boolean> changes) {
-        InputConfig.getInstance().setPreferredSubtitles(new HashSet<>());
-        InputConfig.getInstance().setCommentaryKeywords(keywords);
-        InputConfig.getInstance().setHearingImpaired(new HashSet<>());
-        InputConfig.getInstance().setForcedKeywords(new HashSet<>());
+        AttributeProcessor attributeProcessor = new AttributeProcessor(new String[]{}, Set.of(), keywords, Set.of());
 
         FileInfo fileInfo = new FileInfo(null);
         fileInfo.addTracks(tracks);
-        AttributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
+        attributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
 
         assertEquals(changes.size(), fileInfo.getChanges().getCommentaryTrack().size());
         changes.forEach((key, value) -> {
@@ -220,14 +224,11 @@ class AttributeProcessorTest {
     @ParameterizedTest
     @MethodSource("findCommentaryTracksAndApplyChanges")
     void findHearingImpairedTracksAndApplyChanges(List<TrackAttributes> tracks, Set<String> keywords, Map<TrackAttributes, Boolean> changes) {
-        InputConfig.getInstance().setPreferredSubtitles(new HashSet<>());
-        InputConfig.getInstance().setCommentaryKeywords(new HashSet<>());
-        InputConfig.getInstance().setHearingImpaired(keywords);
-        InputConfig.getInstance().setForcedKeywords(new HashSet<>());
+        AttributeProcessor attributeProcessor =  new AttributeProcessor(new String[]{}, Set.of(), Set.of(), keywords);
 
         FileInfo fileInfo = new FileInfo(null);
         fileInfo.addTracks(tracks);
-        AttributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+        attributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
 
         assertEquals(changes.size(), fileInfo.getChanges().getHearingImpairedTrack().size());
         changes.forEach((key, value) -> {

@@ -26,12 +26,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@RequiredArgsConstructor
 public abstract class AttributeUpdaterKernel {
 
+    protected final InputConfig config;
     protected final FileProcessor processor;
+    protected final AttributeProcessor attributeProcessor;
     protected final ResultStatistic statistic = ResultStatistic.getInstance();
-    private final ExecutorService executor = Executors.newFixedThreadPool(InputConfig.getInstance().getThreads());
+
+    private final ExecutorService executor;
+
+    public AttributeUpdaterKernel(InputConfig config, FileProcessor processor) {
+        this.config = config;
+        this.processor = processor;
+        this.attributeProcessor = new AttributeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
+        this.executor = Executors.newFixedThreadPool(config.getThreads());
+    }
 
     protected ProgressBarBuilder pbBuilder() {
         return new ProgressBarBuilder()
@@ -80,10 +89,10 @@ public abstract class AttributeUpdaterKernel {
             return;
         }
 
-        AttributeProcessor.findDefaultMatchAndApplyChanges(fileInfo);
-        AttributeProcessor.findForcedTracksAndApplyChanges(fileInfo);
-        AttributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-        AttributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+        attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo);
+        attributeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
+        attributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
+        attributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
 
         checkStatusAndUpdate(fileInfo);
     }

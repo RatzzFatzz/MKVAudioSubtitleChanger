@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CoherentAttributeUpdaterKernel extends AttributeUpdaterKernel {
 
-    public CoherentAttributeUpdaterKernel(FileProcessor processor) {
-        super(processor);
+    public CoherentAttributeUpdaterKernel(InputConfig config, FileProcessor processor) {
+        super(config, processor);
     }
 
     @Override

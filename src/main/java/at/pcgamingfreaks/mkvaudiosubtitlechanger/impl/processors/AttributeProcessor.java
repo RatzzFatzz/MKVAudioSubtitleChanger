@@ -9,11 +9,19 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class AttributeProcessor {
-    private static final SubtitleTrackComparator subtitleTrackComparator =
-            new SubtitleTrackComparator(InputConfig.getInstance().getPreferredSubtitles().toArray(new String[0]));
+    private final SubtitleTrackComparator subtitleTrackComparator;
+    private final Set<String> commentaryKeywords;
+    private final Set<String> hearingImpairedKeywords;
+    private final Set<String> forcedKeywords;
 
-    private static List<TrackAttributes> filterForPossibleDefaults(List<TrackAttributes> tracks) {
-        InputConfig config = InputConfig.getInstance();
+    public AttributeProcessor(String[] preferredSubtitles, Set<String> forcedKeywords, Set<String> commentaryKeywords, Set<String> hearingImpairedKeywords) {
+        this.subtitleTrackComparator = new SubtitleTrackComparator(preferredSubtitles);
+        this.commentaryKeywords = commentaryKeywords;
+        this.hearingImpairedKeywords = hearingImpairedKeywords;
+        this.forcedKeywords = forcedKeywords;
+    }
+
+    private List<TrackAttributes> filterForPossibleDefaults(List<TrackAttributes> tracks) {
         Stream<TrackAttributes> attributes = tracks.stream();
 
         if (true) { // TODO: config for including commentary
@@ -21,7 +29,7 @@ public class AttributeProcessor {
                     .filter(attr -> !attr.commentary())
                     .filter(attr -> {
                         if (attr.trackName() == null) return true;
-                        return config.getCommentaryKeywords().stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
+                        return commentaryKeywords.stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
                     });
 
         }
@@ -31,7 +39,7 @@ public class AttributeProcessor {
                     .filter(attr -> !attr.hearingImpaired())
                     .filter(attr -> {
                         if (attr.trackName() == null) return true;
-                        return config.getHearingImpaired().stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
+                        return hearingImpairedKeywords.stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
                     });;
         }
 
@@ -39,16 +47,12 @@ public class AttributeProcessor {
                 .filter(attr -> !attr.forced())
                 .filter(attr -> {
                     if (attr.trackName() == null) return true;
-                    return config.getForcedKeywords().stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
+                    return forcedKeywords.stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
                 })
                 .toList();
     }
 
-    public static void findDefaultMatchAndApplyChanges(FileInfo fileInfo) {
-        findDefaultMatchAndApplyChanges(fileInfo, InputConfig.getInstance().getAttributeConfig().toArray(new AttributeConfig[0]));
-    }
-
-    public static void findDefaultMatchAndApplyChanges(FileInfo fileInfo, AttributeConfig... configs) {
+    public void findDefaultMatchAndApplyChanges(FileInfo fileInfo, AttributeConfig... configs) {
         Map<String, List<TrackAttributes>> audiosByLanguage = new HashMap<>(fileInfo.getTracks().size());
         Map<String, List<TrackAttributes>> subsByLanguage = new HashMap<>(fileInfo.getTracks().size());
         filterForPossibleDefaults(fileInfo.getTracks()).forEach(track -> {
@@ -75,7 +79,7 @@ public class AttributeProcessor {
                 () -> subsByLanguage.get(fileInfo.getMatchedConfig().getSubtitleLanguage()).stream().max(subtitleTrackComparator).get());
     }
 
-    private static void applyDefaultChanges(FileInfo fileInfo, Function<FileInfo, List<TrackAttributes>> tracks, String language, Supplier<TrackAttributes> targetDefaultSupplier) {
+    private void applyDefaultChanges(FileInfo fileInfo, Function<FileInfo, List<TrackAttributes>> tracks, String language, Supplier<TrackAttributes> targetDefaultSupplier) {
         tracks.apply(fileInfo).stream()
                 .filter(TrackAttributes::defaultt)
                 .forEach(attr -> fileInfo.getChanges().getDefaultTrack().put(attr, false));
@@ -89,12 +93,12 @@ public class AttributeProcessor {
         }
     }
 
-    public static void findForcedTracksAndApplyChanges(FileInfo fileInfo) {
+    public void findForcedTracksAndApplyChanges(FileInfo fileInfo, boolean overwrite) {
         Stream<TrackAttributes> forcedTracks = fileInfo.getTracks().stream()
                 .filter(track -> track.trackName() != null)
-                .filter(track -> InputConfig.getInstance().getForcedKeywords().stream().anyMatch(keyword -> track.trackName().toLowerCase().contains(keyword.toLowerCase(Locale.ROOT))));
+                .filter(track -> forcedKeywords.stream().anyMatch(keyword -> track.trackName().toLowerCase().contains(keyword.toLowerCase(Locale.ROOT))));
 
-        if (InputConfig.getInstance().isOverwriteForced()) {
+        if (overwrite) {
             fileInfo.getTracks().stream().filter(TrackAttributes::forced).forEach(attr -> {
                 fileInfo.getChanges().getForcedTrack().put(attr, false);
             });
@@ -107,21 +111,21 @@ public class AttributeProcessor {
         });
     }
 
-    public static void findCommentaryTracksAndApplyChanges(FileInfo fileInfo) {
+    public void findCommentaryTracksAndApplyChanges(FileInfo fileInfo) {
         fileInfo.getTracks().stream()
                 .filter(track -> !track.commentary())
                 .filter(track -> track.trackName() != null)
-                .filter(track -> InputConfig.getInstance().getCommentaryKeywords().stream().anyMatch(keyword -> track.trackName().toLowerCase().contains(keyword.toLowerCase(Locale.ROOT))))
+                .filter(track -> commentaryKeywords.stream().anyMatch(keyword -> track.trackName().toLowerCase().contains(keyword.toLowerCase(Locale.ROOT))))
                 .forEach(attr -> {
                     fileInfo.getChanges().getCommentaryTrack().put(attr, true);
                 });
     }
 
-    public static void findHearingImpairedTracksAndApplyChanges(FileInfo fileInfo) {
+    public void findHearingImpairedTracksAndApplyChanges(FileInfo fileInfo) {
         fileInfo.getTracks().stream()
                 .filter(track -> !track.commentary())
                 .filter(track -> track.trackName() != null)
-                .filter(track -> InputConfig.getInstance().getHearingImpaired().stream().anyMatch(keyword -> track.trackName().toLowerCase().contains(keyword.toLowerCase(Locale.ROOT))))
+                .filter(track -> hearingImpairedKeywords.stream().anyMatch(keyword -> track.trackName().toLowerCase().contains(keyword.toLowerCase(Locale.ROOT))))
                 .forEach(attr -> {
                     fileInfo.getChanges().getHearingImpairedTrack().put(attr, true);
                 });

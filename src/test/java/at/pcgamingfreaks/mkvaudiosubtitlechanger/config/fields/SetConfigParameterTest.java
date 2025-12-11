@@ -22,7 +22,7 @@ class SetConfigParameterTest {
         return Stream.of(
                 Arguments.of(args("--commentary-keywords", "test"), 1, (Function<InputConfig, Set<String>>) InputConfig::getCommentaryKeywords),
                 Arguments.of(args("--commentary-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<InputConfig, Set<String>>) InputConfig::getCommentaryKeywords),
-                Arguments.of(args(), 2, (Function<InputConfig, Set<String>>) InputConfig::getCommentaryKeywords),
+                Arguments.of(args(), 3, (Function<InputConfig, Set<String>>) InputConfig::getCommentaryKeywords),
                 Arguments.of(args("--forced-keywords", "test"), 1, (Function<InputConfig, Set<String>>) InputConfig::getForcedKeywords),
                 Arguments.of(args("--forced-keywords", "test", "test1", "test2", "test3", "test4"), 5, (Function<InputConfig, Set<String>>) InputConfig::getForcedKeywords),
                 Arguments.of(args(), 3, (Function<InputConfig, Set<String>>) InputConfig::getForcedKeywords),
