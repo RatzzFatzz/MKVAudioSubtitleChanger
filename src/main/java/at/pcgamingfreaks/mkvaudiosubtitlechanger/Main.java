@@ -1,10 +1,11 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileFilter;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.MkvFileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation.ValidationExecutionStrategy;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.CachedMkvFileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.CachedFileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.AttributeUpdaterKernel;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.CoherentAttributeUpdaterKernel;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.DefaultAttributeUpdaterKernel;
@@ -53,7 +54,7 @@ public class Main implements Runnable {
         }
 
         FileFilter fileFilter = new FileFilter(config.getExcluded(), config.getIncludePattern(), config.getFilterDate());
-        MkvFileProcessor fileProcessor = new CachedMkvFileProcessor(config.getMkvToolNix(), fileFilter);
+        FileProcessor fileProcessor = new CachedFileProcessor(new MkvFileProcessor(config.getMkvToolNix(), fileFilter));
 
         AttributeUpdaterKernel kernel = config.getCoherent() != null
                 ? new CoherentAttributeUpdaterKernel(config, fileProcessor)
