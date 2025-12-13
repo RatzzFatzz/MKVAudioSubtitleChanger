@@ -34,7 +34,7 @@ class InputConfigTest {
         InputConfig config = CommandLine.populateCommand(new InputConfig(), sut);
 
         assertTrue(config.getLibraryPath().exists());
-        assertEquals(List.of(new AttributeConfig("ger", "ger"), new AttributeConfig("eng", "eng")),
+        assertArrayEquals(new AttributeConfig[]{new AttributeConfig("ger", "ger"), new AttributeConfig("eng", "eng")},
                 config.getAttributeConfig());
 
         assertTrue(config.isSafeMode());

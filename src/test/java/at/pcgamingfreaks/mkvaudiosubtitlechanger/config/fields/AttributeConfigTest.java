@@ -27,10 +27,10 @@ class AttributeConfigTest {
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    void validate(String[] cmdArgs, List<AttributeConfig> expectedConfig) {
+    void validate(String[] cmdArgs, AttributeConfig[] expectedConfig) {
         Main underTest = new Main();
         CommandLine.populateCommand(underTest, cmdArgs);
-        assertIterableEquals(expectedConfig, underTest.getConfig().getAttributeConfig());
+        assertArrayEquals(expectedConfig, underTest.getConfig().getAttributeConfig());
     }
 
     @Test
@@ -51,10 +51,10 @@ class AttributeConfigTest {
         return result;
     }
 
-    private static List<AttributeConfig> attrConf(String... languages) {
-        List<AttributeConfig> conf = new ArrayList<>();
+    private static AttributeConfig[] attrConf(String... languages) {
+        AttributeConfig[] conf = new AttributeConfig[languages.length/2];
         for (int i = 0; i < languages.length; i += 2) {
-            conf.add(new AttributeConfig(languages[i], languages[i+1]));
+            conf[i / 2] = new AttributeConfig(languages[i], languages[i+1]);
         }
         return conf;
     }
