@@ -1,6 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.validation;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.Main;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.CommandRunner;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ValidationUtil;
 import jakarta.validation.ConstraintViolation;
@@ -18,7 +18,7 @@ public class ValidationExecutionStrategy implements CommandLine.IExecutionStrate
 
     private static void validate(CommandLine.Model.CommandSpec spec) {
         Validator validator = ValidationUtil.getValidator();
-        Set<ConstraintViolation<InputConfig>> violations = validator.validate(((Main)spec.userObject()).getConfig());
+        Set<ConstraintViolation<InputConfig>> violations = validator.validate(((CommandRunner)spec.userObject()).getConfig());
 
         if (!violations.isEmpty()) {
             StringBuilder errors = new StringBuilder();

@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,9 +34,7 @@ class SubtitleTrackComparatorTest {
     @ParameterizedTest
     @MethodSource("compareArguments")
     void compare(List<TrackAttributes> input, List<TrackAttributes> expected) {
-        List<TrackAttributes> result = input.stream().sorted(comparator.reversed()).collect(Collectors.toList());
-
-        assertArrayEquals(expected.toArray(new TrackAttributes[0]), result.toArray(new TrackAttributes[0]));
+        assertIterableEquals(expected, input.stream().sorted(comparator.reversed()).toList());
     }
 
     private static TrackAttributes attr(String trackName, boolean defaultTrack) {
