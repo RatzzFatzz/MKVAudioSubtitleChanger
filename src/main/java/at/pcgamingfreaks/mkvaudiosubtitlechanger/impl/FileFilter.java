@@ -28,6 +28,7 @@ public class FileFilter {
     public boolean accept(File pathName, Set<String> fileExtensions) {
         // Ignore files irrelevant for statistics
         if (!hasProperFileExtension(pathName, new HashSet<>(fileExtensions))) {
+            log.debug("Ignored {}", pathName);
             return false;
         }
 
@@ -35,6 +36,7 @@ public class FileFilter {
         if (!hasMatchingPattern(pathName)
                 || !isNewer(pathName)
                 || isExcluded(pathName, new HashSet<>(excluded))) {
+            log.debug("Excluded {}", pathName);
             ResultStatistic.getInstance().excluded();
             return false;
         }
