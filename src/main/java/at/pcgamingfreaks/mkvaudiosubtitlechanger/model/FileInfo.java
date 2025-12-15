@@ -24,7 +24,7 @@ public class FileInfo {
     @Getter(AccessLevel.NONE)
     private final List<TrackAttributes> subtitleTracks = new ArrayList<>();
 
-    private final PlannedChange changes = new PlannedChange();
+    private PlannedChange changes = new PlannedChange();
     @Setter
     private AttributeConfig matchedConfig;
 
@@ -48,6 +48,10 @@ public class FileInfo {
 
     public List<TrackAttributes> getSubtitleTracks() {
         return Collections.unmodifiableList(subtitleTracks);
+    }
+
+    public void resetChanges() {
+        changes = new PlannedChange();
     }
 
     public FileStatus getStatus() {

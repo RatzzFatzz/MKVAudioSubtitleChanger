@@ -1,8 +1,8 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.AttributeUpdaterKernel;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.CoherentAttributeUpdaterKernel;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel.DefaultAttributeUpdaterKernel;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.AttributeUpdater;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.CoherentAttributeUpdater;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.SingleFileAttributeUpdater;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.CachedFileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.MkvFileProcessor;
@@ -42,9 +42,9 @@ public class CommandRunner implements Runnable {
         FileFilter fileFilter = new FileFilter(config.getExcluded(), config.getIncludePattern(), config.getFilterDate());
         FileProcessor fileProcessor = new CachedFileProcessor(new MkvFileProcessor(config.getMkvToolNix(), fileFilter));
 
-        AttributeUpdaterKernel kernel = config.getCoherent() != null
-                ? new CoherentAttributeUpdaterKernel(config, fileProcessor)
-                : new DefaultAttributeUpdaterKernel(config, fileProcessor);
+        AttributeUpdater kernel = config.getCoherent() != null
+                ? new CoherentAttributeUpdater(config, fileProcessor)
+                : new SingleFileAttributeUpdater(config, fileProcessor);
         kernel.execute();
     }
 }

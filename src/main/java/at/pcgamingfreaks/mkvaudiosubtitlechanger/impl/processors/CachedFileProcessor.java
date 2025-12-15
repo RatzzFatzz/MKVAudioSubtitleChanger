@@ -25,8 +25,8 @@ public class CachedFileProcessor implements FileProcessor {
     }
 
     @Override
-    public List<File> loadDirectories(String path, int depth) {
-        return directoryCache.retrieve(Pair.of(path, depth), key -> processor.loadDirectories(key.getLeft(), key.getRight()));
+    public List<File> loadDirectory(String path, int depth) {
+        return directoryCache.retrieve(Pair.of(path, depth), key -> processor.loadDirectory(key.getLeft(), key.getRight()));
     }
 
     @Override

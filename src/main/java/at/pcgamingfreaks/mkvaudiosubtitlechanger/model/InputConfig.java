@@ -21,7 +21,7 @@ import picocli.CommandLine.Option;
 @Setter
 @NoArgsConstructor
 @CommandLine.Command
-public class InputConfig {
+public class InputConfig implements CommandLine.IVersionProvider {
 
     private File configPath;
 
@@ -107,6 +107,11 @@ public class InputConfig {
                 .add("preferredSubtitles=" + preferredSubtitles)
                 .add("attributeConfig=" + attributeConfig)
                 .toString();
+    }
+
+    @Override
+    public String[] getVersion() throws Exception {
+        return new String[0];
     }
 }
 

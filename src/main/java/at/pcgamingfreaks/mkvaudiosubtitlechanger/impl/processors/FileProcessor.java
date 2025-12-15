@@ -16,14 +16,16 @@ public interface FileProcessor {
     List<File> loadFiles(String path);
 
     /**
-     * Load all directories from path, but only until depth is reached.
-     * This will ignore all files between root and directories at depth.
+     * Load only directories and files at depth, ignoring everything between root dir and dir at depth.
+     * E.g. with file structure /base/depth1/depth2/depth3.file
+     *   - with depth 1: return /base/depth1/
+     *   - with depth 2: returns /base/depth1/depth2/
      *
-     * @param path leads to a directory which will be loaded recursively until depth
+     * @param path directory which will be loaded recursively until depth
      * @param depth limit directory crawling
-     * @return list of directory until depth
+     * @return list of directory at depth
      */
-    List<File> loadDirectories(String path, int depth);
+    List<File> loadDirectory(String path, int depth);
 
     /**
      * Load track information from file.

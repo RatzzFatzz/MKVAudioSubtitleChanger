@@ -58,14 +58,44 @@ public class MkvFileProcessor implements FileProcessor {
      */
     @Override
     // does this load /arst/arst & /arst ?
-    public List<File> loadDirectories(String path, int depth) {
-        try (Stream<Path> paths = Files.walk(Paths.get(path), depth)) {
-            return paths.map(Path::toFile)
-                    .filter(File::isDirectory)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            log.error("Couldn't find file or directory!", e);
+    public List<File> loadDirectory(String path, int depth) {
+        File rootDir = Path.of(path).toFile();
+        if (!rootDir.exists()) {
+            log.error("Couldn't find file or directory!");
             return new ArrayList<>();
+        }
+
+        List<File> result = new ArrayList<>();
+        exploreDirectory(rootDir, 0, depth, result);
+        return result;
+    }
+
+    /**
+     * Recursively explores directories to find items at the target depth.
+     *
+     * @param currentDir The current directory being explored
+     * @param currentDepth The current depth level
+     * @param targetDepth The target depth to collect files
+     * @param result The collection to store found files
+     */
+    private static void exploreDirectory(File currentDir, int currentDepth, int targetDepth, List<File> result) {
+        if (currentDepth == targetDepth) {
+            result.add(currentDir);
+            return;
+        }
+
+        // Get all files and directories in the current directory
+        File[] files = currentDir.listFiles();
+        if (files == null) return;
+
+        // Recursively explore subdirectories
+        for (File file : files) {
+            if (file.isDirectory()) {
+                exploreDirectory(file, currentDepth + 1, targetDepth, result);
+            } else if (currentDepth + 1 == targetDepth) {
+                // If files at the next level would be at the target depth, include them
+                result.add(file);
+            }
         }
     }
 

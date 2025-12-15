@@ -1,8 +1,6 @@
-package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.kernel;
+package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.AttributeProcessor;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.FileProcessor;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
@@ -20,18 +18,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public abstract class AttributeUpdaterKernel {
+public abstract class AttributeUpdater {
 
     protected final InputConfig config;
-    protected final FileProcessor processor;
+    protected final FileProcessor fileProcessor;
     protected final AttributeProcessor attributeProcessor;
     protected final ResultStatistic statistic = ResultStatistic.getInstance();
 
     private final ExecutorService executor;
 
-    public AttributeUpdaterKernel(InputConfig config, FileProcessor processor) {
+    public AttributeUpdater(InputConfig config, FileProcessor fileProcessor) {
         this.config = config;
-        this.processor = processor;
+        this.fileProcessor = fileProcessor;
         this.attributeProcessor = new AttributeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
         this.executor = Executors.newFixedThreadPool(config.getThreads());
     }
@@ -48,7 +46,9 @@ public abstract class AttributeUpdaterKernel {
         statistic.startTimer();
 
         try (ProgressBar progressBar = pbBuilder().build()) {
-            List<File> files = processor.loadFiles(config.getLibraryPath().getAbsolutePath());
+            List<File> files = config.getCoherent() != null
+                    ? fileProcessor.loadDirectory(config.getLibraryPath().getPath(), config.getCoherent())
+                    : fileProcessor.loadFiles(config.getLibraryPath().getPath());
 
             progressBar.maxHint(files.size());
             progressBar.refresh();
@@ -74,22 +74,7 @@ public abstract class AttributeUpdaterKernel {
      *
      * @param file file or directory to update
      */
-    void process(File file) {
-        FileInfo fileInfo = processor.readAttributes(file);
-
-        if (fileInfo.getTracks().isEmpty()) {
-            log.warn("No attributes found for file {}", file);
-            statistic.failure();
-            return;
-        }
-
-        attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config.getAttributeConfig());
-        attributeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
-        attributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-        attributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
-
-        checkStatusAndUpdate(fileInfo);
-    }
+    protected abstract void process(File file);
 
     /**
      * Persist file changes.
@@ -119,12 +104,12 @@ public abstract class AttributeUpdaterKernel {
         if (config.isSafeMode()) return;
 
         try {
-            processor.update(fileInfo);
+            fileProcessor.update(fileInfo);
             statistic.success();
-            log.info("Commited {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getAbsolutePath());
+            log.info("Commited {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath());
         } catch (IOException | MkvToolNixException e) {
             statistic.failedChanging();
-            log.warn("Couldn't commit {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getAbsoluteFile(), e);
+            log.warn("Couldn't commit {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath(), e);
         }
     }
 
