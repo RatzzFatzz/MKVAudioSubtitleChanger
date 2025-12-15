@@ -8,13 +8,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class AttributeProcessor {
+public class AttributeChangeProcessor {
     private final SubtitleTrackComparator subtitleTrackComparator;
     private final Set<String> commentaryKeywords;
     private final Set<String> hearingImpairedKeywords;
     private final Set<String> forcedKeywords;
 
-    public AttributeProcessor(String[] preferredSubtitles, Set<String> forcedKeywords, Set<String> commentaryKeywords, Set<String> hearingImpairedKeywords) {
+    public AttributeChangeProcessor(String[] preferredSubtitles, Set<String> forcedKeywords, Set<String> commentaryKeywords, Set<String> hearingImpairedKeywords) {
         this.subtitleTrackComparator = new SubtitleTrackComparator(preferredSubtitles);
         this.commentaryKeywords = commentaryKeywords;
         this.hearingImpairedKeywords = hearingImpairedKeywords;

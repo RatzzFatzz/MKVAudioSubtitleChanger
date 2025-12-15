@@ -34,47 +34,66 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
         List<File> files = fileProcessor.loadFiles(rootDir.getPath());
         Set<FileInfo> matchedFiles = new HashSet<>(files.size() * 2);
 
-        AttributeConfig matchedConfig = null;
         for (AttributeConfig config: config.getAttributeConfig()) {
-            for (File file: files)  {
-                FileInfo fileInfo = fileProcessor.readAttributes(file);
-                fileInfo.resetChanges();
-                fileInfo.setMatchedConfig(null);
+            AttributeConfig matchedConfig = findMatch(config, matchedFiles, files);
 
-                if (fileInfo.getTracks().isEmpty()) {
-                    log.warn("No attributes found for file {}", file);
-                    statistic.failure();
-                    break;
-                }
-
-                attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config);
-
-                if (matchedConfig == null) matchedConfig = fileInfo.getMatchedConfig();
-                matchedFiles.add(fileInfo);
-                if (matchedConfig != fileInfo.getMatchedConfig()) {
-                    matchedConfig = null;
-                    break;
-                }
+            if (matchedConfig == null) continue;
+            if (matchedFiles.size() != files.size()) {
+                log.warn("Skip applying changes: Found coherent match, but matched count is different than file count (matched: {}, files: {}, dir: {})",
+                        matchedFiles.size(), files.size(), rootDir.getPath());
             }
 
-            if (matchedConfig != null) break;
-        }
-
-        if (matchedConfig != null) {
             matchedFiles.forEach(fileInfo -> {
-                attributeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
-                attributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-                attributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+                attributeChangeProcessor.findForcedTracksAndApplyChanges(fileInfo, this.config.isOverwriteForced());
+                attributeChangeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
+                attributeChangeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
 
                 checkStatusAndUpdate(fileInfo);
             });
-        } else {
-            log.info("No coherent match found, trying to find coherent match in child directories: {}", rootDir.getPath());
-            matchedFiles.forEach(fileInfo -> {
-                fileInfo.resetChanges();
-                fileInfo.setMatchedConfig(null);
-            });
-            for (File dir: fileProcessor.loadDirectory(rootDir.getPath(), 1)) this.process(dir);
+            return; // match was found and process must be stopped
         }
+
+        // Couldn't match any config at current level. Resetting changes and trying to one level deeper
+        matchedFiles.forEach(fileInfo -> {
+            fileInfo.resetChanges();
+            fileInfo.setMatchedConfig(null);
+        });
+
+        if (config.isForceCoherent()) {
+            log.info("No coherent match found, aborting: {}", rootDir.getPath());
+            statistic.increaseNoSuitableConfigFoundBy(files.size()); // TODO: should matchedFiles count as already fit config?
+            return;
+        }
+
+        log.info("No coherent match found, trying to find coherent match in child directories: {}", rootDir.getPath());
+        for (File dir: fileProcessor.loadDirectory(rootDir.getPath(), 1)) this.process(dir);
+    }
+
+    private AttributeConfig findMatch(AttributeConfig config, Set<FileInfo> matchedFiles, List<File> files) {
+        AttributeConfig matchedConfig = null;
+        matchedFiles.clear();
+
+        for (File file: files)  {
+            FileInfo fileInfo = fileProcessor.readAttributes(file);
+            fileInfo.resetChanges();
+            fileInfo.setMatchedConfig(null);
+
+            if (fileInfo.getTracks().isEmpty()) {
+                log.warn("No attributes found for file {}", file);
+                statistic.failure();
+                break;
+            }
+
+            attributeChangeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config);
+
+            if (matchedConfig == null) matchedConfig = fileInfo.getMatchedConfig();
+            if (matchedConfig == null || matchedConfig != fileInfo.getMatchedConfig()) {
+                matchedConfig = null;
+                break;
+            }
+            matchedFiles.add(fileInfo);
+        }
+
+        return matchedConfig;
     }
 }

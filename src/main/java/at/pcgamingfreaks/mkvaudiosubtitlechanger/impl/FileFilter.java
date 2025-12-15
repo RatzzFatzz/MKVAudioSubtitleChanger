@@ -32,7 +32,6 @@ public class FileFilter {
             return false;
         }
 
-        ResultStatistic.getInstance().total();
         if (!hasMatchingPattern(pathName)
                 || !isNewer(pathName)
                 || isExcluded(pathName, new HashSet<>(excluded))) {

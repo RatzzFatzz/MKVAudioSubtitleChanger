@@ -22,7 +22,7 @@ public abstract class AttributeUpdater {
 
     protected final InputConfig config;
     protected final FileProcessor fileProcessor;
-    protected final AttributeProcessor attributeProcessor;
+    protected final AttributeChangeProcessor attributeChangeProcessor;
     protected final ResultStatistic statistic = ResultStatistic.getInstance();
 
     private final ExecutorService executor;
@@ -30,7 +30,7 @@ public abstract class AttributeUpdater {
     public AttributeUpdater(InputConfig config, FileProcessor fileProcessor) {
         this.config = config;
         this.fileProcessor = fileProcessor;
-        this.attributeProcessor = new AttributeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
+        this.attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
         this.executor = Executors.newFixedThreadPool(config.getThreads());
     }
 

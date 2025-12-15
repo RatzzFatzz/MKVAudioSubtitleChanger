@@ -17,7 +17,6 @@ public class ResultStatistic {
             "└─ Failed: %s%n" +
             "Runtime: %s";
     private static ResultStatistic instance;
-    private int total = 0;
     private int excluded = 0;
 
     private int shouldChange = 0;
@@ -43,12 +42,8 @@ public class ResultStatistic {
         return instance;
     }
 
-    public void increaseTotalBy(int amount) {
-        total += amount;
-    }
-
-    public synchronized void total() {
-        total++;
+    public int total() {
+        return shouldChange + noSuitableConfigFound + alreadyFits + failed;
     }
 
     public void increaseExcludedBy(int amount) {
@@ -73,6 +68,10 @@ public class ResultStatistic {
 
     public synchronized void noSuitableConfigFound() {
         noSuitableConfigFound++;
+    }
+
+    public synchronized void increaseNoSuitableConfigFoundBy(int amount) {
+        noSuitableConfigFound += amount;
     }
 
     public synchronized void alreadyFits() {
@@ -114,13 +113,13 @@ public class ResultStatistic {
     }
 
     public String prettyPrint() {
-        return String.format(result, total, excluded, shouldChange, failedChanging, successfullyChanged,
+        return String.format(result, total(), excluded, shouldChange, failedChanging, successfullyChanged,
                 noSuitableConfigFound, alreadyFits, failed, formatTimer());
     }
 
     @Override
     public String toString() {
-        return "ResultStatistic: " + "total=" + total +
+        return "ResultStatistic: " + "total=" + total() +
                 ", excluded=" + excluded +
                 ", shouldChange=" + shouldChange +
                 " (failedChanging=" + failedChanging +
@@ -130,4 +129,5 @@ public class ResultStatistic {
                 ", failed=" + failed +
                 ", runtime=" + formatTimer();
     }
+
 }

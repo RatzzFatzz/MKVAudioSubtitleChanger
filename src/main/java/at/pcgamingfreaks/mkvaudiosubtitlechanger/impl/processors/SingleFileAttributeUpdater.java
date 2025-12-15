@@ -29,10 +29,10 @@ public class SingleFileAttributeUpdater extends AttributeUpdater {
             return;
         }
 
-        attributeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config.getAttributeConfig());
-        attributeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
-        attributeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-        attributeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+        attributeChangeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config.getAttributeConfig());
+        attributeChangeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
+        attributeChangeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
+        attributeChangeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
 
         checkStatusAndUpdate(fileInfo);
     }

@@ -46,9 +46,9 @@ public class InputConfig implements CommandLine.IVersionProvider {
     private int threads;
 
     @Min(0)
-    @Option(names = {"-c", "--coherent"}, description = "try to match all files in dir of depth with the same attribute config")
+    @Option(names = {"-c", "--coherent"}, description = "try to match all files in dir of depth with the same attribute config. Attempting increasing deeper levels until match is found (worst case applying config on single file basis)")
     private Integer coherent;
-    @Option(names = {"-cf", "--force-coherent"}, description = "changes are only applied if it's a coherent match")
+    @Option(names = {"-cf", "--force-coherent"}, description = "only applies changes if a coherent match was found for the specifically entered depth")
     private boolean forceCoherent;
 
     @Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")

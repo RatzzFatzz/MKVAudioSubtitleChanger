@@ -73,6 +73,7 @@ class FileFilterTest {
 
             assertEquals(expectedHit, fileFilter.accept(file, new HashSet<>(args)), "File is accepted");
             assertEquals(total, ResultStatistic.getInstance().getTotal(), "Total files");
+            assertEquals(total, ResultStatistic.getInstance().total(), "Total files");
             assertEquals(excluded, ResultStatistic.getInstance().getExcluded(), "Excluded files");
         }
     }
