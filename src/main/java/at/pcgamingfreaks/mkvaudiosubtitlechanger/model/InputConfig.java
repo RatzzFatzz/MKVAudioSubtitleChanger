@@ -59,7 +59,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
     @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
     private Pattern includePattern;
     @Option(names = {"-e", "--excluded"}, arity = "1..*",
-            description = "Directories and files to be excluded (no wildcard)")
+            description = "relative directories and files to be excluded (no wildcard)")
     private Set<String> excluded = new HashSet<>();
 
 

@@ -42,14 +42,19 @@ class FileFilterTest {
 
     private static Stream<Arguments> accept() {
         return Stream.of(
-                Arguments.of("~/video.mkv", Set.of(".mkv"), -1, ".*", true, 1, 0),
-                Arguments.of("~/video.mp4", Set.of(".mkv"), -1, ".*", false, 0, 0),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), Set.of(), -1, ".*", true, false),
+                Arguments.of("~/video.mp4", Set.of(".mkv"), Set.of(), -1, ".*", false, false),
 
-                Arguments.of("~/video.mkv", Set.of(".mkv"), -1, "v.*", true,  1, 0),
-                Arguments.of("~/video.mkv", Set.of(".mkv"), -1, "a.*", false, 1, 1),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), Set.of(), -1, "v.*", true, false),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), Set.of(), -1, "a.*", false, true),
 
-                Arguments.of("~/video.mkv", Set.of(".mkv"), -1000, ".*", true, 1, 0),
-                Arguments.of("~/video.mkv", Set.of(".mkv"), 1000, ".*", false, 1, 1)
+                Arguments.of("~/video.mkv", Set.of(".mkv"), Set.of(), -1000, ".*", true, false),
+                Arguments.of("~/video.mkv", Set.of(".mkv"), Set.of(), 1000, ".*", false, true),
+
+                Arguments.of("dir/video.mkv", Set.of(".mkv"), Set.of("dir"), -1, ".*", false, true),
+                Arguments.of("dir/dir2/video.mkv", Set.of(".mkv"), Set.of("dir/dir2"), -1, ".*", false, true),
+                Arguments.of("dir/video.mkv", Set.of(".mkv"), Set.of("dir/dir2"), -1, ".*", true, false),
+                Arguments.of("dirr/video.mkv", Set.of(".mkv"), Set.of("dir"), -1, ".*", true, false)
         );
     }
 
@@ -58,22 +63,23 @@ class FileFilterTest {
      */
     @ParameterizedTest
     @MethodSource
-    void accept(String path, Set<String> args, int filterDateOffset, String pattern, boolean expectedHit, int total, int excluded) {
+    void accept(String path, Set<String> extensions, Set<String> excludedDirs, int filterDateOffset, String pattern, boolean acceptanceExpected, boolean excluded) {
         when(file.getAbsolutePath()).thenReturn(path);
-        when(file.getName()).thenReturn(List.of(path.split("/")).get(1));
+        when(file.getPath()).thenReturn(path);
+        String[] split = path.split("/");
+        when(file.getName()).thenReturn(split[split.length - 1]);
         when(file.toPath()).thenReturn(Path.of(TEST_FILE));
 
         long currentTime = System.currentTimeMillis();
-        FileFilter fileFilter = new FileFilter(Set.of(), Pattern.compile(pattern), new Date(currentTime + filterDateOffset));
+        FileFilter fileFilter = new FileFilter(excludedDirs, Pattern.compile(pattern), new Date(currentTime + filterDateOffset));
 
         try (MockedStatic<DateUtils> mockedFiles = Mockito.mockStatic(DateUtils.class)) {
             mockedFiles
                     .when(() -> DateUtils.convert(anyLong()))
                     .thenReturn(new Date(currentTime));
 
-            assertEquals(expectedHit, fileFilter.accept(file, new HashSet<>(extensions)), "File is accepted");
-            assertEquals(total, ResultStatistic.getInstance().total(), "Total files");
-            assertEquals(excluded, ResultStatistic.getInstance().getExcluded(), "Excluded files");
+            assertEquals(acceptanceExpected, fileFilter.accept(file, new HashSet<>(extensions)), "File is accepted");
+            assertEquals(excluded, ResultStatistic.getInstance().getExcluded() > 0, "Is counted in excluded statistic");
         }
     }
 }

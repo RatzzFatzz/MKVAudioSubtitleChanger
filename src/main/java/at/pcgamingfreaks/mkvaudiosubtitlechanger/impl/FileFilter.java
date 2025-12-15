@@ -70,9 +70,18 @@ public class FileFilter {
     private boolean isExcluded(File pathName, Set<String> excludedDirs) {
         if (excludedDirs.contains(pathName.getPath())) return true;
 
-        // TODO improve partial matches and wildcard?
+        String[] pathSplit = pathName.getPath().split("/");
         for (String excludedDir : excludedDirs) {
-            if (pathName.getPath().startsWith(excludedDir)) return true;
+            String[] excludeSplit = excludedDir.split("/");
+            if (excludeSplit.length > pathSplit.length) continue;
+            boolean matchingPaths = true;
+            for (int i = 0; i < excludeSplit.length; i++) {
+                if (!excludeSplit[i].equals(pathSplit[i])) {
+                       matchingPaths = false;
+                       break;
+                }
+            }
+            if (matchingPaths) return true;
         }
 
         return false;
