@@ -51,8 +51,9 @@ public class InputConfig implements CommandLine.IVersionProvider {
     @Option(names = {"-cf", "--force-coherent"}, description = "only applies changes if a coherent match was found for the specifically entered depth")
     private boolean forceCoherent;
 
-    @Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
-    private boolean onlyNewFiles; // TODO: implement usage
+    // TODO: implement usage
+//    @Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
+//    private boolean onlyNewFiles;
     @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
     @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
@@ -92,20 +93,23 @@ public class InputConfig implements CommandLine.IVersionProvider {
     public String toString() {
         return new StringJoiner(", ", InputConfig.class.getSimpleName() + "[", "]")
                 .add("configPath=" + configPath)
+                .add("spec=" + spec)
+                .add("attributeConfig=" + Arrays.toString(attributeConfig))
                 .add("libraryPath=" + libraryPath)
                 .add("mkvToolNix=" + mkvToolNix)
-                .add("threads=" + threads)
-                .add("includePattern=" + includePattern)
                 .add("safeMode=" + safeMode)
+                .add("threads=" + threads)
                 .add("coherent=" + coherent)
                 .add("forceCoherent=" + forceCoherent)
-                .add("onlyNewFiles=" + onlyNewFiles)
                 .add("filterDate=" + filterDate)
+                .add("includePattern=" + includePattern)
+                .add("excluded=" + excluded)
+                .add("overwriteForced=" + overwriteForced)
                 .add("forcedKeywords=" + forcedKeywords)
                 .add("commentaryKeywords=" + commentaryKeywords)
-                .add("excludedDirectories=" + excluded)
+                .add("hearingImpaired=" + hearingImpaired)
                 .add("preferredSubtitles=" + preferredSubtitles)
-                .add("attributeConfig=" + attributeConfig)
+                .add("debug=" + debug)
                 .toString();
     }
 

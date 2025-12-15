@@ -71,8 +71,7 @@ class FileFilterTest {
                     .when(() -> DateUtils.convert(anyLong()))
                     .thenReturn(new Date(currentTime));
 
-            assertEquals(expectedHit, fileFilter.accept(file, new HashSet<>(args)), "File is accepted");
-            assertEquals(total, ResultStatistic.getInstance().getTotal(), "Total files");
+            assertEquals(expectedHit, fileFilter.accept(file, new HashSet<>(extensions)), "File is accepted");
             assertEquals(total, ResultStatistic.getInstance().total(), "Total files");
             assertEquals(excluded, ResultStatistic.getInstance().getExcluded(), "Excluded files");
         }

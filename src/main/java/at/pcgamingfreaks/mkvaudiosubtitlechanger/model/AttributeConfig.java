@@ -13,6 +13,10 @@ public class AttributeConfig {
     private final String audioLanguage;
     private final String subtitleLanguage;
 
+    public static AttributeConfig of(String audioLanguage, String subtitleLanguage)  {
+        return new AttributeConfig(audioLanguage, subtitleLanguage);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

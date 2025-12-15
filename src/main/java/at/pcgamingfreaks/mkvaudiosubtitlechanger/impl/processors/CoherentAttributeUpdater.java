@@ -61,7 +61,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
         if (config.isForceCoherent()) {
             log.info("No coherent match found, aborting: {}", rootDir.getPath());
-            statistic.increaseNoSuitableConfigFoundBy(files.size()); // TODO: should matchedFiles count as already fit config?
+            statistic.increaseNoSuitableConfigFoundBy(files.size());
             return;
         }
 

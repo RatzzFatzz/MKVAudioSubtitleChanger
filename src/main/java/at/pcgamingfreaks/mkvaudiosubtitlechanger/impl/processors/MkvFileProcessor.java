@@ -162,7 +162,7 @@ public class MkvFileProcessor implements FileProcessor {
         log.debug("Executing '{}'", String.join(" ", command));
         InputStream inputstream = Runtime.getRuntime().exec(command.toArray(new String[0])).getInputStream();
         String output = IOUtils.toString(new InputStreamReader(inputstream));
-        log.debug("Result: {}", output);
+        log.debug("Result: {}", output.replaceAll("\\n", " '"));
         if (output.contains("Error")) throw new MkvToolNixException(output);
     }
 
