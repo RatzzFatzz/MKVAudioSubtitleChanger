@@ -46,9 +46,7 @@ public abstract class AttributeUpdater {
         statistic.startTimer();
 
         try (ProgressBar progressBar = pbBuilder().build()) {
-            List<File> files = config.getCoherent() != null
-                    ? fileProcessor.loadDirectory(config.getLibraryPath().getPath(), config.getCoherent())
-                    : fileProcessor.loadFiles(config.getLibraryPath().getPath());
+            List<File> files = getFiles();
 
             progressBar.maxHint(files.size());
             progressBar.refresh();
@@ -67,6 +65,8 @@ public abstract class AttributeUpdater {
         statistic.stopTimer();
         statistic.printResult();
     }
+
+    protected abstract List<File> getFiles();
 
     /**
      * Start of the file updating process.

@@ -24,6 +24,10 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
                 .setUnit(" directories", 1);
     }
 
+    protected List<File> getFiles() {
+        return fileProcessor.loadDirectory(config.getLibraryPath().getPath(), config.getCoherent());
+    }
+
     @Override
     public void process(File rootDir) {
         if (rootDir.isFile()) {
