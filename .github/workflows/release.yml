@@ -23,7 +23,7 @@ jobs:
 
       - name: Extract version from tag
         id: get_version
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(echo ${GITHUB_REF_NAME#v} | cut -d'-' -f1)" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Set timezone
@@ -69,7 +69,7 @@ jobs:
 
       - name: Extract version from tag
         id: get_version
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(echo ${GITHUB_REF_NAME#v} | cut -d'-' -f1)" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Set timezone
@@ -117,7 +117,7 @@ jobs:
 
       - name: Extract version from tag
         id: get_version
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(echo ${GITHUB_REF_NAME#v} | cut -d'-' -f1)" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Set timezone
