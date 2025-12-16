@@ -10,7 +10,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,5 +91,43 @@ class MkvFileProcessorTest {
         assertFalse(sub.hearingImpaired());
         assertFalse(sub.commentary());
         assertEquals(TrackType.SUBTITLES, sub.type());
+    }
+
+    @Test
+    void getUpdateCommand() throws InvocationTargetException, IllegalAccessException {
+        FileInfo fileInfo = new FileInfo(new File("./"));
+        fileInfo.getChanges().getDefaultTrack().put(t(1), true);
+        fileInfo.getChanges().getDefaultTrack().put(t(2), false);
+        fileInfo.getChanges().getForcedTrack().put(t(3), true);
+        fileInfo.getChanges().getForcedTrack().put(t(4), false);
+        fileInfo.getChanges().getCommentaryTrack().put(t(5), true);
+        fileInfo.getChanges().getCommentaryTrack().put(t(6), false);
+        fileInfo.getChanges().getHearingImpairedTrack().put(t(7), true);
+        fileInfo.getChanges().getHearingImpairedTrack().put(t(8), false);
+        String[] expectedCommand = """
+                --edit track:1 --set flag-default=1
+                --edit track:2 --set flag-default=0
+                --edit track:3 --set flag-forced=1
+                --edit track:4 --set flag-forced=0
+                --edit track:5 --set flag-commentary=1
+                --edit track:6 --set flag-commentary=0
+                --edit track:7 --set flag-hearing-impaired=1
+                --edit track:8 --set flag-hearing-impaired=0
+                """.split("\\n");
+
+        MkvFileProcessor mkvFileProcessor = new MkvFileProcessor(new File("mkvtoolnix"), null);
+        Method underTest = Arrays.stream(mkvFileProcessor.getClass().getDeclaredMethods()).filter(m -> "getUpdateCommand".equals(m.getName())).findFirst().get();
+        underTest.setAccessible(true);
+        String[] actualCommand = (String[]) underTest.invoke(mkvFileProcessor, fileInfo);
+        String[] trimmedActualCommand = Arrays.copyOfRange(actualCommand, 2, actualCommand.length);
+        String actualCommandString = String.join(" ", trimmedActualCommand);
+        assertTrue(expectedCommand.length * 4 == trimmedActualCommand.length, "Command length is equal");
+        for (String commandPart: expectedCommand) {
+            assertTrue(actualCommandString.contains(commandPart));
+        }
+    }
+
+    private static TrackAttributes t(int id) {
+        return new TrackAttributes(id, "", "", false, false, false, false, TrackType.AUDIO);
     }
 }

@@ -148,6 +148,15 @@ public class MkvFileProcessor implements FileProcessor {
      */
     @Override
     public void update(FileInfo fileInfo) throws IOException, MkvToolNixException {
+        String[] command = getUpdateCommand(fileInfo);
+        log.debug("Executing '{}'", String.join(" ", command));
+        InputStream inputstream = run(command);
+        String output = IOUtils.toString(new InputStreamReader(inputstream));
+        log.debug("Result: {}", output.replaceAll("\\n", " '"));
+        if (output.contains("Error")) throw new MkvToolNixException(output);
+    }
+
+    private String[] getUpdateCommand(FileInfo fileInfo)  {
         List<String> command = new ArrayList<>();
         command.add(getPathFor(mkvToolNixInstallation, MkvToolNix.MKV_PROP_EDIT).getAbsolutePath());
         command.add(String.format(fileInfo.getFile().getAbsolutePath()));
@@ -157,12 +166,7 @@ public class MkvFileProcessor implements FileProcessor {
         changes.getForcedTrack().forEach((key, value) -> command.addAll(format(FORCED_TRACK, key.id(), value ? 1 : 0)));
         changes.getCommentaryTrack().forEach((key, value) -> command.addAll(format(COMMENTARY_TRACK, key.id(), value ? 1 : 0)));
         changes.getHearingImpairedTrack().forEach((key, value) -> command.addAll(format(HEARING_IMPAIRED_TRACK, key.id(), value ? 1 : 0)));
-
-        log.debug("Executing '{}'", String.join(" ", command));
-        InputStream inputstream = run(command.toArray(new String[0]));
-        String output = IOUtils.toString(new InputStreamReader(inputstream));
-        log.debug("Result: {}", output.replaceAll("\\n", " '"));
-        if (output.contains("Error")) throw new MkvToolNixException(output);
+        return command.toArray(new String[0]);
     }
 
     private List<String> format(String format, Object... args) {
