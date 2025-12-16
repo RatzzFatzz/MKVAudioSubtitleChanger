@@ -1,4 +1,4 @@
-# This workflow will run every time a new release is created.
+# This workflow will run every time a tag starting with v is created.
 
 name: Build and release
 on:
@@ -8,12 +8,18 @@ on:
 jobs:
   portable-build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Install mkvtoolnix
         run: sudo apt-get install -y mkvtoolnix
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Set timezone
         uses: szenius/set-timezone@v2.0
@@ -43,12 +49,18 @@ jobs:
 
   debian-build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Install mkvtoolnix
         run: sudo apt-get install -y mkvtoolnix
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Set timezone
         uses: szenius/set-timezone@v2.0
@@ -78,6 +90,10 @@ jobs:
 
   windows-installer-build:
     runs-on: windows-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Install mkvtoolnix
         uses: crazy-max/ghaction-chocolatey@v3
@@ -86,6 +102,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Set timezone
         uses: szenius/set-timezone@v2.0

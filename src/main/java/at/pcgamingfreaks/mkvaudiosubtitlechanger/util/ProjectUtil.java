@@ -21,7 +21,10 @@ public class ProjectUtil implements CommandLine.IVersionProvider {
         }
     }
 
-    // TODO: add mkvmerge and mkvpropedit version
+    public static String getProjectName() {
+        return  PROJECT_PROPERTIES.getProperty("project_name");
+    }
+
     public String[] getVersion() throws IOException {
         String mkvpropeeditVersion = getVersion(MkvToolNix.MKV_PROP_EDIT);
         String mkvmergeVersion = getVersion(MkvToolNix.MKV_MERGE);
@@ -32,10 +35,6 @@ public class ProjectUtil implements CommandLine.IVersionProvider {
                 "${os.name} ${os.version} ${os.arch}",
                 (!Strings.isBlank(mkvpropeeditVersion) ? mkvpropeeditVersion : "MkvPropEdit not found") + ", " + (!Strings.isBlank(mkvmergeVersion) ? mkvmergeVersion : "MkvMerge not found")
         };
-    }
-
-    public static String getProjectName() {
-        return  PROJECT_PROPERTIES.getProperty("project_name");
     }
 
     public static String getVersion(MkvToolNix app) throws IOException {
