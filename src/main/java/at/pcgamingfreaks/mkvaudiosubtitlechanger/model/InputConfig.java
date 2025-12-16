@@ -58,7 +58,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
     private Date filterDate;
     @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
     private Pattern includePattern;
-    @Option(names = {"-e", "--excluded"}, arity = "1..*",
+    @Option(names = {"-e", "--exclude"}, arity = "1..*",
             description = "relative directories and files to be excluded (no wildcard)")
     private Set<String> excluded = new HashSet<>();
 
