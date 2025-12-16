@@ -42,7 +42,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean package --file pom.xml -P portable -Drevision=${{ steps.get_version.outputs.VERSION }}
+          mvn clean package --file pom.xml -P portable -Drevision="${{ steps.get_version.outputs.VERSION }}"
           cp target/M*.{zip,tar} artifacts/
 
       - name: Upload artifacts
@@ -88,7 +88,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean package --file pom.xml -P linux -Drevision=${{ steps.get_version.outputs.VERSION }}
+          mvn clean package --file pom.xml -P debian -Drevision="${{ steps.get_version.outputs.VERSION }}"
           cp target/M*.deb artifacts/
 
       - name: Upload artifacts
@@ -135,7 +135,7 @@ jobs:
         run: mkdir artifacts
 
       - name: Build with Maven
-        run: mvn clean package --file pom.xml -P windows -Drevision=${{ steps.get_version.outputs.VERSION }}
+        run: mvn clean package --file pom.xml -P windows -Drevision="${{ steps.get_version.outputs.VERSION }}"
 
       - name: Upload artifacts
         uses: AButler/upload-release-assets@v3.0

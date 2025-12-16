@@ -147,7 +147,7 @@
             </build>
         </profile>
         <profile>
-            <id>linux</id>
+            <id>debian</id>
             <build>
                 <resources>
                     <resource>
