@@ -64,7 +64,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j2-installed.yaml</include>
+                            <include>log4j2-windows.yaml</include>
                         </includes>
                     </resource>
                 </resources>
@@ -130,7 +130,7 @@
                             <winShortcut>false</winShortcut>
                             <winMenu>false</winMenu>
                             <javaOptions>
-                                <javaOption>-Dlog4j.configurationFile=log4j2-windows.yaml</javaOption>
+                                <javaOption>-Dlog4j2.configurationFile=log4j2-windows.yaml</javaOption>
                             </javaOptions>
                         </configuration>
                         <executions>
