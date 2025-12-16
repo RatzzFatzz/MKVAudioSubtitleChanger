@@ -1,7 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileFilter;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileFilter;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -73,10 +73,10 @@ public class MkvFileProcessor implements FileProcessor {
     /**
      * Recursively explores directories to find items at the target depth.
      *
-     * @param currentDir The current directory being explored
+     * @param currentDir   The current directory being explored
      * @param currentDepth The current depth level
-     * @param targetDepth The target depth to collect files
-     * @param result The collection to store found files
+     * @param targetDepth  The target depth to collect files
+     * @param result       The collection to store found files
      */
     private static void exploreDirectory(File currentDir, int currentDepth, int targetDepth, List<File> result) {
         if (currentDepth == targetDepth) {
@@ -113,8 +113,7 @@ public class MkvFileProcessor implements FileProcessor {
             };
 
             log.debug("Executing: {}", String.join(" ", command));
-            InputStream inputStream = Runtime.getRuntime().exec(command)
-                    .getInputStream();
+            InputStream inputStream = run(command);
             Map<String, Object> jsonMap = mapper.readValue(inputStream, Map.class);
             List<Map<String, Object>> tracks = (List<Map<String, Object>>) jsonMap.get("tracks");
             if (tracks != null) {
@@ -160,7 +159,7 @@ public class MkvFileProcessor implements FileProcessor {
         changes.getHearingImpairedTrack().forEach((key, value) -> command.addAll(format(HEARING_IMPAIRED_TRACK, key.id(), value ? 1 : 0)));
 
         log.debug("Executing '{}'", String.join(" ", command));
-        InputStream inputstream = Runtime.getRuntime().exec(command.toArray(new String[0])).getInputStream();
+        InputStream inputstream = run(command.toArray(new String[0]));
         String output = IOUtils.toString(new InputStreamReader(inputstream));
         log.debug("Result: {}", output.replaceAll("\\n", " '"));
         if (output.contains("Error")) throw new MkvToolNixException(output);

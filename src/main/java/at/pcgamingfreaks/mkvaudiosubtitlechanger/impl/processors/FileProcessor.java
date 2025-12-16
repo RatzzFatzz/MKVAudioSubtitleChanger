@@ -5,6 +5,7 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public interface FileProcessor {
@@ -43,4 +44,8 @@ public interface FileProcessor {
      * @throws MkvToolNixException when error occurs while sending query to mkvpropedit
      */
     void update(FileInfo fileInfo) throws IOException, MkvToolNixException;
+
+    default InputStream run(String[] command) throws IOException {
+        return Runtime.getRuntime().exec(command).getInputStream();
+    }
 }
