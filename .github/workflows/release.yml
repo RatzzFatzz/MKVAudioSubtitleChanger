@@ -21,6 +21,11 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Set timezone
         uses: szenius/set-timezone@v2.0
         with:
@@ -37,7 +42,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean package --file pom.xml -P portable
+          mvn clean package --file pom.xml -P portable -Drevision=${{ steps.get_version.outputs.VERSION }}
           cp target/M*.{zip,tar} artifacts/
 
       - name: Upload artifacts
@@ -62,6 +67,11 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Set timezone
         uses: szenius/set-timezone@v2.0
         with:
@@ -78,7 +88,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean package --file pom.xml -P linux
+          mvn clean package --file pom.xml -P linux -Drevision=${{ steps.get_version.outputs.VERSION }}
           cp target/M*.deb artifacts/
 
       - name: Upload artifacts
@@ -105,6 +115,11 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Set timezone
         uses: szenius/set-timezone@v2.0
         with:
@@ -120,7 +135,7 @@ jobs:
         run: mkdir artifacts
 
       - name: Build with Maven
-        run: mvn clean package --file pom.xml -P windows
+        run: mvn clean package --file pom.xml -P windows -Drevision=${{ steps.get_version.outputs.VERSION }}
 
       - name: Upload artifacts
         uses: AButler/upload-release-assets@v3.0

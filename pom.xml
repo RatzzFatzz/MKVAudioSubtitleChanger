@@ -6,9 +6,10 @@
 
     <groupId>at.pcgamingfreaks</groupId>
     <artifactId>MKVAudioSubtitleChanger</artifactId>
-    <version>4.0.4</version>
+    <version>${revision}</version>
 
     <properties>
+        <revision>1.0.0-SNAPSHOT</revision>
         <mainClass>at.pcgamingfreaks.mkvaudiosubtitlechanger.Main</mainClass>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
