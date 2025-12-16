@@ -85,10 +85,6 @@ public class InputConfig implements CommandLine.IVersionProvider {
         System.setProperty("DEFAULT_MKV_TOOL_NIX", SystemUtils.IS_OS_WINDOWS ? "C:\\Program Files\\MKVToolNix" : "/usr/bin/");
     }
 
-    public String getNormalizedLibraryPath() {
-        return this.getLibraryPath().getAbsolutePath().replace("\\", "/");
-    }
-
     @Override
     public String toString() {
         return new StringJoiner(", ", InputConfig.class.getSimpleName() + "[", "]")

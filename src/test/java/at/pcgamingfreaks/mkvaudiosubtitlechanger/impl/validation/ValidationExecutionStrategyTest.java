@@ -24,8 +24,8 @@ class ValidationExecutionStrategyTest {
                 .setExecutionStrategy(new ValidationExecutionStrategy())
                 .parseArgs("-a", "ger:ger", "-l", TEST_FILE, "-m", TEST_MKVTOOLNIX_DIR);
 
-        assertEquals(TEST_FILE, underTest.getConfig().getLibraryPath().getPath());
-        assertEquals(TEST_MKVTOOLNIX_DIR, underTest.getConfig().getMkvToolNix().getPath());
+        assertEquals(TEST_FILE, underTest.getConfig().getLibraryPath().getPath().replace("\\", "/"));
+        assertEquals(TEST_MKVTOOLNIX_DIR, underTest.getConfig().getMkvToolNix().getPath().replace("\\", "/"));
     }
 
     private static Stream<Arguments> validateFailure() {
@@ -56,6 +56,6 @@ class ValidationExecutionStrategyTest {
                 .execute(args);
 
         printWriter.flush();
-        assertEquals(expectedMessage, writer.toString().split("\n")[0]);
+        assertEquals(expectedMessage, writer.toString().split("[\r\n]")[0]);
     }
 }
