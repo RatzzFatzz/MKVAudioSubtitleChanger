@@ -123,7 +123,7 @@ public class AttributeChangeProcessor {
 
     public void findHearingImpairedTracksAndApplyChanges(FileInfo fileInfo) {
         fileInfo.getTracks().stream()
-                .filter(track -> !track.commentary())
+                .filter(track -> !track.hearingImpaired())
                 .filter(track -> track.trackName() != null)
                 .filter(track -> hearingImpairedKeywords.stream().anyMatch(keyword -> track.trackName().toLowerCase().contains(keyword.toLowerCase(Locale.ROOT))))
                 .forEach(attr -> {

@@ -57,6 +57,8 @@ class MkvFileProcessorTest {
                         "default_track": true,
                         "enabled_track": true,
                         "forced_track": false,
+                        "commentary_track": true,
+                        "flag_hearing_impaired": true,
                         "language": "eng",
                         "number": 3
                       },
@@ -88,8 +90,8 @@ class MkvFileProcessorTest {
         assertEquals("eng", sub.language());
         assertTrue(sub.defaultt());
         assertFalse(sub.forced());
-        assertFalse(sub.hearingImpaired());
-        assertFalse(sub.commentary());
+        assertTrue(sub.hearingImpaired());
+        assertTrue(sub.commentary());
         assertEquals(TrackType.SUBTITLES, sub.type());
     }
 

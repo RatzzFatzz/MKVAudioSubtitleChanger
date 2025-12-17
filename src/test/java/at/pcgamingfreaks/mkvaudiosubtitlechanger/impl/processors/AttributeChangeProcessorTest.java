@@ -248,7 +248,7 @@ class AttributeChangeProcessorTest {
                         Set.of("SDH"),
                         Map.ofEntries(on(withName(SUB_GER, "SDH")))
                 ),
-                Arguments.of(List.of(withName(AUDIO_GER_COMMENTARY, "SDH")),
+                Arguments.of(List.of(withName(AUDIO_GER_HEARING, "SDH")),
                         Set.of("SDH"),
                         Map.ofEntries()
                 ),
@@ -260,7 +260,7 @@ class AttributeChangeProcessorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("findCommentaryTracksAndApplyChanges")
+    @MethodSource("findHearingImpairedTracksAndApplyChanges")
     void findHearingImpairedTracksAndApplyChanges(List<TrackAttributes> tracks, Set<String> keywords, Map<TrackAttributes, Boolean> changes) {
         AttributeChangeProcessor attributeChangeProcessor =  new AttributeChangeProcessor(new String[]{}, Set.of(), Set.of(), keywords);
 

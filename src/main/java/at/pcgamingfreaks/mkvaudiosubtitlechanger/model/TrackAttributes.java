@@ -16,6 +16,8 @@ public record TrackAttributes(int id, String language, String trackName,
         return id == attribute.id
                 && defaultt == attribute.defaultt
                 && forced == attribute.forced
+                && commentary == attribute.commentary
+                && hearingImpaired == attribute.hearingImpaired
                 && Objects.equals(language, attribute.language)
                 && Objects.equals(trackName, attribute.trackName)
                 && type == attribute.type;
@@ -28,6 +30,8 @@ public record TrackAttributes(int id, String language, String trackName,
                 ", trackName='" + trackName + '\'' +
                 ", defaultt=" + defaultt +
                 ", forced=" + forced +
+                ", commentary=" + commentary +
+                ", hearingImpaired=" + hearingImpaired +
                 ", type=" + type +
                 ']';
     }

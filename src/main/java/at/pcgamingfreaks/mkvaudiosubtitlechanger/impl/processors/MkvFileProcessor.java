@@ -127,7 +127,7 @@ public class MkvFileProcessor implements FileProcessor {
                                 (Boolean) properties.getOrDefault("default_track", false),
                                 (Boolean) properties.getOrDefault("forced_track", false),
                                 (Boolean) properties.getOrDefault("commentary_track", false),
-                                (Boolean) properties.getOrDefault("hearing_impaired_track", false),
+                                (Boolean) properties.getOrDefault("flag_hearing_impaired", false),
                                 TrackType.valueOf(((String) attribute.get("type")).toUpperCase(Locale.ENGLISH))));
                     }
                 }
