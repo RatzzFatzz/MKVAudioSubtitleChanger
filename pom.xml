@@ -70,6 +70,14 @@
                 </resources>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.4.2</version>
+                        <configuration>
+                            <finalName>${project.artifactId}</finalName>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
                         <version>3.3.1</version>
                         <executions>
@@ -85,7 +93,7 @@
                                         <resource>
                                             <directory>${project.build.directory}</directory>
                                             <includes>
-                                                <include>${project.artifactId}-${project.version}.jar</include>
+                                                <include>${project.artifactId}.jar</include>
                                             </includes>
                                         </resource>
                                     </resources>
@@ -122,7 +130,7 @@
 
                             <input>target/jpackage-input</input>
                             <mainClass>at.pcgamingfreaks.mkvaudiosubtitlechanger.Main</mainClass>
-                            <mainJar>${project.artifactId}-${project.version}.jar</mainJar>
+                            <mainJar>${project.artifactId}.jar</mainJar>
 
                             <resourceDir>${project.build.directory}/wix-resources/</resourceDir>
                             <type>EXE</type>
