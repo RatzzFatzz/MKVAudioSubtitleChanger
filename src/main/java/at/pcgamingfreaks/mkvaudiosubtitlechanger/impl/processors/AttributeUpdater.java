@@ -63,7 +63,7 @@ public abstract class AttributeUpdater {
 //        writeLastExecutionDate();
 
         statistic.stopTimer();
-        statistic.printResult();
+        statistic.print();
     }
 
     protected abstract List<File> getFiles();
@@ -82,34 +82,23 @@ public abstract class AttributeUpdater {
      * @param fileInfo contains information about file and desired configuration.
      */
     protected void checkStatusAndUpdate(FileInfo fileInfo) {
-        switch (fileInfo.getStatus()) {
-            case CHANGE_NECESSARY:
-                statistic.shouldChange();
-                commitChange(fileInfo);
-                break;
-            case NO_SUITABLE_CONFIG:
-                statistic.noSuitableConfigFound();
-                break;
-            case ALREADY_SUITED:
-                statistic.alreadyFits();
-                break;
-            case UNKNOWN:
-            default:
-                statistic.failure();
-                break;
-        }
-    }
+        if (!fileInfo.getChanges().isEmpty()) {
+            statistic.changePlanned();
 
-    private void commitChange(FileInfo fileInfo) {
-        if (config.isSafeMode()) return;
+            if (config.isSafeMode()) return;
 
-        try {
-            fileProcessor.update(fileInfo);
-            statistic.success();
-            log.info("Commited {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath());
-        } catch (IOException | MkvToolNixException e) {
-            statistic.failedChanging();
-            log.warn("Couldn't commit {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath(), e);
+            try {
+                fileProcessor.update(fileInfo);
+                statistic.changeSuccessful();
+                log.info("Commited {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath());
+            } catch (IOException | MkvToolNixException e) {
+                statistic.changeFailed();
+                log.warn("Couldn't commit {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath(), e);
+            }
+        } else if (fileInfo.getChanges().isEmpty()) {
+            statistic.unchanged();
+        } else {
+            statistic.unknownFailed();
         }
     }
 

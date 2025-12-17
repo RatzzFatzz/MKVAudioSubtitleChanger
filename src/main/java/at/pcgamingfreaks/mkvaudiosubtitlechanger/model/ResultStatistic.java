@@ -1,33 +1,25 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
 public class ResultStatistic {
-    private static final String result = "Total files: %s%n" +
-            "├─ Excluded: %s%n" +
-            "├─ Should change: %s%n" +
-            "│  ├─ Failed changing: %s%n" +
-            "│  └─ Successfully changed: %s%n" +
-            "├─ No suitable config found: %s%n" +
-            "├─ Already fit config: %s%n" +
-            "└─ Failed: %s%n" +
-            "Runtime: %s";
+    private static final String PRINT_TEMPLATE = "Total: %s, Changing: %s (Successful: %s, Failed %s), Unchanged: %s, Excluded: %s, Unknown/Failed: %s\nRuntime: %s";
     private static ResultStatistic instance;
-    private int excluded = 0;
 
-    private int shouldChange = 0;
-    private int failedChanging = 0;
-    private int successfullyChanged = 0;
+    private int changePlanned = 0;
+    private int changeFailed = 0;
+    private int changeSuccessful = 0;
+    private int unchanged = 0;
+    private int excluded = 0;
+    private int unknownFailed = 0;
 
     private int noSuitableConfigFound = 0;
     private int alreadyFits = 0;
     private int failed = 0;
 
-    @Getter(AccessLevel.NONE)
     private long startTime = 0;
     private long runtime = 0;
 
@@ -43,43 +35,39 @@ public class ResultStatistic {
     }
 
     public int total() {
-        return shouldChange + noSuitableConfigFound + alreadyFits + failed;
+        return changePlanned + noSuitableConfigFound + alreadyFits + failed;
     }
 
     public void increaseExcludedBy(int amount) {
         excluded += amount;
     }
 
+    public synchronized void changePlanned() {
+        changePlanned++;
+    }
+
+    public synchronized void changeSuccessful() {
+        changeSuccessful++;
+    }
+
+    public synchronized void changeFailed() {
+        changeFailed++;
+    }
+
+    public synchronized void unchanged() {
+        unchanged++;
+    }
+
+    public synchronized void increaseUnchangedBy(int amount) {
+        unchanged += amount;
+    }
+
     public synchronized void excluded() {
         excluded++;
     }
 
-    public synchronized void shouldChange() {
-        shouldChange++;
-    }
-
-    public synchronized void success() {
-        successfullyChanged++;
-    }
-
-    public synchronized void failedChanging() {
-        failedChanging++;
-    }
-
-    public synchronized void noSuitableConfigFound() {
-        noSuitableConfigFound++;
-    }
-
-    public synchronized void increaseNoSuitableConfigFoundBy(int amount) {
-        noSuitableConfigFound += amount;
-    }
-
-    public synchronized void alreadyFits() {
-        alreadyFits++;
-    }
-
-    public synchronized void failure() {
-        failed++;
+    public synchronized void unknownFailed() {
+        unknownFailed++;
     }
 
     public void startTimer() {
@@ -88,11 +76,6 @@ public class ResultStatistic {
 
     public void stopTimer() {
         runtime = System.currentTimeMillis() - startTime;
-    }
-
-    public void printResult() {
-        System.out.println(prettyPrint());
-        log.info(this.toString());
     }
 
     private String formatTimer() {
@@ -112,22 +95,14 @@ public class ResultStatistic {
         }
     }
 
-    public String prettyPrint() {
-        return String.format(result, total(), excluded, shouldChange, failedChanging, successfullyChanged,
-                noSuitableConfigFound, alreadyFits, failed, formatTimer());
+    public void print() {
+        String result = this.toString();
+        System.out.println(result);
+        log.info(result);
     }
 
     @Override
     public String toString() {
-        return "ResultStatistic: " + "total=" + total() +
-                ", excluded=" + excluded +
-                ", shouldChange=" + shouldChange +
-                " (failedChanging=" + failedChanging +
-                ", successfullyChanged=" + successfullyChanged +
-                "), noSuitableConfigFound=" + noSuitableConfigFound +
-                ", alreadyFits=" + alreadyFits +
-                ", failed=" + failed +
-                ", runtime=" + formatTimer();
+        return String.format(PRINT_TEMPLATE, total(), changePlanned, changeSuccessful, changeFailed, unchanged, excluded, unknownFailed, formatTimer());
     }
-
 }

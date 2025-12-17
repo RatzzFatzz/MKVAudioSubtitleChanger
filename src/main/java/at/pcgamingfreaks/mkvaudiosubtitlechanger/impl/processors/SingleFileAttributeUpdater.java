@@ -32,7 +32,7 @@ public class SingleFileAttributeUpdater extends AttributeUpdater {
 
         if (fileInfo.getTracks().isEmpty()) {
             log.warn("No attributes found for file {}", file);
-            statistic.failure();
+            statistic.unknownFailed();
             return;
         }
 

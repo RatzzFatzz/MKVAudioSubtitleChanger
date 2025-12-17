@@ -65,7 +65,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
         if (config.isForceCoherent()) {
             log.info("No coherent match found, aborting: {}", rootDir.getPath());
-            statistic.increaseNoSuitableConfigFoundBy(files.size());
+            statistic.increaseUnchangedBy(files.size());
             return;
         }
 
@@ -84,7 +84,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
             if (fileInfo.getTracks().isEmpty()) {
                 log.warn("No attributes found for file {}", file);
-                statistic.failure();
+                statistic.unknownFailed();
                 break;
             }
 

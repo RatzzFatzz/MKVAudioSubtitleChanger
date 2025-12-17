@@ -53,11 +53,4 @@ public class FileInfo {
     public void resetChanges() {
         changes = new PlannedChange();
     }
-
-    public FileStatus getStatus() {
-        if (!changes.isEmpty()) return FileStatus.CHANGE_NECESSARY;
-        if (matchedConfig == null) return FileStatus.NO_SUITABLE_CONFIG;
-        if (changes.isEmpty()) return FileStatus.ALREADY_SUITED;
-        return FileStatus.UNKNOWN;
-    }
 }
