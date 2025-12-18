@@ -28,12 +28,13 @@ public class InputConfig implements CommandLine.IVersionProvider {
     @CommandLine.Spec
     CommandLine.Model.CommandSpec spec;
 
-    @Option(names = {"-a", "--attribute-config"}, required = true, arity = "1..*", converter = AttributeConfigConverter.class,
-            description = "List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)")
-    private AttributeConfig[] attributeConfig;
     @ValidFile(message = "does not exist")
-    @Option(names = {"-l", "--library"}, required = true, description = "path to library")
+    @CommandLine.Parameters(description = "path to library")
     private File libraryPath;
+
+    @Option(names = {"-a", "--attribute-config"}, arity = "1..*", converter = AttributeConfigConverter.class,
+            description = "List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)")
+    private AttributeConfig[] attributeConfig = new AttributeConfig[0];
     @ValidMkvToolNix(message = "does not exist")
     @Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "${DEFAULT_MKV_TOOL_NIX}", description = "path to mkvtoolnix installation")
     private File mkvToolNix;
@@ -90,8 +91,8 @@ public class InputConfig implements CommandLine.IVersionProvider {
         return new StringJoiner(", ", InputConfig.class.getSimpleName() + "[", "]")
                 .add("configPath=" + configPath)
                 .add("spec=" + spec)
-                .add("attributeConfig=" + Arrays.toString(attributeConfig))
                 .add("libraryPath=" + libraryPath)
+                .add("attributeConfig=" + Arrays.toString(attributeConfig))
                 .add("mkvToolNix=" + mkvToolNix)
                 .add("safeMode=" + safeMode)
                 .add("threads=" + threads)

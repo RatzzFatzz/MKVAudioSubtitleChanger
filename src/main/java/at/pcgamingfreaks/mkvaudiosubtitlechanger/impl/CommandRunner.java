@@ -1,11 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.AttributeUpdater;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.CoherentAttributeUpdater;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.SingleFileAttributeUpdater;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.CachedFileProcessor;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.FileProcessor;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.MkvFileProcessor;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors.*;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
 import lombok.Getter;
@@ -19,8 +14,8 @@ import picocli.CommandLine;
         name = "mkvaudiosubtitlechanger",
         usageHelpAutoWidth = true,
         customSynopsis = {
-                "mkvaudiosubtitlechanger -a <attributeConfig> [...<attributeConfig>] -l <libraryPath> [-s]",
-                "Example: mkvaudiosubtitlechanger -a eng:eng eng:ger -l /mnt/media/ -s",
+                "mkvaudiosubtitlechanger [-a <attributeConfig> [...<attributeConfig>]] [-s] <libraryPath>",
+                "Example: mkvaudiosubtitlechanger -a eng:eng eng:ger -s /mnt/media/",
                 ""
         },
         requiredOptionMarker = '*',
@@ -41,10 +36,11 @@ public class CommandRunner implements Runnable {
 
         FileFilter fileFilter = new FileFilter(config.getExcluded(), config.getIncludePattern(), config.getFilterDate());
         FileProcessor fileProcessor = new CachedFileProcessor(new MkvFileProcessor(config.getMkvToolNix(), fileFilter));
+        AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
 
         AttributeUpdater kernel = config.getCoherent() != null
-                ? new CoherentAttributeUpdater(config, fileProcessor)
-                : new SingleFileAttributeUpdater(config, fileProcessor);
+                ? new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor)
+                : new SingleFileAttributeUpdater(config, fileProcessor, attributeChangeProcessor);
         kernel.execute();
     }
 }

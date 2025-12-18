@@ -27,7 +27,7 @@ public abstract class AttributeUpdater {
 
     private final ExecutorService executor;
 
-    public AttributeUpdater(InputConfig config, FileProcessor fileProcessor) {
+    public AttributeUpdater(InputConfig config, FileProcessor fileProcessor, AttributeChangeProcessor attributeChangeProcessor) {
         this.config = config;
         this.fileProcessor = fileProcessor;
         this.attributeChangeProcessor = attributeChangeProcessor;

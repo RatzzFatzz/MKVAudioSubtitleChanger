@@ -65,9 +65,10 @@ class CoherentAttributeUpdaterTest {
     @MethodSource("findMatch")
     void findMatch(AttributeConfig attributeConfig, List<Pair<File, FileInfo>> fileInfoMock, boolean expectedMatch, int expectedMatchCount) throws InvocationTargetException, IllegalAccessException {
         CommandRunner commandRunner = new CommandRunner();
-        new CommandLine(commandRunner).parseArgs("-l", "/arst", "-a", "ger:ger");
+        new CommandLine(commandRunner).parseArgs("-a", "ger:ger", "/arst");
         InputConfig config = commandRunner.getConfig();
-        CoherentAttributeUpdater updater = new CoherentAttributeUpdater(config, fileProcessor, null);
+        AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
+        CoherentAttributeUpdater updater = new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor);
         Set<FileInfo> matchedFiles = new HashSet<>(fileInfoMock.size() * 2);
 
         List<File> files = new ArrayList<>();

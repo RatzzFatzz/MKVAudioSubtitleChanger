@@ -22,7 +22,7 @@ class ValidationExecutionStrategyTest {
         CommandRunner underTest = new CommandRunner();
         new CommandLine(underTest)
                 .setExecutionStrategy(new ValidationExecutionStrategy())
-                .parseArgs("-a", "ger:ger", "-l", TEST_FILE, "-m", TEST_MKVTOOLNIX_DIR);
+                .parseArgs("-a", "ger:ger", "-m", TEST_MKVTOOLNIX_DIR, TEST_FILE);
 
         assertEquals(TEST_FILE, underTest.getConfig().getLibraryPath().getPath().replace("\\", "/"));
         assertEquals(TEST_MKVTOOLNIX_DIR, underTest.getConfig().getMkvToolNix().getPath().replace("\\", "/"));
@@ -30,17 +30,16 @@ class ValidationExecutionStrategyTest {
 
     private static Stream<Arguments> validateFailure() {
         return Stream.of(
-                Arguments.of(new String[]{"-a", "jpn:ger"}, "Error: Missing required argument(s): --library=<libraryPath>"),
-                Arguments.of(new String[]{"-a", "jpn:ger", "-l"}, "Missing required parameter for option '--library' (<libraryPath>)"),
-                Arguments.of(new String[]{"-l", "/arstarstarst"}, "Error: Missing required argument(s): --attribute-config=<attributeConfig>"),
-                Arguments.of(new String[]{"-l", "/arstarstarst", "-a",}, "Missing required parameter for option '--attribute-config' at index 0 (<attributeConfig>)"),
-                Arguments.of(new String[]{"-l", "/arstarstarst", "-a", "jpn:ger"}, "libraryPath does not exist"),
-                Arguments.of(args("-m"), "Missing required parameter for option '--mkvtoolnix' (<mkvToolNix>)"),
-                Arguments.of(args("-m", TEST_INVALID_DIR), "mkvToolNix does not exist"),
-                Arguments.of(args("-t"), "Missing required parameter for option '--threads' (<threads>)"),
-                Arguments.of(args("-t", "0"), "threads must be greater than or equal to 1"),
-                Arguments.of(args("-t", "-1"), "threads must be greater than or equal to 1"),
-                Arguments.of(args("-c", "-1"), "coherent must be greater than or equal to 0")
+                Arguments.of(new String[]{"-a", "jpn:ger"}, "Error: Missing required argument(s): <libraryPath>"),
+                Arguments.of(new String[]{"/arstarstarst"}, "libraryPath does not exist"),
+                Arguments.of(new String[]{"/arstarstarst", "-a",}, "Missing required parameter for option '--attribute-config' at index 0 (<attributeConfig>)"),
+                Arguments.of(new String[]{"/arstarstarst", "-a", "jpn:ger"}, "libraryPath does not exist"),
+                Arguments.of(new String[]{"/arstarstarst", "-m"}, "Missing required parameter for option '--mkvtoolnix' (<mkvToolNix>)"),
+                Arguments.of(new String[]{"./", "-m", TEST_INVALID_DIR}, "mkvToolNix does not exist"),
+                Arguments.of(new String[]{"./", "-t"}, "Missing required parameter for option '--threads' (<threads>)"),
+                Arguments.of(new String[]{"./", "-t", "0"}, "threads must be greater than or equal to 1"),
+                Arguments.of(new String[]{"./", "-t", "-1"}, "threads must be greater than or equal to 1"),
+                Arguments.of(new String[]{"./", "-c", "-1"}, "coherent must be greater than or equal to 0")
         );
     }
 
