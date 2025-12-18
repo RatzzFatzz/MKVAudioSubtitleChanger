@@ -14,8 +14,8 @@ import java.util.Set;
 @Slf4j
 public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
-    public CoherentAttributeUpdater(InputConfig config, FileProcessor processor) {
-        super(config, processor);
+    public CoherentAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor) {
+        super(config, processor, attributeChangeProcessor);
     }
 
     @Override

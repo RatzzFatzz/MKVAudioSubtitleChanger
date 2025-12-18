@@ -16,10 +16,6 @@ public class ResultStatistic {
     private int excluded = 0;
     private int unknownFailed = 0;
 
-    private int noSuitableConfigFound = 0;
-    private int alreadyFits = 0;
-    private int failed = 0;
-
     private long startTime = 0;
     private long runtime = 0;
 
@@ -35,11 +31,7 @@ public class ResultStatistic {
     }
 
     public int total() {
-        return changePlanned + noSuitableConfigFound + alreadyFits + failed;
-    }
-
-    public void increaseExcludedBy(int amount) {
-        excluded += amount;
+        return changePlanned + unchanged + excluded + unknownFailed;
     }
 
     public synchronized void changePlanned() {

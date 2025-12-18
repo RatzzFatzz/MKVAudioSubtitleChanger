@@ -67,7 +67,7 @@ class CoherentAttributeUpdaterTest {
         CommandRunner commandRunner = new CommandRunner();
         new CommandLine(commandRunner).parseArgs("-l", "/arst", "-a", "ger:ger");
         InputConfig config = commandRunner.getConfig();
-        CoherentAttributeUpdater updater = new CoherentAttributeUpdater(config, fileProcessor);
+        CoherentAttributeUpdater updater = new CoherentAttributeUpdater(config, fileProcessor, null);
         Set<FileInfo> matchedFiles = new HashSet<>(fileInfoMock.size() * 2);
 
         List<File> files = new ArrayList<>();

@@ -30,7 +30,7 @@ public abstract class AttributeUpdater {
     public AttributeUpdater(InputConfig config, FileProcessor fileProcessor) {
         this.config = config;
         this.fileProcessor = fileProcessor;
-        this.attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
+        this.attributeChangeProcessor = attributeChangeProcessor;
         this.executor = Executors.newFixedThreadPool(config.getThreads());
     }
 

@@ -11,8 +11,8 @@ import java.util.List;
 @Slf4j
 public class SingleFileAttributeUpdater extends AttributeUpdater {
 
-    public SingleFileAttributeUpdater(InputConfig config, FileProcessor processor) {
-        super(config, processor);
+    public SingleFileAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor) {
+        super(config, processor, attributeChangeProcessor);
     }
 
     @Override
