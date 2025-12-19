@@ -12,10 +12,12 @@ import me.tongfei.progressbar.ProgressBarStyle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class AttributeUpdater {
@@ -88,18 +90,27 @@ public abstract class AttributeUpdater {
             if (config.isSafeMode()) return;
 
             try {
+                log.info("Committing changes [{}] to {}", changeLog(fileInfo), fileInfo.getFile().getPath());
                 fileProcessor.update(fileInfo);
                 statistic.changeSuccessful();
-                log.info("Commited {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath());
             } catch (IOException | MkvToolNixException e) {
                 statistic.changeFailed();
-                log.warn("Couldn't commit {} to '{}'", fileInfo.getMatchedConfig().toStringShort(), fileInfo.getFile().getPath(), e);
+                log.warn("Couldn't commit changes [{}] to {}", changeLog(fileInfo), fileInfo.getFile().getPath(), e);
             }
         } else if (fileInfo.getChanges().isEmpty()) {
             statistic.unchanged();
         } else {
             statistic.unknownFailed();
         }
+    }
+
+    private String changeLog(FileInfo fileInfo) {
+        List<String> changes = new ArrayList<>();
+        if (fileInfo.getMatchedConfig() != null) changes.add("defaults " + fileInfo.getMatchedConfig().toStringShort());
+        if (!fileInfo.getChanges().getForcedTrack().isEmpty()) changes.add("forced tags");
+        if (!fileInfo.getChanges().getCommentaryTrack().isEmpty()) changes.add("commentary tags");
+        if (!fileInfo.getChanges().getHearingImpairedTrack().isEmpty()) changes.add("hearing impaired tags");
+        return String.join(", ", changes);
     }
 
     // should this be here?

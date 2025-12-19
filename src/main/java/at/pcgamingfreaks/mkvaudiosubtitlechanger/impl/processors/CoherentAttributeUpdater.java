@@ -47,6 +47,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
                         matchedFiles.size(), files.size(), rootDir.getPath());
             }
 
+            log.info("Found coherent match {} for {}", matchedConfig.toStringShort(), rootDir.getPath());
             matchedFiles.forEach(fileInfo -> {
                 attributeChangeProcessor.findForcedTracksAndApplyChanges(fileInfo, this.config.isOverwriteForced());
                 attributeChangeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
@@ -64,12 +65,12 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
         });
 
         if (config.isForceCoherent()) {
-            log.info("No coherent match found, aborting: {}", rootDir.getPath());
+            log.info("No coherent match found, skipping {}", rootDir.getPath());
             statistic.increaseUnchangedBy(files.size());
             return;
         }
 
-        log.info("No coherent match found, trying to find coherent match in child directories: {}", rootDir.getPath());
+        log.info("No coherent match found, attempting to find coherent match in child directories of {}", rootDir.getPath());
         for (File dir: fileProcessor.loadDirectory(rootDir.getPath(), 1)) this.process(dir);
     }
 
@@ -83,7 +84,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
             fileInfo.setMatchedConfig(null);
 
             if (fileInfo.getTracks().isEmpty()) {
-                log.warn("No attributes found for file {}", file);
+                log.warn("No attributes found for {}", file);
                 statistic.unknownFailed();
                 break;
             }
