@@ -120,6 +120,7 @@ public class MkvFileProcessor implements FileProcessor {
                 for (Map<String, Object> attribute : tracks) {
                     if (!"video".equals(attribute.get("type"))) {
                         Map<String, Object> properties = (Map<String, Object>) attribute.get("properties");
+                        // mkvpropedit takes in the n-th track, based on the order of mkvmerge --idenfity
                         fileInfo.addTrack(new TrackAttributes(
                                 (int) properties.get("number"),
                                 (String) properties.get("language"),
