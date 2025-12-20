@@ -71,19 +71,29 @@ class AttributeChangeProcessorTest {
                         Map.ofEntries()
                 ),
                 Arguments.of(
-                        List.of(AUDIO_ENG_DEFAULT, AUDIO_GER_HEARING, SUB_GER),
-                        arr(a("ger:ger")), null,
-                        Map.ofEntries()
-                ),
-                Arguments.of(
-                        List.of(AUDIO_ENG_DEFAULT, withName(AUDIO_GER, "SDH"), SUB_GER),
-                        arr(a("ger:ger")), null,
-                        Map.ofEntries()
-                ),
-                Arguments.of(
-                        List.of(AUDIO_ENG_DEFAULT, AUDIO_GER_COMMENTARY, AUDIO_GER_HEARING, AUDIO_GER, SUB_GER_FORCED, SUB_GER),
+                        List.of(AUDIO_GER, withName(SUB_GER, "SDH")),
                         arr(a("ger:ger")), "ger:ger",
-                        Map.ofEntries(off(AUDIO_ENG_DEFAULT), on(AUDIO_GER), on(SUB_GER))
+                        Map.ofEntries(on(AUDIO_GER), on(withName(SUB_GER, "SDH")))
+                ),
+                Arguments.of(
+                        List.of(AUDIO_GER, withName(SUB_GER, "SDH"), SUB_GER),
+                        arr(a("ger:ger")), "ger:ger",
+                        Map.ofEntries(on(AUDIO_GER), on(SUB_GER))
+                ),
+                Arguments.of(
+                        List.of(AUDIO_GER, SUB_GER_HEARING),
+                        arr(a("ger:ger")), "ger:ger",
+                        Map.ofEntries(on(AUDIO_GER), on(SUB_GER_HEARING))
+                ),
+                Arguments.of(
+                        List.of(AUDIO_GER, SUB_GER_HEARING, SUB_GER),
+                        arr(a("ger:ger")), "ger:ger",
+                        Map.ofEntries(on(AUDIO_GER), on(SUB_GER))
+                ),
+                Arguments.of(
+                        List.of(AUDIO_GER, SUB_ENG_HEARING, SUB_GER),
+                        arr(a("ger:eng")), "ger:eng",
+                        Map.ofEntries(on(AUDIO_GER), on(SUB_ENG_HEARING))
                 )
         );
     }
@@ -128,9 +138,9 @@ class AttributeChangeProcessorTest {
             Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "Forced"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
             Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "commentary"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
             Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "Commentary"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
-            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "SDH"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
-            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "sdh"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER)),
-            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, SUB_GER, SUB_GER_FORCED, AUDIO_GER_COMMENTARY, AUDIO_GER_HEARING), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER))
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "SDH"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER, withName(AUDIO_GER, "SDH"))),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, withName(AUDIO_GER, "sdh"), SUB_GER), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER, withName(AUDIO_GER, "sdh"))),
+            Arguments.of(List.of(AUDIO_GER, AUDIO_ENG, SUB_GER, SUB_GER_FORCED, AUDIO_GER_COMMENTARY, AUDIO_GER_HEARING), Set.of(AUDIO_GER, AUDIO_ENG, SUB_GER, AUDIO_GER_HEARING))
         );
     }
 

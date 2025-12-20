@@ -12,32 +12,42 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SubtitleTrackComparatorTest {
-    private static final SubtitleTrackComparator comparator = new SubtitleTrackComparator(new String[]{"unstyled"});
-
     private static Stream<Arguments> compareArguments() {
         return Stream.of(
-                Arguments.of(List.of(attr("unstyled sub", false), attr("styled sub", false)),
-                        List.of(attr("unstyled sub", false), attr("styled sub", false))),
-                Arguments.of(List.of(attr("styled sub", false), attr("unstyled sub", false)),
-                        List.of(attr("unstyled sub", false), attr("styled sub", false))),
+                Arguments.of(attr(""), attr(""), 0),
+                Arguments.of(attr("pref"), attr(""), 1),
+                Arguments.of(attr(""), attr("pref"), -1),
+                Arguments.of(attr("pref"), attr("pref"), 0),
 
-                Arguments.of(List.of(attr("unstyled sub", true), attr("styled sub", false)),
-                        List.of(attr("unstyled sub", true), attr("styled sub", false))),
-                Arguments.of(List.of(attr("styled sub", true), attr("unstyled sub", false)),
-                        List.of(attr("unstyled sub", false), attr("styled sub", true))),
+                Arguments.of(attr("", true), attr("", true), 0),
+                Arguments.of(attr("", true), attr(""), -1),
+                Arguments.of(attr("CC", true), attr(""), -1),
+                Arguments.of(attr("CC"), attr(""), -1),
+                Arguments.of(attr(""), attr("", true), 1),
+                Arguments.of(attr(""), attr("CC", true), 1),
+                Arguments.of(attr(""), attr("CC"), 1),
 
-                Arguments.of(List.of(attr("unstyled sub", true), attr("unstyled sub", false)),
-                        List.of(attr("unstyled sub", true), attr("unstyled sub", false)))
+                Arguments.of(attr("pref", true), attr("pref"), -1),
+                Arguments.of(attr("pref", true), attr("pref", true), 0),
+                Arguments.of(attr("pref"), attr("pref", true), 1),
+                Arguments.of(attr("", true), attr("pref"), -2),
+                Arguments.of(attr("pref"), attr("", true), 2)
         );
     }
 
     @ParameterizedTest
     @MethodSource("compareArguments")
-    void compare(List<TrackAttributes> input, List<TrackAttributes> expected) {
-        assertIterableEquals(expected, input.stream().sorted(comparator.reversed()).toList());
+    void compare(TrackAttributes track1, TrackAttributes track2, int expected) {
+        SubtitleTrackComparator comparator = new SubtitleTrackComparator(List.of("pref"), List.of("CC", "SDH"));
+        int actual = comparator.compare(track1, track2);
+        assertEquals(expected, actual);
     }
 
-    private static TrackAttributes attr(String trackName, boolean defaultTrack) {
-        return new TrackAttributes(0, "", trackName, defaultTrack, false, false, false, TrackType.SUBTITLES);
+    private static TrackAttributes attr(String trackname) {
+        return attr(trackname, false);
+    }
+
+    private static TrackAttributes attr(String trackName, boolean hearingImpaired) {
+        return new TrackAttributes(0, "", trackName, false, false, false, hearingImpaired, TrackType.SUBTITLES);
     }
 }

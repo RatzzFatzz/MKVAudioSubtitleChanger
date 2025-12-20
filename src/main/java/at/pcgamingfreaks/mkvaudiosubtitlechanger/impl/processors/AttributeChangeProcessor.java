@@ -15,7 +15,7 @@ public class AttributeChangeProcessor {
     private final Set<String> forcedKeywords;
 
     public AttributeChangeProcessor(String[] preferredSubtitles, Set<String> forcedKeywords, Set<String> commentaryKeywords, Set<String> hearingImpairedKeywords) {
-        this.subtitleTrackComparator = new SubtitleTrackComparator(preferredSubtitles);
+        this.subtitleTrackComparator = new SubtitleTrackComparator(Arrays.stream(preferredSubtitles).toList(), hearingImpairedKeywords);
         this.commentaryKeywords = commentaryKeywords;
         this.hearingImpairedKeywords = hearingImpairedKeywords;
         this.forcedKeywords = forcedKeywords;
@@ -24,26 +24,12 @@ public class AttributeChangeProcessor {
     private List<TrackAttributes> filterForPossibleDefaults(List<TrackAttributes> tracks) {
         Stream<TrackAttributes> attributes = tracks.stream();
 
-        if (true) { // TODO: config for including commentary
-            attributes = attributes
-                    .filter(attr -> !attr.commentary())
-                    .filter(attr -> {
-                        if (attr.trackName() == null) return true;
-                        return commentaryKeywords.stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
-                    });
-
-        }
-
-        if (true) { // TODO: config for including hearing impaired
-            attributes = attributes
-                    .filter(attr -> !attr.hearingImpaired())
-                    .filter(attr -> {
-                        if (attr.trackName() == null) return true;
-                        return hearingImpairedKeywords.stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
-                    });;
-        }
-
         return attributes
+                .filter(attr -> !attr.commentary())
+                .filter(attr -> {
+                    if (attr.trackName() == null) return true;
+                    return commentaryKeywords.stream().noneMatch(keyword -> keyword.compareToIgnoreCase(attr.trackName()) == 0);
+                })
                 .filter(attr -> !attr.forced())
                 .filter(attr -> {
                     if (attr.trackName() == null) return true;

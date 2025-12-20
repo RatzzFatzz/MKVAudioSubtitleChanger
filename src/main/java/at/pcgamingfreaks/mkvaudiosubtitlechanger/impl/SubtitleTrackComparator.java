@@ -1,14 +1,20 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
-@RequiredArgsConstructor
 public class SubtitleTrackComparator implements Comparator<TrackAttributes> {
-    private final String[] preferredSubtitles;
+    private final Set<String> preferredSubtitles;
+    private final Set<String> hearingImpairedKeywords;
+
+    public SubtitleTrackComparator(Collection<String> preferredSubtitles, Collection<String> hearingImpairedKeywords) {
+        this.preferredSubtitles = new HashSet<>(preferredSubtitles.stream().map(String::toLowerCase).toList());
+        this.hearingImpairedKeywords = new HashSet<>(hearingImpairedKeywords.stream().map(String::toLowerCase).toList());
+    }
 
     /**
      * {@inheritDoc}
@@ -17,12 +23,22 @@ public class SubtitleTrackComparator implements Comparator<TrackAttributes> {
     public int compare(TrackAttributes track1, TrackAttributes track2) {
         int result = 0;
 
-        if (StringUtils.containsAnyIgnoreCase(track1.trackName(), preferredSubtitles)) {
-            result++;
-        }
-        if (StringUtils.containsAnyIgnoreCase(track2.trackName(), preferredSubtitles)) {
-            result--;
-        }
+        String track1Name = track1.trackName().toLowerCase();
+        String track2Name = track2.trackName().toLowerCase();
+
+        if (preferredSubtitles.contains(track1Name)) result++;
+        else for (String keyword: preferredSubtitles) if (track1Name.contains(keyword)) result++;
+
+        if (preferredSubtitles.contains(track2Name)) result--;
+        else for (String keyword: preferredSubtitles) if (track2Name.contains(keyword)) result--;
+
+
+        if (track1.hearingImpaired()) result--;
+        else if (hearingImpairedKeywords.contains(track1Name)) result--;
+        else for (String keyword: hearingImpairedKeywords) if (track1Name.contains(keyword)) result--;
+        if (track2.hearingImpaired()) result++;
+        else if (hearingImpairedKeywords.contains(track2Name)) result++;
+        else for (String keyword: hearingImpairedKeywords) if (track2Name.contains(keyword)) result++;
 
         if (result == 0) {
             if (track1.defaultt()) result++;
