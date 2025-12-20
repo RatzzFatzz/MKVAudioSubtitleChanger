@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.AUDIO_GER;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_FILE;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AttributeUpdaterTest {
@@ -56,7 +57,7 @@ class AttributeUpdaterTest {
     }
 
     private static FileInfo info(AttributeConfig config, TrackAttributes attr) {
-        FileInfo fileInfo = new FileInfo(null);
+        FileInfo fileInfo = new FileInfo(new File(TEST_FILE));
         fileInfo.setMatchedConfig(config);
         if(attr != null) fileInfo.getChanges().getDefaultTrack().put(attr, true);
         return fileInfo;

@@ -87,7 +87,10 @@ public abstract class AttributeUpdater {
         if (!fileInfo.getChanges().isEmpty()) {
             statistic.changePlanned();
 
-            if (config.isSafeMode()) return;
+            if (config.isSafeMode()) {
+                log.info("Planned changes [{}] for {}", changeLog(fileInfo), fileInfo.getFile().getPath());
+                return;
+            }
 
             try {
                 log.info("Committing changes [{}] to {}", changeLog(fileInfo), fileInfo.getFile().getPath());
