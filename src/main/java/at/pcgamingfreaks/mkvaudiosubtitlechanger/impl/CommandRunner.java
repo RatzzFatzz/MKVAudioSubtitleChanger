@@ -34,6 +34,11 @@ public class CommandRunner implements Runnable {
             Configurator.setRootLevel(Level.DEBUG);
         }
 
+        if (config.isSafeMode()) {
+            log.info("Safemode active. No files will be changed!");
+            System.out.println("Safemode active. No files will be changed!");
+        }
+
         FileFilter fileFilter = new FileFilter(config.getExcluded(), config.getIncludePattern(), config.getFilterDate());
         FileProcessor fileProcessor = new CachedFileProcessor(new MkvFileProcessor(config.getMkvToolNix(), fileFilter));
         AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
