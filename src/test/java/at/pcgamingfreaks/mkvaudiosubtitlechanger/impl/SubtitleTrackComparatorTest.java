@@ -31,7 +31,13 @@ class SubtitleTrackComparatorTest {
                 Arguments.of(attr("pref", true), attr("pref", true), 0),
                 Arguments.of(attr("pref"), attr("pref", true), 1),
                 Arguments.of(attr("", true), attr("pref"), -2),
-                Arguments.of(attr("pref"), attr("", true), 2)
+                Arguments.of(attr("pref"), attr("", true), 2),
+
+                Arguments.of(attr(null), attr(null), 0),
+                Arguments.of(attr(null), attr(""), 0),
+                Arguments.of(attr(null), attr("pref"), -1),
+                Arguments.of(attr(""), attr(null), 0),
+                Arguments.of(attr("pref"), attr(null), 1)
         );
     }
 

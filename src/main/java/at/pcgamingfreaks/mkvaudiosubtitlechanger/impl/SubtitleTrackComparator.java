@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
+import org.apache.logging.log4j.util.Strings;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -23,8 +24,8 @@ public class SubtitleTrackComparator implements Comparator<TrackAttributes> {
     public int compare(TrackAttributes track1, TrackAttributes track2) {
         int result = 0;
 
-        String track1Name = track1.trackName().toLowerCase();
-        String track2Name = track2.trackName().toLowerCase();
+        String track1Name = Strings.isNotBlank(track1.trackName()) ? track1.trackName().toLowerCase() : "";
+        String track2Name = Strings.isNotBlank(track2.trackName()) ? track2.trackName().toLowerCase() : "";
 
         if (preferredSubtitles.contains(track1Name)) result++;
         else for (String keyword: preferredSubtitles) if (track1Name.contains(keyword)) result++;
