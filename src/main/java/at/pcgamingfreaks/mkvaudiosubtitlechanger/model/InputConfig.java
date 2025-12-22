@@ -43,7 +43,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
     private boolean safeMode;
 
     @Min(1)
-    @Option(names = {"-t", "--threads"}, defaultValue = "2", description = "thread count (default: ${DEFAULT-VALUE})")
+    @Option(names = {"-t", "--threads"}, defaultValue = "2", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "thread count")
     private int threads;
 
     @Min(0)
@@ -57,7 +57,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
 //    private boolean onlyNewFiles;
     @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
-    @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern (default: \".*\")")
+    @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern")
     private Pattern includePattern;
     @Option(names = {"-e", "--exclude"}, arity = "1..*",
             description = "relative directories and files to be excluded (no wildcard)")
@@ -66,17 +66,17 @@ public class InputConfig implements CommandLine.IVersionProvider {
 
     @Option(names =  {"-o", "-overwrite-forced"}, description = "remove all forced flags")
     private boolean overwriteForced;
-    @Option(names = {"--forced-keywords"}, arity = "1..*", defaultValue = "forced, signs, songs", split = ", ",
-            description = "Keywords to identify forced tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
+    @Option(names = {"--forced-keywords"}, arity = "1..*", defaultValue = "forced, signs, songs", showDefaultValue = CommandLine.Help.Visibility.ALWAYS,
+            split = ", ", description = "Keywords to identify forced tracks (Defaults will be overwritten)")
     private Set<String> forcedKeywords;
-    @Option(names = {"--commentary-keywords"}, arity = "1..*", defaultValue = "comment, commentary, director", split = ", ",
-            description = "Keywords to identify commentary tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
+    @Option(names = {"--commentary-keywords"}, arity = "1..*", defaultValue = "comment, commentary, director", showDefaultValue = CommandLine.Help.Visibility.ALWAYS,
+            split = ", ", description = "Keywords to identify commentary tracks (Defaults will be overwritten)")
     private Set<String> commentaryKeywords;
-    @Option(names = {"--hearing-impaired"}, arity = "1..*", defaultValue = "SDH, CC", split = ", ",
-            description = "Keywords to identify hearing impaired tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE}")
+    @Option(names = {"--hearing-impaired"}, arity = "1..*", defaultValue = "SDH, CC", showDefaultValue = CommandLine.Help.Visibility.ALWAYS,
+            split = ", ", description = "Keywords to identify hearing impaired tracks (Defaults will be overwritten")
     private Set<String> hearingImpaired;
-    @Option(names = {"--preferred-subtitles"}, arity = "1..*", defaultValue = "unstyled", split = ", ",
-            description = "Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: ${DEFAULT-VALUE})")
+    @Option(names = {"--preferred-subtitles"}, arity = "1..*", defaultValue = "unstyled", showDefaultValue = CommandLine.Help.Visibility.ALWAYS,
+            split = ", ", description = "Keywords to prefer specific subtitle tracks (Defaults will be overwritten)")
     private Set<String> preferredSubtitles;
     @Option(names = {"--debug"}, description = "Enable debug logging")
     private boolean debug;

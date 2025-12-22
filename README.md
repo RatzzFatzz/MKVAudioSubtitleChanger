@@ -34,24 +34,29 @@ Using this parameter is not required, but it is the reason I originally started 
   -m, --mkvtoolnix=<mkvToolNix>
                             path to mkvtoolnix installation
   -s, --safemode            test run (no files will be changes)
-  -t, --threads=<threads>   thread count (default: 2)
+  -t, --threads=<threads>   thread count
+                              Default: 2
   -c, --coherent=<coherent> try to match all files in dir of depth with the same attribute config. Attempting increasing deeper levels until match is found (worst case applying config on single file basis)
       -cf, --force-coherent only applies changes if a coherent match was found for the specifically entered depth
   -d, --filter-date=<filterDate>
                             only consider files created newer than entered date (format: "dd.MM.yyyy-HH:mm:ss")
   -i, --include-pattern=<includePattern>
-                            include files matching pattern (default: ".*")
+                            include files matching pattern
   -e, --exclude=<excluded>...
                             relative directories and files to be excluded (no wildcard)
   -o, -overwrite-forced     remove all forced flags
       --forced-keywords=<forcedKeywords>[, <forcedKeywords>...]...
-                            Keywords to identify forced tracks (Defaults will be overwritten; Default: forced, signs, songs)
+                            Keywords to identify forced tracks (Defaults will be overwritten)
+                              Default: forced, signs, songs
       --commentary-keywords=<commentaryKeywords>[, <commentaryKeywords>...]...
-                            Keywords to identify commentary tracks (Defaults will be overwritten; Default: comment, commentary, director)
+                            Keywords to identify commentary tracks (Defaults will be overwritten)
+                              Default: comment, commentary, director
       --hearing-impaired=<hearingImpaired>[, <hearingImpaired>...]...
-                            Keywords to identify hearing impaired tracks (Defaults will be overwritten; Default: SDH, CC
+                            Keywords to identify hearing impaired tracks (Defaults will be overwritten
+                              Default: SDH, CC
       --preferred-subtitles=<preferredSubtitles>[, <preferredSubtitles>...]...
-                            Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: unstyled)
+                            Keywords to prefer specific subtitle tracks (Defaults will be overwritten)
+                              Default: unstyled
       --debug               Enable debug logging
   -h, --help                Show this help message and exit.
   -V, --version             Print version information and exit.
