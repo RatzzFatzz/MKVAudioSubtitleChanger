@@ -1,8 +1,7 @@
 ## Introduction
 
-A streamlined solution for managing MKV files, this program leverages MKVToolNix to modify audio and subtitle track properties without the need for time-consuming file reencoding. Users can easily set their track preferences, and the application intelligently applies the best matching configuration. The tool focuses on metadata modification rather than full file rewriting, ensuring quick operations while maintaining the original file integrity. This makes it an ideal choice for managing multilingual media collections or batch processing multiple MKV files.
-
-![](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/blob/master/example.gif)
+This CLI tool uses MKVToolNix to quickly modify track properties in MKV files without reencoding. Use profiles to set default audio/subtitle tracks and add commentary, hearing impaired, and forced flags in bulk.
+![](example.gif)
 
 ## Requirements
 
@@ -10,58 +9,49 @@ A streamlined solution for managing MKV files, this program leverages MKVToolNix
  - mkvtoolnix installation
  
 ## Execution
-Portable: 
+```shell
+# Portable
+java -jar mkvaudiosubtitlechanger.jar --attribute-config eng:ger -s ./videos
+# Installed
+mkvaudiosubtitlechanger.jar --attribute-config eng:ger -s ./videos
 ```
-java -jar mkvaudiosubtitlechanger-<version>.jar --library "X:/Files" --attribute-config eng:ger eng:OFF
-```
-Windows & Linux (installed): 
-```
-mkvaudiosubtitlechanger --library "X:/Files" --attribute-config eng:ger eng:OFF
-```
+Remove `--safemode` or `-s` to actually apply the changes. Using safemode for the first execution is recommended.
 
-Add `--safe-mode` oder `-s` to not change any files. This is recommended for the first executions.
+### Update defaults
+To update the default flag for tracks use `--attribute-config` or `-a`.
+This parameter takes in a list of pairs `audio:subtitle` (E.g. `eng:ger`).
+The order of these configs matters, because they are processed in order. 
+The matching stops when the first match was found or when no match was found. 
+For example `-a ger:OFF eng:ger` first tries to find a match for german audio, if that is not possible it tries the same for english with german subs. 
+This can be extended indefinitely.
 
-Attribute-config must be entered in pairs: `audio:subtitle`; Example: `jpn:eng`. More about this topic
-[here](https://github.com/RatzzFatzz/MKVAudioSubtitleChanger/wiki/Attribute-Config).
+Using this parameter is not required, but it is the reason I originally started developing this tool.
 
 ### Available parameters
 ```
-* -a, --attribute-config=<attributeConfig>...
-                            List of audio:subtitle pairs used to match in order
-                              and update files accordingly (e.g. jpn:eng jpn:
-                              ger)
-* -l, --library=<libraryPath>
-                            path to library
+  -a, --attribute-config=<attributeConfig>...
+                            List of audio:subtitle pairs for matching defaults in order (e.g. jpn:eng jpn:ger)
   -m, --mkvtoolnix=<mkvToolNix>
                             path to mkvtoolnix installation
   -s, --safemode            test run (no files will be changes)
   -t, --threads=<threads>   thread count (default: 2)
-  -c, --coherent=<coherent> try to match all files in dir of depth with the
-                              same attribute config
-      -cf, --force-coherent changes are only applied if it's a coherent match
-  -n, --only-new-file       sets filter-date to last successful execution
-                              (overwrites input of filter-date)
+  -c, --coherent=<coherent> try to match all files in dir of depth with the same attribute config. Attempting increasing deeper levels until match is found (worst case applying config on single file basis)
+      -cf, --force-coherent only applies changes if a coherent match was found for the specifically entered depth
   -d, --filter-date=<filterDate>
-                            only consider files created newer than entered date
-                              (format: "dd.MM.yyyy-HH:mm:ss")
+                            only consider files created newer than entered date (format: "dd.MM.yyyy-HH:mm:ss")
   -i, --include-pattern=<includePattern>
                             include files matching pattern (default: ".*")
-  -e, --excluded=<excluded>...
-                            Directories and files to be excluded (no wildcard)
+  -e, --exclude=<excluded>...
+                            relative directories and files to be excluded (no wildcard)
   -o, -overwrite-forced     remove all forced flags
       --forced-keywords=<forcedKeywords>[, <forcedKeywords>...]...
-                            Keywords to identify forced tracks (Defaults will
-                              be overwritten; Default: forced, signs, songs)
+                            Keywords to identify forced tracks (Defaults will be overwritten; Default: forced, signs, songs)
       --commentary-keywords=<commentaryKeywords>[, <commentaryKeywords>...]...
-                            Keywords to identify commentary tracks (Defaults
-                              will be overwritten; Default: comment,
-                              commentary, director)
+                            Keywords to identify commentary tracks (Defaults will be overwritten; Default: comment, commentary, director)
       --hearing-impaired=<hearingImpaired>[, <hearingImpaired>...]...
-                            Keywords to identify hearing impaired tracks
-                              (Defaults will be overwritten; Default: SDH
+                            Keywords to identify hearing impaired tracks (Defaults will be overwritten; Default: SDH, CC
       --preferred-subtitles=<preferredSubtitles>[, <preferredSubtitles>...]...
-                            Keywords to prefer specific subtitle tracks
-                              (Defaults will be overwritten; Default: unstyled)
+                            Keywords to prefer specific subtitle tracks (Defaults will be overwritten; Default: unstyled)
       --debug               Enable debug logging
   -h, --help                Show this help message and exit.
   -V, --version             Print version information and exit.

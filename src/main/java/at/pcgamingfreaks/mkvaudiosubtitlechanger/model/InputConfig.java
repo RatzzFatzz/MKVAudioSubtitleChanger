@@ -33,7 +33,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
     private File libraryPath;
 
     @Option(names = {"-a", "--attribute-config"}, arity = "1..*", converter = AttributeConfigConverter.class,
-            description = "List of audio:subtitle pairs used to match in order and update files accordingly (e.g. jpn:eng jpn:ger)")
+            description = "List of audio:subtitle pairs for matching defaults in order (e.g. jpn:eng jpn:ger)")
     private AttributeConfig[] attributeConfig = new AttributeConfig[0];
     @ValidMkvToolNix(message = "does not exist")
     @Option(names = {"-m", "--mkvtoolnix"}, defaultValue = "${DEFAULT_MKV_TOOL_NIX}", description = "path to mkvtoolnix installation")
