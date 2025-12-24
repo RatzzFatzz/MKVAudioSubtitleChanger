@@ -10,8 +10,8 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 public class AttributeConfig {
-    private final String audioLanguage;
-    private final String subtitleLanguage;
+    private final String audioLang;
+    private final String subLang;
 
     public static AttributeConfig of(String audioLanguage, String subtitleLanguage)  {
         return new AttributeConfig(audioLanguage, subtitleLanguage);
@@ -22,23 +22,23 @@ public class AttributeConfig {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AttributeConfig that = (AttributeConfig) o;
-        return Objects.equals(audioLanguage, that.audioLanguage) && Objects.equals(subtitleLanguage, that.subtitleLanguage);
+        return Objects.equals(audioLang, that.audioLang) && Objects.equals(subLang, that.subLang);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(audioLanguage, subtitleLanguage);
+        return Objects.hash(audioLang, subLang);
     }
 
     public String toStringShort()  {
-        return audioLanguage + ":" + subtitleLanguage;
+        return audioLang + ":" + subLang;
     }
 
     @Override
     public String toString() {
         return "AttributeConfig{"
-                + "audioLanguage='" + audioLanguage + '\''
-                + ", subtitleLanguage='" + subtitleLanguage + '\'' +
+                + "audioLanguage='" + audioLang + '\''
+                + ", subtitleLanguage='" + subLang + '\'' +
                 '}';
     }
 }

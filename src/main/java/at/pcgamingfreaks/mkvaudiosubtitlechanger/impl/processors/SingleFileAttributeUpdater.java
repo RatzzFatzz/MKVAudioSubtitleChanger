@@ -36,10 +36,11 @@ public class SingleFileAttributeUpdater extends AttributeUpdater {
             return;
         }
 
-        attributeChangeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config.getAttributeConfig());
-        attributeChangeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
-        attributeChangeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-        attributeChangeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+        attributeChangeProcessor.findAndApplyDefaultMatch(fileInfo, config.getAttributeConfig());
+        attributeChangeProcessor.findAndApplyForcedTracks(fileInfo, config.isOverwriteForced());
+        attributeChangeProcessor.applyForcedAsDefault(fileInfo);
+        attributeChangeProcessor.findAndApplyCommentaryTracks(fileInfo);
+        attributeChangeProcessor.findAndApplyHearingImpairedTracks(fileInfo);
 
         checkStatusAndUpdate(fileInfo);
     }

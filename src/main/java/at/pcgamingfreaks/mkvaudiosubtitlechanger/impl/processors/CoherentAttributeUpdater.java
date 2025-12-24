@@ -49,9 +49,10 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
             log.info("Found coherent match {} for {}", matchedConfig.toStringShort(), rootDir.getPath());
             matchedFiles.forEach(fileInfo -> {
-                attributeChangeProcessor.findForcedTracksAndApplyChanges(fileInfo, this.config.isOverwriteForced());
-                attributeChangeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-                attributeChangeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+                attributeChangeProcessor.findAndApplyForcedTracks(fileInfo, this.config.isOverwriteForced());
+                attributeChangeProcessor.applyForcedAsDefault(fileInfo);
+                attributeChangeProcessor.findAndApplyCommentaryTracks(fileInfo);
+                attributeChangeProcessor.findAndApplyHearingImpairedTracks(fileInfo);
 
                 checkStatusAndUpdate(fileInfo);
             });
@@ -89,7 +90,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
                 break;
             }
 
-            attributeChangeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config);
+            attributeChangeProcessor.findAndApplyDefaultMatch(fileInfo, config);
 
             if (matchedConfig == null) matchedConfig = fileInfo.getMatchedConfig();
             if (matchedConfig == null || matchedConfig != fileInfo.getMatchedConfig()) {
