@@ -59,7 +59,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
             return; // match was found and process must be stopped
         }
 
-        // Couldn't match any config at current level. Resetting changes and trying to one level deeper
+        // Couldn't match any config at current level. Resetting changes and trying one level deeper
         matchedFiles.forEach(fileInfo -> {
             fileInfo.resetChanges();
             fileInfo.setMatchedConfig(null);

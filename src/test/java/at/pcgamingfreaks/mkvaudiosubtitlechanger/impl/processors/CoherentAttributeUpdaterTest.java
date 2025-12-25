@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.*;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TrackAttributeUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 

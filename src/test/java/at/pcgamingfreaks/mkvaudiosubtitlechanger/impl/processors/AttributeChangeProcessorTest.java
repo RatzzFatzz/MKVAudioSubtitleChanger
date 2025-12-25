@@ -12,28 +12,11 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.*;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TrackAttributeUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AttributeChangeProcessorTest {
-
-    private static AttributeConfig[] arr(AttributeConfig... configs) {
-        return configs;
-    }
-
-    private static AttributeConfig a(String config) {
-        String[] split = config.split(":");
-        return new AttributeConfig(split[0], split[1]);
-    }
-
-    private static Map.Entry<TrackAttributes, Boolean> on(TrackAttributes track) {
-        return Map.entry(track, true);
-    }
-
-    private static Map.Entry<TrackAttributes, Boolean> off(TrackAttributes track) {
-        return Map.entry(track, false);
-    }
 
     private static Stream<Arguments> findAndApplyDefaultMatch() {
         return Stream.of(

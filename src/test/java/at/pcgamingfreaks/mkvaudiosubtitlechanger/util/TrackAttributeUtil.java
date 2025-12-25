@@ -1,9 +1,12 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.util;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackType;
 
-public class FileInfoTestUtil {
+import java.util.Map;
+
+public class TrackAttributeUtil {
     public static final TrackAttributes AUDIO_GER = new TrackAttributes(0, "ger", "", false, false, false, false, TrackType.AUDIO);
     public static final TrackAttributes AUDIO_ENG = new TrackAttributes(1, "eng", "", false, false, false, false, TrackType.AUDIO);
     public static final TrackAttributes AUDIO_GER_DEFAULT = new TrackAttributes(0, "ger", "", true, false, false, false, TrackType.AUDIO);
@@ -27,4 +30,22 @@ public class FileInfoTestUtil {
     public static TrackAttributes withName(TrackAttributes track, String trackName) {
         return new TrackAttributes(track.id(), track.language(), trackName, track.defaultt(), track.forced(), track.commentary(), track.hearingImpaired(), track.type());
     }
+
+    public static AttributeConfig[] arr(AttributeConfig... configs) {
+        return configs;
+    }
+
+    public static AttributeConfig a(String config) {
+        String[] split = config.split(":");
+        return new AttributeConfig(split[0], split[1]);
+    }
+
+    public static Map.Entry<TrackAttributes, Boolean> on(TrackAttributes track) {
+        return Map.entry(track, true);
+    }
+
+    public static Map.Entry<TrackAttributes, Boolean> off(TrackAttributes track) {
+        return Map.entry(track, false);
+    }
+
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.AUDIO_GER;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TrackAttributeUtil.AUDIO_GER;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_FILE;
 import static org.junit.jupiter.api.Assertions.*;
 
