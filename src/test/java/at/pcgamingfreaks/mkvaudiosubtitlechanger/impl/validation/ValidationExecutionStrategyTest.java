@@ -12,7 +12,6 @@ import java.io.StringWriter;
 import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.*;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TestUtil.args;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ValidationExecutionStrategyTest {
@@ -24,16 +23,17 @@ class ValidationExecutionStrategyTest {
                 .setExecutionStrategy(new ValidationExecutionStrategy())
                 .parseArgs("-a", "ger:ger", "-m", TEST_MKVTOOLNIX_DIR, TEST_FILE);
 
-        assertEquals(TEST_FILE, underTest.getConfig().getLibraryPath().getPath().replace("\\", "/"));
+        assertEquals(TEST_FILE, underTest.getConfig().getLibraryPaths()[0].getPath().replace("\\", "/"));
         assertEquals(TEST_MKVTOOLNIX_DIR, underTest.getConfig().getMkvToolNix().getPath().replace("\\", "/"));
     }
 
     private static Stream<Arguments> validateFailure() {
         return Stream.of(
-                Arguments.of(new String[]{"-a", "jpn:ger"}, "Error: Missing required argument(s): <libraryPath>"),
-                Arguments.of(new String[]{"/arstarstarst"}, "libraryPath does not exist"),
+                Arguments.of(new String[]{"-a", "jpn:ger"}, "Error: Missing required argument(s): <libraryPaths>"),
+                Arguments.of(new String[]{"/arstarstarst"}, "libraryPaths does not exist"),
+                Arguments.of(new String[]{TEST_DIR + " /arstarstarst"}, "libraryPaths does not exist"),
                 Arguments.of(new String[]{"/arstarstarst", "-a",}, "Missing required parameter for option '--attribute-config' at index 0 (<attributeConfig>)"),
-                Arguments.of(new String[]{"/arstarstarst", "-a", "jpn:ger"}, "libraryPath does not exist"),
+                Arguments.of(new String[]{"/arstarstarst", "-a", "jpn:ger"}, "libraryPaths does not exist"),
                 Arguments.of(new String[]{"/arstarstarst", "-m"}, "Missing required parameter for option '--mkvtoolnix' (<mkvToolNix>)"),
                 Arguments.of(new String[]{"./", "-m", TEST_INVALID_DIR}, "mkvToolNix does not exist"),
                 Arguments.of(new String[]{"./", "-t"}, "Missing required parameter for option '--threads' (<threads>)"),

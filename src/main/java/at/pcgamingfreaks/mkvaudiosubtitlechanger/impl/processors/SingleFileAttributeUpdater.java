@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBarBuilder;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +24,9 @@ public class SingleFileAttributeUpdater extends AttributeUpdater {
 
     @Override
     protected List<File> getFiles() {
-        return fileProcessor.loadFiles(config.getLibraryPath().getPath());
+        return Arrays.stream(config.getLibraryPaths())
+                .flatMap(path -> fileProcessor.loadFiles(path.getPath()).stream())
+                .toList();
     }
 
     @Override

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBarBuilder;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,9 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
     }
 
     protected List<File> getFiles() {
-        return fileProcessor.loadDirectory(config.getLibraryPath().getPath(), config.getCoherent());
+        return Arrays.stream(config.getLibraryPaths())
+                .flatMap(path -> fileProcessor.loadDirectory(path.getPath(), config.getCoherent()).stream())
+                .toList();
     }
 
     @Override
