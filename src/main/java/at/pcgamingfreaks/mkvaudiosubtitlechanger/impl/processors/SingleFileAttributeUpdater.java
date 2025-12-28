@@ -24,7 +24,7 @@ public class SingleFileAttributeUpdater extends AttributeUpdater {
 
     @Override
     protected List<File> getFiles() {
-        return Arrays.stream(config.getLibraryPaths())
+        return Arrays.stream(config.getLibraryPath())
                 .flatMap(path -> fileProcessor.loadFiles(path.getPath()).stream())
                 .toList();
     }

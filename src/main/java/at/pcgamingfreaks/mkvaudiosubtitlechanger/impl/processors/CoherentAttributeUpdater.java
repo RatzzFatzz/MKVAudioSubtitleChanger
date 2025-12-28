@@ -26,7 +26,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
     }
 
     protected List<File> getFiles() {
-        return Arrays.stream(config.getLibraryPaths())
+        return Arrays.stream(config.getLibraryPath())
                 .flatMap(path -> fileProcessor.loadDirectory(path.getPath(), config.getCoherent()).stream())
                 .toList();
     }

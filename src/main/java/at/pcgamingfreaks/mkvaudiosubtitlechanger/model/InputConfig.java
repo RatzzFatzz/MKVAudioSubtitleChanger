@@ -30,7 +30,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
 
     @ValidFile(message = "does not exist")
     @CommandLine.Parameters(description = "paths to library", arity = "1..*")
-    private File[] libraryPaths;
+    private File[] libraryPath;
 
     @Option(names = {"-a", "--attribute-config"}, arity = "1..*", converter = AttributeConfigConverter.class,
             description = "List of audio:subtitle pairs for matching defaults in order (e.g. jpn:eng jpn:ger)")
@@ -91,7 +91,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
         return new StringJoiner(", ", InputConfig.class.getSimpleName() + "[", "]")
                 .add("configPath=" + configPath)
                 .add("spec=" + spec)
-                .add("libraryPath=" + libraryPaths)
+                .add("libraryPath=" + libraryPath)
                 .add("attributeConfig=" + Arrays.toString(attributeConfig))
                 .add("mkvToolNix=" + mkvToolNix)
                 .add("safeMode=" + safeMode)
