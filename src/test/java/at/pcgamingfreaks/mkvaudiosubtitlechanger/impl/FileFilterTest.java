@@ -71,7 +71,7 @@ class FileFilterTest {
         when(file.toPath()).thenReturn(Path.of(TEST_FILE));
 
         long currentTime = System.currentTimeMillis();
-        FileFilter fileFilter = new FileFilter(excludedDirs, Pattern.compile(pattern), new Date(currentTime + filterDateOffset));
+        FileFilter fileFilter = new FileFilter(excludedDirs, Pattern.compile(pattern), new Date(currentTime + filterDateOffset), null);
 
         try (MockedStatic<DateUtils> mockedFiles = Mockito.mockStatic(DateUtils.class)) {
             mockedFiles

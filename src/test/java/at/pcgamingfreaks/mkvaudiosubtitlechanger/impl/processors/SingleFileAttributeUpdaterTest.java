@@ -1,10 +1,10 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_DIR;
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_FILE;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TrackAttributeUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,7 +77,8 @@ class SingleFileAttributeUpdaterTest {
         FileProcessor fileProcessor = spy(FileProcessor.class);
         doReturn(fileInfo).when(fileProcessor).readAttributes(any());
         AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(new String[]{"pref"}, Set.of("forced"), Set.of("commentary"), Set.of("SDH"));
-        SingleFileAttributeUpdater underTest = new SingleFileAttributeUpdater(config, fileProcessor, attributeChangeProcessor);
+        LastExecutionHandler lastExecutionHandler = new LastExecutionHandler("");
+        SingleFileAttributeUpdater underTest = new SingleFileAttributeUpdater(config, fileProcessor, attributeChangeProcessor, lastExecutionHandler);
 
         underTest.process(fileInfo.getFile());
 

@@ -1,6 +1,7 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
@@ -25,14 +26,16 @@ public abstract class AttributeUpdater {
     protected final InputConfig config;
     protected final FileProcessor fileProcessor;
     protected final AttributeChangeProcessor attributeChangeProcessor;
+    protected final LastExecutionHandler lastExecutionHandler;
     protected final ResultStatistic statistic = ResultStatistic.getInstance();
 
     private final ExecutorService executor;
 
-    public AttributeUpdater(InputConfig config, FileProcessor fileProcessor, AttributeChangeProcessor attributeChangeProcessor) {
+    public AttributeUpdater(InputConfig config, FileProcessor fileProcessor, AttributeChangeProcessor attributeChangeProcessor, LastExecutionHandler lastExecutionHandler) {
         this.config = config;
         this.fileProcessor = fileProcessor;
         this.attributeChangeProcessor = attributeChangeProcessor;
+        this.lastExecutionHandler = lastExecutionHandler;
         this.executor = Executors.newFixedThreadPool(config.getThreads());
     }
 
@@ -62,7 +65,7 @@ public abstract class AttributeUpdater {
             executor.awaitTermination(1, TimeUnit.DAYS);
         }
 
-//        writeLastExecutionDate();
+        lastExecutionHandler.persist();
 
         statistic.stopTimer();
         statistic.print();
@@ -84,6 +87,7 @@ public abstract class AttributeUpdater {
      * @param fileInfo contains information about file and desired configuration.
      */
     protected void checkStatusAndUpdate(FileInfo fileInfo) {
+        if (lastExecutionHandler != null) lastExecutionHandler.update(fileInfo.getFile().getAbsolutePath());
         if (!fileInfo.getChanges().isEmpty()) {
             statistic.changePlanned();
 

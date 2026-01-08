@@ -1,5 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +13,8 @@ import java.util.List;
 @Slf4j
 public class SingleFileAttributeUpdater extends AttributeUpdater {
 
-    public SingleFileAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor) {
-        super(config, processor, attributeChangeProcessor);
+    public SingleFileAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor, LastExecutionHandler lastExecutionHandler) {
+        super(config, processor, attributeChangeProcessor, lastExecutionHandler);
     }
 
     @Override

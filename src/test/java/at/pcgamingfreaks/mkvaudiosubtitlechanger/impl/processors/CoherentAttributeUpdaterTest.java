@@ -1,12 +1,12 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.CommandRunner;
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.TrackAttributes;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -66,7 +66,8 @@ class CoherentAttributeUpdaterTest {
         new CommandLine(commandRunner).parseArgs("-a", "ger:ger", "/arst");
         InputConfig config = commandRunner.getConfig();
         AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
-        CoherentAttributeUpdater updater = new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor);
+        LastExecutionHandler lastExecutionHandler = new LastExecutionHandler("");
+        CoherentAttributeUpdater updater = new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor, lastExecutionHandler);
         Set<FileInfo> matchedFiles = new HashSet<>(fileInfoMock.size() * 2);
 
         List<File> files = new ArrayList<>();
@@ -193,7 +194,8 @@ class CoherentAttributeUpdaterTest {
         doReturn(testMkvFiles).when(fileProcessor).loadFiles(any());
 
         AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(new String[]{"pref"}, Set.of("forced"), Set.of("commentary"), Set.of("SDH"));
-        CoherentAttributeUpdater underTest = new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor);
+        LastExecutionHandler lastExecutionHandler = new LastExecutionHandler("");
+        CoherentAttributeUpdater underTest = new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor, lastExecutionHandler);
 
         underTest.process(new File(""));
 

@@ -1,5 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
@@ -15,8 +16,8 @@ import java.util.Set;
 @Slf4j
 public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
-    public CoherentAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor) {
-        super(config, processor, attributeChangeProcessor);
+    public CoherentAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor, LastExecutionHandler lastExecutionHandler) {
+        super(config, processor, attributeChangeProcessor, lastExecutionHandler);
     }
 
     @Override
