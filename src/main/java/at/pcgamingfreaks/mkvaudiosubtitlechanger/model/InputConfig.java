@@ -53,7 +53,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
     private boolean forceCoherent;
 
     // TODO: implement usage
-    @Option(names = {"-n", "--only-new-file"}, description = "ignores all files unchanged and previously processed")
+    @Option(names = {"-n", "--only-new-files"}, description = "ignores all files unchanged and previously processed")
     private boolean onlyNewFiles;
     @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
     private Date filterDate;
