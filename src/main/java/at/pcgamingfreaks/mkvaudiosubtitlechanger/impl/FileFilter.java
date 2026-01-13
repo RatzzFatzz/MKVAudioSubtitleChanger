@@ -33,7 +33,7 @@ public class FileFilter {
 
         if (!hasMatchingPattern(pathName)
                 || isExcluded(pathName, new HashSet<>(excluded))
-                || lastExecutionHandler != null && !isNewOrChanged(pathName)
+                || lastExecutionHandler != null && !isNewer(pathName, lastExecutionHandler.get(pathName.getAbsolutePath()))
                 || !isNewer(pathName, filterDate)) {
             log.debug("Excluded {}", pathName);
             ResultStatistic.getInstance().excluded();
@@ -82,10 +82,5 @@ public class FileFilter {
         }
 
         return false;
-    }
-
-    private boolean isNewOrChanged(File pathname) {
-        Instant lastExecutionDate = lastExecutionHandler.get(pathname.getAbsolutePath());
-        return lastExecutionDate == null || isNewer(pathname, lastExecutionDate);
     }
 }

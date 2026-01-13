@@ -56,7 +56,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
     // TODO: implement usage
     @Option(names = {"-n", "--only-new-files"}, description = "ignores all files unchanged and previously processed")
     private boolean onlyNewFiles;
-    @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
+    @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (following ISO-8601 yyyy-MM-ddTHH:mm:ss.sssZ)")
     private Instant filterDate;
     @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern")
     private Pattern includePattern;
