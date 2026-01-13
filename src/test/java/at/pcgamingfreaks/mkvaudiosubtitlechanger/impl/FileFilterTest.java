@@ -1,8 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,11 +12,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Date;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -71,12 +71,14 @@ class FileFilterTest {
         when(file.toPath()).thenReturn(Path.of(TEST_FILE));
 
         long currentTime = System.currentTimeMillis();
-        FileFilter fileFilter = new FileFilter(excludedDirs, Pattern.compile(pattern), new Date(currentTime + filterDateOffset), null);
+        when(attributes.creationTime()).thenReturn(FileTime.fromMillis(currentTime));
+        when(attributes.lastModifiedTime()).thenReturn(FileTime.fromMillis(currentTime));
+        FileFilter fileFilter = new FileFilter(excludedDirs, Pattern.compile(pattern), Instant.ofEpochMilli(currentTime).plus(filterDateOffset, ChronoUnit.SECONDS), null);
 
-        try (MockedStatic<DateUtils> mockedFiles = Mockito.mockStatic(DateUtils.class)) {
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles
-                    .when(() -> DateUtils.convert(anyLong()))
-                    .thenReturn(new Date(currentTime));
+                    .when(() -> Files.readAttributes(any(), eq(BasicFileAttributes.class)))
+                    .thenReturn(attributes);
 
             assertEquals(acceptanceExpected, fileFilter.accept(file, new HashSet<>(extensions)), "File is accepted");
             assertEquals(excluded, ResultStatistic.getInstance().getExcluded() > 0, "Is counted in excluded statistic");

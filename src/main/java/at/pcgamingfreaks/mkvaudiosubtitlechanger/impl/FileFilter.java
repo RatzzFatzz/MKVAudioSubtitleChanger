@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class FileFilter {
     private final Set<String> excluded;
     private final Pattern includePattern;
-    private final Date filterDate;
+    private final Instant filterDate;
     private final LastExecutionHandler lastExecutionHandler;
 
     private final String EXTENSION_GROUP = "extension";
@@ -50,10 +50,6 @@ public class FileFilter {
 
     private boolean hasMatchingPattern(File pathName) {
         return includePattern.matcher(pathName.getName()).matches();
-    }
-
-    private boolean isNewer(File pathName, Date date) {
-        return isNewer(pathName, date.toInstant());
     }
 
     private boolean isNewer(File pathName, Instant date) {

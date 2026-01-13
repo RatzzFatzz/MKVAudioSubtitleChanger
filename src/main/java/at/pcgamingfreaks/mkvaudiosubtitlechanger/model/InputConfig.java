@@ -12,6 +12,7 @@ import org.apache.commons.lang3.SystemUtils;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
 import picocli.CommandLine.Option;
@@ -56,7 +57,7 @@ public class InputConfig implements CommandLine.IVersionProvider {
     @Option(names = {"-n", "--only-new-files"}, description = "ignores all files unchanged and previously processed")
     private boolean onlyNewFiles;
     @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
-    private Date filterDate;
+    private Instant filterDate;
     @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern")
     private Pattern includePattern;
     @Option(names = {"-e", "--exclude"}, arity = "1..*",
