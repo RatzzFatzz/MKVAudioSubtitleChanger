@@ -1,12 +1,20 @@
 Configuration:
-  name: DefaultLogger
+  name: MainConfig
+
+  Properties:
+    Property:
+      - name: logDir
+        value: ${sys:user.home}/.local/mkvaudiosubtitlechanger/logs
+      - name: logPattern
+        value: "%d{DEFAULT} | %-5level | %msg %n %throwable"
+
   Appenders:
     RollingFile:
       name: FileAppender
-      fileName: ${sys:user.home}/.local/mkvaudiosubtitlechanger/logs/application.log
-      filePattern: ${sys:user.home}/.local/mkvaudiosubtitlechanger/logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
+      fileName: ${logDir}/application.log
+      filePattern: ${logDir}/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %msg %n %throwable"
+        Pattern: logPattern
       ThresholdFilter:
         level: debug
       Policies:
@@ -15,7 +23,7 @@ Configuration:
       DefaultRolloverStrategy:
         max: 30
         Delete:
-          basePath: archive
+          basePath: logs/archive
           maxDepth: 1
           IfLastModified:
             age: 30d

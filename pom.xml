@@ -29,7 +29,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j2.yaml</include>
+                            <include>log4j2.yml</include>
                         </includes>
                     </resource>
                 </resources>
@@ -64,7 +64,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j2-windows.yaml</include>
+                            <include>log4j2-windows.yml</include>
                         </includes>
                     </resource>
                 </resources>
@@ -161,7 +161,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j2-debian.yaml</include>
+                            <include>log4j2-debian.yml</include>
                         </includes>
                     </resource>
                 </resources>

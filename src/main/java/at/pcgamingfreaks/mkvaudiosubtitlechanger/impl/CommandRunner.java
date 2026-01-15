@@ -43,14 +43,7 @@ public class CommandRunner implements Runnable {
             System.out.println("Safemode active. No files will be changed!");
         }
 
-        String userLocal = getLogDirectory();
-        if (userLocal == null) {
-            log.error("Could not load log4j2 log info");
-            System.out.println("Could not load log4j2 log info");
-            System.exit(1);
-        }
-
-        LastExecutionHandler lastExecutionHandler = config.isOnlyNewFiles() ? new LastExecutionHandler(userLocal) : null;
+        LastExecutionHandler lastExecutionHandler = config.isOnlyNewFiles() ? new LastExecutionHandler(getApplicationHome()) : null;
         FileFilter fileFilter = new FileFilter(config.getExcluded(), config.getIncludePattern(), config.getFilterDate(), lastExecutionHandler);
         FileProcessor fileProcessor = new CachedFileProcessor(new MkvFileProcessor(config.getMkvToolNix(), fileFilter));
         AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
@@ -61,7 +54,7 @@ public class CommandRunner implements Runnable {
         kernel.execute();
     }
 
-    public String getLogDirectory() {
+    public String getApplicationHome() {
         LoggerContext context = (LoggerContext) LogManager.getContext(false);
         Configuration config = context.getConfiguration();
 
@@ -72,7 +65,9 @@ public class CommandRunner implements Runnable {
             }
         }
 
-        log.warn("No file appender found in configuration");
+        log.error("Could not load log4j2 path info");
+        System.out.println("Could not load log4j2 path info");
+        System.exit(1);
         return null;
     }
 }
