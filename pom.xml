@@ -138,7 +138,7 @@
                             <winShortcut>false</winShortcut>
                             <winMenu>false</winMenu>
                             <javaOptions>
-                                <javaOption>-Dlog4j2.configurationFile=log4j2-windows.yaml</javaOption>
+                                <javaOption>-Dlog4j2.configurationFile=log4j2-windows.yml</javaOption>
                             </javaOptions>
                         </configuration>
                         <executions>
