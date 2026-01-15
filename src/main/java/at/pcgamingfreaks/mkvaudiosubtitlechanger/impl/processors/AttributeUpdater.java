@@ -65,7 +65,7 @@ public abstract class AttributeUpdater {
             executor.awaitTermination(1, TimeUnit.DAYS);
         }
 
-        lastExecutionHandler.persist();
+        if (lastExecutionHandler != null) lastExecutionHandler.persist();
 
         statistic.stopTimer();
         statistic.print();
