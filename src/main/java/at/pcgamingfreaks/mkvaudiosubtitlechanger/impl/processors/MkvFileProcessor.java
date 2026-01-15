@@ -3,10 +3,10 @@ package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.exceptions.MkvToolNixException;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.FileFilter;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
