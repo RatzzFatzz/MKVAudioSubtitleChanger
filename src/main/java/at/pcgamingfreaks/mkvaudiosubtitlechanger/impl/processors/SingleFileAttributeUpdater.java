@@ -1,18 +1,20 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBarBuilder;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
 public class SingleFileAttributeUpdater extends AttributeUpdater {
 
-    public SingleFileAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor) {
-        super(config, processor, attributeChangeProcessor);
+    public SingleFileAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor, LastExecutionHandler lastExecutionHandler) {
+        super(config, processor, attributeChangeProcessor, lastExecutionHandler);
     }
 
     @Override
@@ -23,7 +25,9 @@ public class SingleFileAttributeUpdater extends AttributeUpdater {
 
     @Override
     protected List<File> getFiles() {
-        return fileProcessor.loadFiles(config.getLibraryPath().getPath());
+        return Arrays.stream(config.getLibraryPath())
+                .flatMap(path -> fileProcessor.loadFiles(path.getPath()).stream())
+                .toList();
     }
 
     @Override
@@ -36,10 +40,11 @@ public class SingleFileAttributeUpdater extends AttributeUpdater {
             return;
         }
 
-        attributeChangeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config.getAttributeConfig());
-        attributeChangeProcessor.findForcedTracksAndApplyChanges(fileInfo, config.isOverwriteForced());
-        attributeChangeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-        attributeChangeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+        attributeChangeProcessor.findAndApplyDefaultMatch(fileInfo, config.getAttributeConfig());
+        attributeChangeProcessor.findAndApplyForcedTracks(fileInfo, config.isOverwriteForced());
+        attributeChangeProcessor.applyForcedAsDefault(fileInfo);
+        attributeChangeProcessor.findAndApplyCommentaryTracks(fileInfo);
+        attributeChangeProcessor.findAndApplyHearingImpairedTracks(fileInfo);
 
         checkStatusAndUpdate(fileInfo);
     }

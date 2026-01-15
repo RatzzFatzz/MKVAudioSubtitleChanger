@@ -1,12 +1,20 @@
 Configuration:
-  name: DefaultLogger
+  name: WindowsConfig
+
+  Properties:
+    Property:
+      - name: logDir
+        value: ${sys:user.home}/AppData/Local/MKVAudioSubtitleChanger/logs
+      - name: logPattern
+        value: "%d{DEFAULT} | %-5level | %msg %n %throwable"
+
   Appenders:
     RollingFile:
       name: FileAppender
-      fileName: ${sys:user.home}/AppData/Local/MKVAudioSubtitleChanger/logs/application.log
-      filePattern: ${sys:user.home}/AppData/Local/MKVAudioSubtitleChanger/logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
+      fileName: ${logDir}/application.log
+      filePattern: ${logDir}/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %msg %n %throwable"
+        Pattern: logPattern
       ThresholdFilter:
         level: debug
       Policies:

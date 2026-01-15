@@ -1,7 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl;
 
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.ResultStatistic;
-import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,9 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.Instant;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +18,8 @@ import java.util.regex.Pattern;
 public class FileFilter {
     private final Set<String> excluded;
     private final Pattern includePattern;
-    private final Date filterDate;
+    private final Instant filterDate;
+    private final LastExecutionHandler lastExecutionHandler;
 
     private final String EXTENSION_GROUP = "extension";
     private final Pattern extensionPattern = Pattern.compile(String.format(".*(?<%s>\\..*)", EXTENSION_GROUP));
@@ -33,8 +32,9 @@ public class FileFilter {
         }
 
         if (!hasMatchingPattern(pathName)
-                || !isNewer(pathName)
-                || isExcluded(pathName, new HashSet<>(excluded))) {
+                || isExcluded(pathName, new HashSet<>(excluded))
+                || lastExecutionHandler != null && !isNewer(pathName, lastExecutionHandler.get(pathName.getAbsolutePath()))
+                || !isNewer(pathName, filterDate)) {
             log.debug("Excluded {}", pathName);
             ResultStatistic.getInstance().excluded();
             return false;
@@ -52,19 +52,16 @@ public class FileFilter {
         return includePattern.matcher(pathName.getName()).matches();
     }
 
-    private boolean isNewer(File pathName) {
-        if (filterDate == null) return true;
+    private boolean isNewer(File pathName, Instant date) {
+        if (date == null) return true;
         try {
             BasicFileAttributes attributes = Files.readAttributes(pathName.toPath(), BasicFileAttributes.class);
-            return isNewer(DateUtils.convert(attributes.creationTime().toMillis()));
+            return attributes.creationTime().toInstant().isAfter(date)
+                    || attributes.lastModifiedTime().toInstant().isAfter(date);
         } catch (IOException e) {
             log.warn("File attributes could not be read", e);
         }
         return true;
-    }
-
-    private boolean isNewer(Date creationDate) {
-        return creationDate.toInstant().isAfter(filterDate.toInstant());
     }
 
     private boolean isExcluded(File pathName, Set<String> excludedDirs) {

@@ -29,7 +29,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j2.yaml</include>
+                            <include>log4j2.yml</include>
                         </includes>
                     </resource>
                 </resources>
@@ -64,7 +64,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j2-windows.yaml</include>
+                            <include>log4j2-windows.yml</include>
                         </includes>
                     </resource>
                 </resources>
@@ -138,7 +138,7 @@
                             <winShortcut>false</winShortcut>
                             <winMenu>false</winMenu>
                             <javaOptions>
-                                <javaOption>-Dlog4j2.configurationFile=log4j2-windows.yaml</javaOption>
+                                <javaOption>-Dlog4j2.configurationFile=log4j2-windows.yml</javaOption>
                             </javaOptions>
                         </configuration>
                         <executions>
@@ -161,7 +161,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j2-debian.yaml</include>
+                            <include>log4j2-debian.yml</include>
                         </includes>
                     </resource>
                 </resources>
@@ -396,18 +396,18 @@
             <version>2.25.3</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/tools.jackson.dataformat/jackson-dataformat-yaml -->
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml -->
         <dependency>
-            <groupId>tools.jackson.dataformat</groupId>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>3.0.3</version>
+            <version>2.20.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind -->
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
-            <groupId>tools.jackson.core</groupId>
+            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>3.0.3</version>
+            <version>2.20.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
         <dependency>
@@ -420,6 +420,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.20.0</version>
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.21.0</version>
+            <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/me.tongfei/progressbar -->
         <dependency>

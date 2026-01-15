@@ -1,5 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.FileInfoTestUtil.AUDIO_GER;
+import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.TrackAttributeUtil.AUDIO_GER;
 import static at.pcgamingfreaks.mkvaudiosubtitlechanger.util.PathUtils.TEST_FILE;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,7 +37,7 @@ class AttributeUpdaterTest {
         InputConfig config = new InputConfig();
         config.setThreads(1);
         config.setSafeMode(true);
-        AttributeUpdater underTest = new AttributeUpdater(config, null, null) {
+        AttributeUpdater underTest = new AttributeUpdater(config, null, null, new LastExecutionHandler("")) {
             @Override
             protected List<File> getFiles() {
                 return List.of();

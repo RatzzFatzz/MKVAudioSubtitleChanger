@@ -1,5 +1,6 @@
 package at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.processors;
 
+import at.pcgamingfreaks.mkvaudiosubtitlechanger.impl.LastExecutionHandler;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.FileInfo;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.InputConfig;
 import at.pcgamingfreaks.mkvaudiosubtitlechanger.model.AttributeConfig;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.tongfei.progressbar.ProgressBarBuilder;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,8 +16,8 @@ import java.util.Set;
 @Slf4j
 public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
-    public CoherentAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor) {
-        super(config, processor, attributeChangeProcessor);
+    public CoherentAttributeUpdater(InputConfig config, FileProcessor processor, AttributeChangeProcessor attributeChangeProcessor, LastExecutionHandler lastExecutionHandler) {
+        super(config, processor, attributeChangeProcessor, lastExecutionHandler);
     }
 
     @Override
@@ -25,7 +27,9 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
     }
 
     protected List<File> getFiles() {
-        return fileProcessor.loadDirectory(config.getLibraryPath().getPath(), config.getCoherent());
+        return Arrays.stream(config.getLibraryPath())
+                .flatMap(path -> fileProcessor.loadDirectory(path.getPath(), config.getCoherent()).stream())
+                .toList();
     }
 
     @Override
@@ -49,16 +53,17 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
 
             log.info("Found coherent match {} for {}", matchedConfig.toStringShort(), rootDir.getPath());
             matchedFiles.forEach(fileInfo -> {
-                attributeChangeProcessor.findForcedTracksAndApplyChanges(fileInfo, this.config.isOverwriteForced());
-                attributeChangeProcessor.findCommentaryTracksAndApplyChanges(fileInfo);
-                attributeChangeProcessor.findHearingImpairedTracksAndApplyChanges(fileInfo);
+                attributeChangeProcessor.findAndApplyForcedTracks(fileInfo, this.config.isOverwriteForced());
+                attributeChangeProcessor.applyForcedAsDefault(fileInfo);
+                attributeChangeProcessor.findAndApplyCommentaryTracks(fileInfo);
+                attributeChangeProcessor.findAndApplyHearingImpairedTracks(fileInfo);
 
                 checkStatusAndUpdate(fileInfo);
             });
             return; // match was found and process must be stopped
         }
 
-        // Couldn't match any config at current level. Resetting changes and trying to one level deeper
+        // Couldn't match any config at current level. Resetting changes and trying one level deeper
         matchedFiles.forEach(fileInfo -> {
             fileInfo.resetChanges();
             fileInfo.setMatchedConfig(null);
@@ -89,7 +94,7 @@ public class CoherentAttributeUpdater extends SingleFileAttributeUpdater {
                 break;
             }
 
-            attributeChangeProcessor.findDefaultMatchAndApplyChanges(fileInfo, config);
+            attributeChangeProcessor.findAndApplyDefaultMatch(fileInfo, config);
 
             if (matchedConfig == null) matchedConfig = fileInfo.getMatchedConfig();
             if (matchedConfig == null || matchedConfig != fileInfo.getMatchedConfig()) {

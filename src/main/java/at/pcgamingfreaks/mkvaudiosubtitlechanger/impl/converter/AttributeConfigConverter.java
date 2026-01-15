@@ -37,10 +37,10 @@ public class AttributeConfigConverter implements CommandLine.ITypeConverter<Attr
      * @return valid {@link AttributeConfig}
      */
     private static AttributeConfig validateResult(AttributeConfig attr) {
-        if (!isLanguageValid(attr.getAudioLanguage()))
-            throw new CommandLine.TypeConversionException("Audio language invalid: " + attr.getAudioLanguage());
-        if (!isLanguageValid(attr.getSubtitleLanguage()))
-            throw new CommandLine.TypeConversionException("Subtitle language invalid: " + attr.getSubtitleLanguage());
+        if (!isLanguageValid(attr.getAudioLang()))
+            throw new CommandLine.TypeConversionException("Audio language invalid: " + attr.getAudioLang());
+        if (!isLanguageValid(attr.getSubLang()))
+            throw new CommandLine.TypeConversionException("Subtitle language invalid: " + attr.getSubLang());
 
         return attr;
     }

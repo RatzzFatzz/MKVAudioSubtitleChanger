@@ -1,18 +1,20 @@
 Configuration:
-  name: DefaultLogger
+  name: MainConfig
+
+  Properties:
+    Property:
+      - name: logDir
+        value: ./logs
+      - name: logPattern
+        value: "%d{DEFAULT} | %-5level | %msg %n %throwable"
+
   Appenders:
-    Console:
-      name: Console_Out
-      PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %thread | %C{1} | %msg %n %throwable"
-      ThresholdFilter:
-        level: debug
     RollingFile:
       name: FileAppender
-      fileName: logs/application.log
-      filePattern: logs/archive/application-%d{yyyy-MM-dd}-%i.log.gz
+      fileName: ${logDir}/application.log
+      filePattern: ${logDir}/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
-        Pattern: "%d{DEFAULT} | %-5level | %thread | %C{1} | %msg %n %throwable"
+        Pattern: logPattern
       ThresholdFilter:
         level: debug
       Policies:
@@ -30,13 +32,11 @@ Configuration:
 
   Loggers:
     Root:
-      level: debug
+      level: info
       AppenderRef:
-        - ref: Console_Out
         - ref: FileAppender
     Logger:
       name: "com.zaxxer.hikari.HikariConfig"
       level: info
       AppenderRef:
-        - ref: Console_Out
         - ref: FileAppender

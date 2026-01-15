@@ -6,6 +6,10 @@ import at.pcgamingfreaks.mkvaudiosubtitlechanger.util.ProjectUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 
@@ -39,13 +43,31 @@ public class CommandRunner implements Runnable {
             System.out.println("Safemode active. No files will be changed!");
         }
 
-        FileFilter fileFilter = new FileFilter(config.getExcluded(), config.getIncludePattern(), config.getFilterDate());
+        LastExecutionHandler lastExecutionHandler = config.isOnlyNewFiles() ? new LastExecutionHandler(getApplicationHome()) : null;
+        FileFilter fileFilter = new FileFilter(config.getExcluded(), config.getIncludePattern(), config.getFilterDate(), lastExecutionHandler);
         FileProcessor fileProcessor = new CachedFileProcessor(new MkvFileProcessor(config.getMkvToolNix(), fileFilter));
         AttributeChangeProcessor attributeChangeProcessor = new AttributeChangeProcessor(config.getPreferredSubtitles().toArray(new String[0]), config.getForcedKeywords(), config.getCommentaryKeywords(), config.getHearingImpaired());
 
         AttributeUpdater kernel = config.getCoherent() != null
-                ? new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor)
-                : new SingleFileAttributeUpdater(config, fileProcessor, attributeChangeProcessor);
+                ? new CoherentAttributeUpdater(config, fileProcessor, attributeChangeProcessor, lastExecutionHandler)
+                : new SingleFileAttributeUpdater(config, fileProcessor, attributeChangeProcessor, lastExecutionHandler);
         kernel.execute();
+    }
+
+    public String getApplicationHome() {
+        LoggerContext context = (LoggerContext) LogManager.getContext(false);
+        Configuration config = context.getConfiguration();
+
+        for (org.apache.logging.log4j.core.Appender appender : config.getAppenders().values()) {
+            if (appender instanceof RollingFileAppender rollingFileAppender) {
+                String fileName = rollingFileAppender.getFileName();
+                return new java.io.File(fileName).getParentFile().getParent();
+            }
+        }
+
+        log.error("Could not load log4j2 path info");
+        System.out.println("Could not load log4j2 path info");
+        System.exit(1);
+        return null;
     }
 }

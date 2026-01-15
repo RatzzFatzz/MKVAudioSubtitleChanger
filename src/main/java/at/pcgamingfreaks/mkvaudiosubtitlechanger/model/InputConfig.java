@@ -12,6 +12,7 @@ import org.apache.commons.lang3.SystemUtils;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
 import picocli.CommandLine.Option;
@@ -29,8 +30,8 @@ public class InputConfig implements CommandLine.IVersionProvider {
     CommandLine.Model.CommandSpec spec;
 
     @ValidFile(message = "does not exist")
-    @CommandLine.Parameters(description = "path to library")
-    private File libraryPath;
+    @CommandLine.Parameters(description = "paths to library", arity = "1..*")
+    private File[] libraryPath;
 
     @Option(names = {"-a", "--attribute-config"}, arity = "1..*", converter = AttributeConfigConverter.class,
             description = "List of audio:subtitle pairs for matching defaults in order (e.g. jpn:eng jpn:ger)")
@@ -53,10 +54,10 @@ public class InputConfig implements CommandLine.IVersionProvider {
     private boolean forceCoherent;
 
     // TODO: implement usage
-//    @Option(names = {"-n", "--only-new-file"}, description = "sets filter-date to last successful execution (overwrites input of filter-date)")
-//    private boolean onlyNewFiles;
-    @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (format: \"dd.MM.yyyy-HH:mm:ss\")")
-    private Date filterDate;
+    @Option(names = {"-n", "--only-new-files"}, description = "ignores all files unchanged and previously processed")
+    private boolean onlyNewFiles;
+    @Option(names = {"-d", "--filter-date"}, defaultValue = Option.NULL_VALUE, description = "only consider files created newer than entered date (following ISO-8601 yyyy-MM-ddTHH:mm:ss.sssZ)")
+    private Instant filterDate;
     @Option(names = {"-i", "--include-pattern"}, defaultValue = ".*", description = "include files matching pattern")
     private Pattern includePattern;
     @Option(names = {"-e", "--exclude"}, arity = "1..*",
