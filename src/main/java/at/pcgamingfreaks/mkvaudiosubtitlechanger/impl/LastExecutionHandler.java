@@ -11,11 +11,12 @@ import java.util.Properties;
 
 @Slf4j
 public class LastExecutionHandler {
+    private static final String FILE_NAME = "last-execution.properties";
     private final File file;
     private final Properties lastFileExecution;
 
     public LastExecutionHandler(String path) {
-        file = new File(path);
+        file = new File(path + "/" +  FILE_NAME);
         lastFileExecution = loadLastFileExecution(file);
     }
 
@@ -24,7 +25,7 @@ public class LastExecutionHandler {
         try (FileInputStream in = new FileInputStream(file)) {
             properties.load(in);
         } catch (IOException e) {
-            log.warn("Couldn't find or read {}", file.getPath(), e);
+            log.info("Couldn't find or read {}", file.getPath(), e);
         }
         return properties;
     }
