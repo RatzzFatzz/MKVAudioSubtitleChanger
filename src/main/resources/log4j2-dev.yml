@@ -19,7 +19,7 @@ Configuration:
       fileName: ${logDir}/application.log
       filePattern: ${logDir}/archive/application-%d{yyyy-MM-dd}-%i.log.gz
       PatternLayout:
-        Pattern: logPattern
+        Pattern: ${logPattern}
       ThresholdFilter:
         level: debug
       Policies:
